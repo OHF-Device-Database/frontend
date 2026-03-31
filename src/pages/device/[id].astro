@@ -1,0 +1,140 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { MonoDevice } from "../../types/device";
+
+export const prerender = false;
+const { id } = Astro.params;
+
+const result = await fetch(
+    `${import.meta.env.API_AUTHORITY ?? "http://localhost:3000"}/api/unstable/derived/devices/${id}`,
+    {
+        method: "GET",
+    },
+);
+
+let fetched: { device: MonoDevice; model: string } | undefined;
+if (result.status === 200) {
+    const device = MonoDevice.parse(await result.json());
+
+    let model;
+    if (typeof device.model !== "undefined") {
+        model = `${device.model}${typeof device.model_id !== "undefined" ? ` ${typeof device.model_id}` : ""}`;
+    } else {
+        model = device.model_id!;
+    }
+
+    fetched = { device, model };
+
+    Astro.cache.set({
+        maxAge: 604800,
+    });
+}
+---
+
+<style>
+    main {
+        padding: 16px;
+        box-sizing: border-box;
+    }
+
+    @media (min-width: 640px) {
+        main {
+            padding: 32px 24px;
+        }
+    }
+
+    #device-header {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        max-width: 640px;
+        margin: 0 auto;
+    }
+
+    #device-image {
+        width: 96px;
+        height: 96px;
+        border-radius: 12px;
+        background-color: #e0e0e0;
+        flex-shrink: 0;
+    }
+
+    #device-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0;
+        width: 100%;
+    }
+
+    .integration {
+        font-size: 0.95em;
+        font-weight: 300;
+    }
+
+    .manufacturer {
+        font-size: 2em;
+    }
+
+    .model {
+        font-size: 1.5em;
+        font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .model-id {
+        font-family: monospace;
+        font-size: 1em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
+
+<Layout
+    title={typeof fetched !== "undefined"
+        ? `${fetched.device.manufacturer} ${fetched.model}`
+        : undefined}
+>
+    {
+        typeof fetched !== "undefined" ? (
+            <Fragment slot="head">
+                <meta
+                    name="og-description"
+                    content={`device page of ${fetched.model} by by ${fetched.device.manufacturer}`}
+                />
+            </Fragment>
+        ) : (
+            <Fragment />
+        )
+    }
+
+    {
+        typeof fetched !== "undefined" ? (
+            <main>
+                <div id="device-header">
+                    <div id="device-image" />
+                    <div id="device-info">
+                        <div class="integration">{fetched.device.integration}</div>
+                        <div class="manufacturer">{fetched.device.manufacturer}</div>
+                        {typeof fetched.device.model !== "undefined" ? (
+                            <div class="model">{fetched.device.model}</div>
+                        ) : (
+                            <Fragment />
+                        )}
+                        {typeof fetched.device.model_id !== "undefined" ? (
+                            <code class="model-id">{fetched.device.model_id}</code>
+                        ) : (
+                            <Fragment />
+                        )}
+                    </div>
+                </div>
+            </main>
+        ) : (
+            <Fragment />
+        )
+    }
+</Layout>

@@ -1,0 +1,40 @@
+---
+import { ClientRouter } from "astro:transitions";
+
+interface Props {
+    title?: string;
+}
+
+const { title } = Astro.props;
+---
+
+<style is:global>
+    html,
+    body {
+        margin: 0;
+        height: 100%;
+    }
+
+    body {
+        font-family: sans-serif;
+    }
+
+    h1 {
+        display: inline-block;
+        margin: 0;
+    }
+</style>
+
+<html lang="en" transition:animate="none">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="generator" content={Astro.generator} />
+        <slot name="head" />
+        <ClientRouter fallback="swap" />
+        <title>device database{typeof title !== "undefined" ? ` - ${title}` : ""}</title>
+    </head>
+    <body>
+        <slot />
+    </body>
+</html>

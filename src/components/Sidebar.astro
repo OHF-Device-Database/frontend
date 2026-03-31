@@ -1,0 +1,273 @@
+---
+import type { PolyDevice } from "../types/device";
+
+interface Props {
+    fetched: PolyDevice[];
+}
+
+const { fetched: devices } = Astro.props;
+
+const integrations = new Set(devices.map((d) => d.integration));
+const manufacturers = new Set(devices.map((d) => d.manufacturer));
+
+const term = Astro.url.searchParams.get("term");
+
+const selected = {
+    integrations: new Set(Astro.url.searchParams.getAll("integration") ?? []),
+    manufacturers: new Set(Astro.url.searchParams.getAll("manufacturer") ?? []),
+};
+---
+
+<style>
+    aside {
+        width: 220px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        padding: 16px;
+        border-right: 1px solid #e0e0e0;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        box-sizing: border-box;
+    }
+
+    aside form {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    aside form noscript {
+        margin-top: auto;
+    }
+
+    aside form noscript input[type="submit"] {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    aside form input[type="search"] {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    aside form fieldset {
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        padding: 8px 10px;
+        margin: 0;
+    }
+
+    aside form fieldset legend {
+        font-size: 0.8em;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        padding: 0 4px;
+    }
+
+    aside details {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-height: 0;
+    }
+
+    aside details summary {
+        flex-shrink: 0;
+        list-style: none;
+        cursor: pointer;
+        user-select: none;
+        font-size: 0.85em;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        padding: 4px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    aside details summary::after {
+        content: "▸";
+    }
+
+    aside details:not([open]) summary::after {
+        rotate: 90deg;
+    }
+
+    /* otherwise spacing between form and details bleeds into collapsed layout */
+    aside details:not([open]) {
+        gap: 0;
+    }
+
+    aside form noscript {
+        margin-top: auto;
+    }
+
+    aside form noscript input[type="submit"] {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 0;
+        cursor: pointer;
+        font-size: 0.9em;
+    }
+
+    @media (max-width: 768px) {
+        aside {
+            width: 100%;
+            height: auto;
+            border-right: none;
+            border-bottom: 1px solid #e0e0e0;
+            background-color: white;
+            z-index: 10;
+        }
+    }
+
+    @media (min-width: 768px) {
+        aside:has(details:not([open])) {
+            width: 28px;
+            overflow: hidden;
+            padding: 8px 4px;
+        }
+
+        aside:has(details:not([open])) details {
+            align-items: center;
+            justify-content: center;
+        }
+
+        aside:has(details:not([open])) details summary {
+            /* allows expanding horizontally, so whole height is click area */
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            flex: 1;
+            padding: 0;
+            justify-content: center;
+        }
+
+        aside details summary::after {
+            display: none;
+        }
+    }
+</style>
+
+<aside>
+    <details open>
+        <summary>filters</summary>
+        <form method="get">
+            <input type="search" name="term" value={term} placeholder="term" />
+
+            {
+                integrations.size > 0 ? (
+                    <fieldset>
+                        <legend>integrations</legend>
+                        {[...integrations].toSorted().map((integration) => (
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="integration"
+                                    value={integration}
+                                    checked={selected.integrations.has(integration)}
+                                />
+                                {integration}
+                            </label>
+                        ))}
+                    </fieldset>
+                ) : (
+                    <Fragment />
+                )
+            }
+            {
+                manufacturers.size > 0 ? (
+                    <fieldset>
+                        <legend>manufacturers</legend>
+                        {[...manufacturers].toSorted().map((manufacturer) => (
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="manufacturer"
+                                    value={manufacturer}
+                                    checked={selected.manufacturers.has(manufacturer)}
+                                />
+                                {manufacturer}
+                            </label>
+                        ))}
+                    </fieldset>
+                ) : (
+                    <Fragment />
+                )
+            }
+
+            <noscript>
+                <input type="submit" value="submit" />
+            </noscript>
+        </form>
+    </details>
+</aside>
+
+<script>
+    import { navigate } from "astro:transitions/client";
+
+    const handleEvents = () => {
+        for (const element of document.getElementsByTagName("input")) {
+            element.addEventListener("change", (e) => {
+                const { name, value, checked } = e.target as HTMLInputElement;
+
+                if (!(name === "integration" || name === "manufacturer")) {
+                    return;
+                }
+
+                const searchParams = new URLSearchParams(window.location.search);
+                const term = searchParams.get("term");
+                if (term === null) {
+                    return;
+                }
+
+                const next = {
+                    term,
+                    integration: new Set(searchParams.getAll("integration") ?? []),
+                    manufacturer: new Set(searchParams.getAll("manufacturer") ?? []),
+                };
+
+                if (checked) {
+                    next[name].add(value);
+                } else {
+                    next[name].delete(value);
+                }
+
+                const url = new URL(window.location.href);
+
+                url.searchParams.set("term", term);
+
+                url.searchParams.delete("integration");
+                for (const integration of next.integration) {
+                    url.searchParams.append("integration", integration);
+                }
+
+                url.searchParams.delete("manufacturer");
+                for (const manufacturer of next.manufacturer) {
+                    url.searchParams.append("manufacturer", manufacturer);
+                }
+
+                navigate(url.href);
+            });
+        }
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+        handleEvents();
+    });
+
+    document.addEventListener("astro:page-load", () => {
+        handleEvents();
+    });
+</script>
