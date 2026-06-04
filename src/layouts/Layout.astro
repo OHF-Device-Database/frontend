@@ -1,40 +1,94 @@
 ---
 import { ClientRouter } from "astro:transitions";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+import globalCss from "../styles/global.css?url";
 
 interface Props {
     title?: string;
+    page?: "home" | "browse" | "detail" | "page";
+    back?: string;
 }
 
-const { title } = Astro.props;
+const { title, page = "page", back } = Astro.props;
 ---
-
-<style is:global>
-    html,
-    body {
-        margin: 0;
-        height: 100%;
-    }
-
-    body {
-        font-family: sans-serif;
-    }
-
-    h1 {
-        display: inline-block;
-        margin: 0;
-    }
-</style>
 
 <html lang="en" transition:animate="none">
     <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
         <meta name="generator" content={Astro.generator} />
+        <meta name="theme-color" content="#2a2a27" />
+
+        <script is:inline>
+            (function () {
+                var KEY = "devicedb.demoState.v1";
+                function read() {
+                    try {
+                        return JSON.parse(localStorage.getItem(KEY)) || {};
+                    } catch (e) {
+                        return {};
+                    }
+                }
+                function resolve(pref) {
+                    if (pref === "light" || pref === "dark") return pref;
+                    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+                        ? "dark"
+                        : "light";
+                }
+                function apply(state) {
+                    document.documentElement.setAttribute("data-resolved-theme", resolve(state.theme));
+                }
+                var state = read();
+                apply(state);
+                window.DemoState = {
+                    getTheme: function () {
+                        return read().theme || "auto";
+                    },
+                    setTheme: function (theme) {
+                        var s = read();
+                        s.theme = theme;
+                        try {
+                            localStorage.setItem(KEY, JSON.stringify(s));
+                        } catch (e) {}
+                        apply(s);
+                        window.dispatchEvent(new CustomEvent("devicedb:demostate", { detail: s }));
+                    },
+                };
+                if (window.matchMedia) {
+                    var mql = window.matchMedia("(prefers-color-scheme: dark)");
+                    var onChange = function () {
+                        var s = read();
+                        if (!s.theme || s.theme === "auto") apply(s);
+                    };
+                    if (mql.addEventListener) mql.addEventListener("change", onChange);
+                    else if (mql.addListener) mql.addListener(onChange);
+                }
+            })();
+        </script>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        />
+        <link rel="stylesheet" href={globalCss} transition:persist="app-styles" />
+
         <slot name="head" />
         <ClientRouter fallback="swap" />
-        <title>device database{typeof title !== "undefined" ? ` - ${title}` : ""}</title>
+        <title>Device Database{typeof title !== "undefined" ? ` · ${title}` : ""}</title>
     </head>
     <body>
-        <slot />
+        <div class="app-shell">
+            <Nav page={page} back={back} />
+            <main class="app-main">
+                <slot />
+            </main>
+            <Footer flush={page === "home"} />
+        </div>
+        <script>
+            import "../islands/client";
+        </script>
     </body>
 </html>

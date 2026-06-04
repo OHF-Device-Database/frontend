@@ -1,0 +1,38 @@
+---
+import { icon } from "../lib/icons";
+
+interface Props {
+    page: string;
+    back?: string;
+}
+
+const { page, back } = Astro.props;
+const showSearch = page !== "home";
+---
+
+<header class="appnav" data-appnav>
+    <div class="container appnav-inner">
+        <div class="appnav-left">
+            {
+                back && (
+                    <a href={back} class="appnav-back" aria-label="Back to devices" set:html={icon("arrowL", 18)} />
+                )
+            }
+            <brand-menu></brand-menu>
+        </div>
+        {showSearch ? <device-search size="header"></device-search> : <div></div>}
+        <div></div>
+    </div>
+</header>
+
+<script>
+    const sync = () => {
+        const nav = document.querySelector("[data-appnav]");
+        if (nav) nav.classList.toggle("is-scrolled", window.scrollY > 0);
+    };
+    const bind = () => {
+        sync();
+        window.addEventListener("scroll", sync, { passive: true });
+    };
+    document.addEventListener("astro:page-load", bind);
+</script>

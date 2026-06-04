@@ -1,140 +1,63 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { MonoDevice } from "../../types/device";
+import { fetchDevice, fetchDevices } from "../../lib/api";
+import { requiresInternet } from "../../lib/device";
+import { CATEGORY_LABEL } from "../../lib/categories";
+import { categoryGlyph } from "../../lib/icons";
 
 export const prerender = false;
+
 const { id } = Astro.params;
+const device = id ? await fetchDevice(id) : undefined;
 
-const result = await fetch(
-    `${import.meta.env.API_AUTHORITY ?? "http://localhost:3000"}/api/unstable/derived/devices/${id}`,
-    {
-        method: "GET",
-    },
-);
-
-let fetched: { device: MonoDevice; model: string } | undefined;
-if (result.status === 200) {
-    const device = MonoDevice.parse(await result.json());
-
-    let model;
-    if (typeof device.model !== "undefined") {
-        model = `${device.model}${typeof device.model_id !== "undefined" ? ` ${typeof device.model_id}` : ""}`;
-    } else {
-        model = device.model_id!;
-    }
-
-    fetched = { device, model };
-
-    Astro.cache.set({
-        maxAge: 604800,
-    });
+if (!device) {
+    Astro.response.status = 404;
 }
+
+const needsInternet = device ? requiresInternet(device) : false;
+const total = (await fetchDevices()).length;
 ---
 
-<style>
-    main {
-        padding: 16px;
-        box-sizing: border-box;
-    }
-
-    @media (min-width: 640px) {
-        main {
-            padding: 32px 24px;
-        }
-    }
-
-    #device-header {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-        max-width: 640px;
-        margin: 0 auto;
-    }
-
-    #device-image {
-        width: 96px;
-        height: 96px;
-        border-radius: 12px;
-        background-color: #e0e0e0;
-        flex-shrink: 0;
-    }
-
-    #device-info {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        min-width: 0;
-        width: 100%;
-    }
-
-    .integration {
-        font-size: 0.95em;
-        font-weight: 300;
-    }
-
-    .manufacturer {
-        font-size: 2em;
-    }
-
-    .model {
-        font-size: 1.5em;
-        font-weight: 600;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .model-id {
-        font-family: monospace;
-        font-size: 1em;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-</style>
-
-<Layout
-    title={typeof fetched !== "undefined"
-        ? `${fetched.device.manufacturer} ${fetched.model}`
-        : undefined}
->
-    {
-        typeof fetched !== "undefined" ? (
-            <Fragment slot="head">
-                <meta
-                    name="og-description"
-                    content={`device page of ${fetched.model} by by ${fetched.device.manufacturer}`}
-                />
-            </Fragment>
-        ) : (
-            <Fragment />
-        )
-    }
-
-    {
-        typeof fetched !== "undefined" ? (
-            <main>
-                <div id="device-header">
-                    <div id="device-image" />
-                    <div id="device-info">
-                        <div class="integration">{fetched.device.integration}</div>
-                        <div class="manufacturer">{fetched.device.manufacturer}</div>
-                        {typeof fetched.device.model !== "undefined" ? (
-                            <div class="model">{fetched.device.model}</div>
-                        ) : (
-                            <Fragment />
-                        )}
-                        {typeof fetched.device.model_id !== "undefined" ? (
-                            <code class="model-id">{fetched.device.model_id}</code>
-                        ) : (
-                            <Fragment />
-                        )}
+{
+    device ? (
+        <Layout page="detail" back="/browse" title={`${device.manufacturer} ${device.name}`}>
+            <div class="detail container">
+                <div class="detail-header">
+                    <div class="detail-thumb" set:html={categoryGlyph(device.category, 56)} />
+                    <div class="detail-info">
+                        <div class="device-category">{CATEGORY_LABEL[device.category]}</div>
+                        <h1>{device.name}</h1>
+                        <div class="detail-model">
+                            {device.manufacturer} · {device.model}
+                        </div>
+                        <div class="device-badges">
+                            <span class={"local-indicator " + (needsInternet ? "net-yes" : "net-no")}>
+                                <span class="dot" />
+                                {needsInternet ? "Requires internet" : "Local connection"}
+                            </span>
+                        </div>
                     </div>
                 </div>
-            </main>
-        ) : (
-            <Fragment />
-        )
-    }
-</Layout>
+                <p class="detail-summary">{device.summary}</p>
+                <div class="detail-stats">
+                    <span>
+                        Reports <b>{device.reports.toLocaleString("en-US")}</b>
+                    </span>
+                    <span>
+                        Installations <b>{device.installs.toLocaleString("en-US")}</b>
+                    </span>
+                </div>
+            </div>
+        </Layout>
+    ) : (
+        <Layout page="page" title="Not found">
+            <div class="container" style="padding: 80px 0; text-align: center;">
+                <div class="eyebrow" style="margin-bottom: 12px;">404</div>
+                <h1 style="margin-bottom: 16px;">Device not found.</h1>
+                <a class="btn btn-primary" href="/browse">
+                    Browse all {total} devices
+                </a>
+            </div>
+        </Layout>
+    )
+}
