@@ -17,6 +17,11 @@ export const Device = z.object({
     summary: z.string(),
     reports: z.number(),
     installs: z.number(),
+    haIntegration: z.string().default(""),
+    entityTypes: z.array(z.string()).default([]),
+    softwareVersion: z.string().default(""),
+    firstSeen: z.string().default(""),
+    lastVerified: z.string().default(""),
 });
 export type Device = z.infer<typeof Device>;
 

@@ -23,6 +23,8 @@ import {
     Car,
     Watch,
     Blinds,
+    Check,
+    ExternalLink,
     type IconNode,
 } from "lucide";
 
@@ -33,6 +35,8 @@ const ICONS: Record<string, IconNode> = {
     users: Users,
     x: X,
     pencil: Pencil,
+    check: Check,
+    open: ExternalLink,
 };
 
 const GLYPHS: Record<string, IconNode> = {
