@@ -15,9 +15,9 @@ const devicesJson = JSON.stringify(all);
     <div class="browse">
         <browse-filters-sheet devices={devicesJson}></browse-filters-sheet>
         <div class="container browse-grid">
+            <browse-toolbar matchCount={matchCount}></browse-toolbar>
             <device-filters devices={devicesJson}></device-filters>
             <div class="browse-main">
-                <browse-toolbar matchCount={matchCount}></browse-toolbar>
                 <browse-results devices={devicesJson}></browse-results>
             </div>
         </div>

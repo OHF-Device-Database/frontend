@@ -108,15 +108,6 @@ export class DeviceFilters extends LitElement {
         this._commit({ ...this._filters, [dim]: new Set() });
     }
 
-    private _clearAll(): void {
-        this._commit({
-            ...this._filters,
-            category: new Set(),
-            manufacturer: new Set(),
-            localOnly: false,
-        });
-    }
-
     private _openMore(dim: FacetDimension): void {
         this._moreDim = dim;
         this._moreQuery = "";
@@ -280,18 +271,8 @@ export class DeviceFilters extends LitElement {
 
     render() {
         const filters = this._filters;
-        const active =
-            filters.category.size + filters.manufacturer.size + (filters.localOnly ? 1 : 0) > 0;
         return html`
             <aside class="filters" aria-label="Filters">
-                <div class="filters-head">
-                    <h3 class="filters-title">Filters</h3>
-                    ${active
-                        ? html`<button type="button" class="filters-clear" @click=${this._clearAll}>
-                              Clear all
-                          </button>`
-                        : nothing}
-                </div>
                 <div class="local-only-toggle">
                     <label class="local-only-toggle-row">
                         <span class="local-only-toggle-text">

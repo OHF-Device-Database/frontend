@@ -1,10 +1,12 @@
-import { LitElement, html } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { property, state } from "lit/decorators.js";
 import { defineElementOnce } from "../lib/define-element.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import {
     activeFilterChips,
+    activeFilterCount,
     browseFiltersHref,
+    clearedFilters,
     parseBrowseFilters,
     removeFilterChip,
     type FilterChip,
@@ -68,40 +70,56 @@ export class BrowseToolbar extends LitElement {
         }
     }
 
+    private _clearAll(): void {
+        history.pushState(null, "", browseFiltersHref(clearedFilters(this._filters)));
+        window.dispatchEvent(new CustomEvent("browse:filter-change"));
+    }
+
     render() {
         const chips = this._chips;
         const count = this._count;
-        const label =
-            count === 1 ? "1 device matches" : `${count.toLocaleString()} devices match`;
+        const active = activeFilterCount(this._filters) > 0;
 
         return html`
             <div class="browse-toolbar">
-                <div class="browse-toolbar-chips">
-                    ${chips.map((chip) =>
-                        chip.summary
-                            ? html`<button
-                                  type="button"
-                                  class="filter-chip filter-chip-summary"
-                                  aria-label=${`Edit ${chip.label}`}
-                                  @click=${() => this._open(chip)}
-                              >
-                                  <span class="filter-chip-label">${chip.label}</span>
-                                  ${unsafeHTML(icon("pencil", 12))}
-                              </button>`
-                            : html`<span class="filter-chip">
-                                  <span class="filter-chip-label">${chip.label}</span>
-                                  <button
-                                      type="button"
-                                      class="filter-chip-remove"
-                                      aria-label=${`Remove ${chip.label}`}
-                                      @click=${() => this._remove(chip)}
-                                  >
-                                      ${unsafeHTML(icon("x", 12))}
-                                  </button>
-                              </span>`,
-                    )}
+                <div class="browse-toolbar-filters">
+                    <h2 class="browse-toolbar-title">Filters</h2>
+                    ${active
+                        ? html`<button type="button" class="browse-toolbar-clear" @click=${this._clearAll}>
+                              Clear all
+                          </button>`
+                        : nothing}
                 </div>
-                <p class="browse-match-count">${label}</p>
+                <div class="browse-toolbar-main">
+                    <div class="browse-toolbar-chips">
+                        ${chips.map((chip) =>
+                            chip.summary
+                                ? html`<button
+                                      type="button"
+                                      class="filter-chip filter-chip-summary"
+                                      aria-label=${`Edit ${chip.label}`}
+                                      @click=${() => this._open(chip)}
+                                  >
+                                      <span class="filter-chip-label">${chip.label}</span>
+                                      ${unsafeHTML(icon("pencil", 12))}
+                                  </button>`
+                                : html`<span class="filter-chip">
+                                      <span class="filter-chip-label">${chip.label}</span>
+                                      <button
+                                          type="button"
+                                          class="filter-chip-remove"
+                                          aria-label=${`Remove ${chip.label}`}
+                                          @click=${() => this._remove(chip)}
+                                      >
+                                          ${unsafeHTML(icon("x", 12))}
+                                      </button>
+                                  </span>`,
+                        )}
+                    </div>
+                    <p class="browse-match-count">
+                        <b>${count.toLocaleString()}</b> ${count === 1 ? "device matches" : "devices match"}
+                    </p>
+                </div>
             </div>
         `;
     }
