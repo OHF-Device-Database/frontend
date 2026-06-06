@@ -585,7 +585,7 @@ body.search-fullscreen-open .appnav {
 }
 
 .browse {
-  padding: var(--space-5) 0 var(--space-9);
+  padding: 0 0 var(--space-9);
 }
 .browse-grid {
   display: grid;
@@ -780,12 +780,12 @@ browse-toolbar {
 
 .filters {
   position: sticky;
-  top: 88px;
+  top: 72px;
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
   padding-right: var(--space-6);
-  max-height: calc(100vh - 96px);
+  max-height: calc(100vh - 72px);
   overflow-y: auto;
 }
 .filters-head {
@@ -1276,6 +1276,7 @@ h1,
 device-filters {
   display: block;
   min-width: 0;
+  align-self: stretch;
 }
 browse-filters-sheet {
   display: block;
