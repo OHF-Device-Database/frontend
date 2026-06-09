@@ -182,14 +182,12 @@
 }
 .aside-card {
   border: 0;
-  border-top: 1px solid var(--border);
   border-radius: 0;
-  padding: var(--space-4) 0;
   background: transparent;
 }
 .aside-card h4 {
   font-family: var(--font-sans);
-  font-size: var(--fs-12);
+  font-size: var(--fs-14);
   font-weight: var(--fw-semibold);
   letter-spacing: var(--ls-wide);
   text-transform: uppercase;

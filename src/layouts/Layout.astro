@@ -41,6 +41,9 @@ const { title, page = "page", back } = Astro.props;
                 }
                 var state = read();
                 apply(state);
+                document.addEventListener("astro:after-swap", function () {
+                    apply(read());
+                });
                 window.DemoState = {
                     getTheme: function () {
                         return read().theme || "auto";
