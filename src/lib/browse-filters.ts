@@ -239,4 +239,16 @@ export function topOptions(
     return byFreq.filter((o) => top.has(o.id));
 }
 
+export function groupByLetter(options: Category[]): (readonly [string, Category[]])[] {
+    const groups = new Map<string, Category[]>();
+    for (const option of options) {
+        const head = (option.label[0] ?? "#").toUpperCase();
+        const key = /[A-Z]/.test(head) ? head : "#";
+        const list = groups.get(key) ?? [];
+        list.push(option);
+        groups.set(key, list);
+    }
+    return [...groups.entries()].sort(([a], [b]) => a.localeCompare(b));
+}
+
 export const FACET_SIDEBAR_LIMIT = 5;

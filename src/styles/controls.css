@@ -1,0 +1,74 @@
+.btn {
+  font: var(--fw-medium) 14px/1 var(--font-sans);
+  letter-spacing: 0.005em;
+  padding: 10px 16px;
+  border-radius: var(--radius-2);
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: var(--transition-fast);
+  white-space: nowrap;
+  text-decoration: none;
+}
+.btn:hover {
+  text-decoration: none;
+}
+.btn-primary {
+  background: var(--fg);
+  color: var(--fg-on-primary);
+}
+.btn-primary:hover {
+  background: var(--neutral-700);
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--fg);
+  border-color: var(--border-strong);
+}
+.btn-secondary:hover {
+  border-color: var(--fg);
+}
+.btn:focus-visible {
+  outline: 0;
+  box-shadow: var(--ring-focus);
+}
+
+input[type="text"],
+input[type="search"] {
+  font: inherit;
+  font-size: var(--fs-14);
+  height: 36px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-3);
+  background: var(--surface);
+  color: var(--fg);
+  outline: 0;
+}
+input[type="checkbox"] {
+  accent-color: var(--primary);
+}
+input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.local-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-13);
+}
+.local-indicator .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.local-indicator.net-no .dot {
+  background: var(--success);
+}
+.local-indicator.net-yes .dot {
+  background: var(--neutral-400);
+}

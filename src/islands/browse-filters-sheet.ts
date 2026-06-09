@@ -10,6 +10,7 @@ import {
   browseFiltersHref,
   categoryOptions,
   facetCounts,
+  groupByLetter,
   manufacturerOptions,
   parseBrowseFilters,
 } from "../lib/browse-filters.js"
@@ -374,18 +375,6 @@ export class BrowseFiltersSheet extends LitElement {
         : nothing}
     `
   }
-}
-
-function groupByLetter(options: Category[]): (readonly [string, Category[]])[] {
-  const groups = new Map<string, Category[]>()
-  for (const option of options) {
-    const head = (option.label[0] ?? "#").toUpperCase()
-    const key = /[A-Z]/.test(head) ? head : "#"
-    const list = groups.get(key) ?? []
-    list.push(option)
-    groups.set(key, list)
-  }
-  return [...groups.entries()].sort(([a], [b]) => a.localeCompare(b))
 }
 
 defineElementOnce("browse-filters-sheet", BrowseFiltersSheet)

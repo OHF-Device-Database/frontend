@@ -1,0 +1,21 @@
+h1,
+.h1 {
+  font-size: 32px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  font-weight: var(--fw-semibold);
+}
+.hero h1 {
+  font-size: 38px;
+}
+.hero-center h1 {
+  font-size: 56px;
+}
+.badge,
+.chip {
+  border-radius: var(--radius-2);
+}
+.browse-match-count,
+.detail-stats b {
+  font-variant-numeric: tabular-nums;
+}

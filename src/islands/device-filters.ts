@@ -12,6 +12,7 @@ import {
     categoryOptions,
     facetCounts,
     frequencyCounts,
+    groupByLetter,
     manufacturerOptions,
     parseBrowseFilters,
     topOptions,
@@ -298,18 +299,6 @@ export class DeviceFilters extends LitElement {
             ${this._moreDim ? this._renderMore(filters) : nothing}
         `;
     }
-}
-
-function groupByLetter(options: Category[]): (readonly [string, Category[]])[] {
-    const groups = new Map<string, Category[]>();
-    for (const option of options) {
-        const head = (option.label[0] ?? "#").toUpperCase();
-        const key = /[A-Z]/.test(head) ? head : "#";
-        const list = groups.get(key) ?? [];
-        list.push(option);
-        groups.set(key, list);
-    }
-    return [...groups.entries()].sort(([a], [b]) => a.localeCompare(b));
 }
 
 defineElementOnce("device-filters", DeviceFilters);
