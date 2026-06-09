@@ -15,7 +15,7 @@ const needsInternet = requiresInternet(device);
 <a class="device-row" href={`/device/${device.id}`}>
     <div class="device-thumb" set:html={categoryGlyph(device.category, 36)}></div>
     <div class="device-row-body">
-        <div class="device-category">{CATEGORY_LABEL[device.category]}</div>
+        <div class="device-category">{CATEGORY_LABEL[device.category] ?? device.category}</div>
         <div class="device-name">{device.name}</div>
         <div class="device-manu">{device.manufacturer}</div>
         <div>
