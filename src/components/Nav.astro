@@ -30,9 +30,13 @@ const showSearch = page !== "home";
         const nav = document.querySelector("[data-appnav]");
         if (nav) nav.classList.toggle("is-scrolled", window.scrollY > 0);
     };
+
     const bind = () => {
+        if (window.__devicedbNavScrollBound) return;
+        window.__devicedbNavScrollBound = true;
         sync();
         window.addEventListener("scroll", sync, { passive: true });
     };
+
     document.addEventListener("astro:page-load", bind);
 </script>
