@@ -21,7 +21,7 @@
 }
 .device-thumb {
   width: 72px;
-  height: stretch;
+  align-self: stretch;
   flex-shrink: 0;
   background: var(--surface-tint-mid);
   border-radius: var(--radius-1);
