@@ -31,9 +31,10 @@ const showSearch = page !== "home";
         if (nav) nav.classList.toggle("is-scrolled", window.scrollY > 0);
     };
 
+    let bound = false;
     const bind = () => {
-        if (window.__devicedbNavScrollBound) return;
-        window.__devicedbNavScrollBound = true;
+        if (bound) return;
+        bound = true;
         sync();
         window.addEventListener("scroll", sync, { passive: true });
     };
