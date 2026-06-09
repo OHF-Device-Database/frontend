@@ -1,0 +1,57 @@
+.device-list {
+  display: flex;
+  flex-direction: column;
+}
+.device-row {
+  display: flex;
+  gap: var(--space-5);
+  align-items: flex-start;
+  padding: var(--space-5);
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+}
+.device-row:first-child {
+  padding-top: var(--space-4);
+}
+.device-row:hover {
+  background: var(--surface-tint-soft);
+  text-decoration: none;
+  color: inherit;
+}
+.device-thumb {
+  width: 72px;
+  align-self: stretch;
+  flex-shrink: 0;
+  background: var(--surface-tint-mid);
+  border-radius: var(--radius-1);
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+}
+.device-thumb svg {
+  color: var(--neutral-400);
+}
+.device-row-body {
+  flex: 1;
+  min-width: 0;
+  padding-top: 2px;
+}
+.device-category {
+  font-size: var(--fs-13);
+  color: var(--fg-muted);
+  line-height: 1.35;
+}
+.device-name {
+  font-size: var(--fs-18);
+  font-weight: var(--fw-semibold);
+  color: var(--fg);
+  line-height: 1.25;
+  margin-top: 2px;
+}
+.device-manu {
+  font-size: var(--fs-14);
+  color: var(--fg-muted);
+  margin-top: 2px;
+}

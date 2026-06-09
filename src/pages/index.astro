@@ -1,113 +1,23 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Sidebar from "../components/Sidebar.astro";
-import { PolyDevice } from "../types/device";
-import { z } from "astro/zod";
-import InlineDevice from "../components/InlineDevice.astro";
+import { MOCK_DEVICES } from "../lib/mock-devices";
 
-// can't access search parameters otherwise
-export const prerender = false;
-
-const term = Astro.url.searchParams.get("term");
-const integrations = new Set(Astro.url.searchParams.getAll("integration"));
-const manufacturers = new Set(Astro.url.searchParams.getAll("manufacturer"));
-
-let fetched: { request: { term: string }; response: PolyDevice[] } | undefined;
-if (term !== null) {
-    const result = await fetch(
-        `${import.meta.env.API_AUTHORITY ?? "http://localhost:3000"}/api/unstable/derived/devices?${new URLSearchParams({ term }).toString()}`,
-        {
-            method: "GET",
-        },
-    );
-
-    if (result.status === 200) {
-        let filtered = z.array(PolyDevice).parse(await result.json());
-
-        if (integrations.size > 0) {
-            filtered = filtered.filter((item) => integrations.has(item.integration));
-        }
-
-        if (manufacturers.size > 0) {
-            filtered = filtered.filter((item) => manufacturers.has(item.manufacturer));
-        }
-
-        fetched = { request: { term }, response: filtered };
-    }
-}
+const total = MOCK_DEVICES.length;
 ---
 
-<style>
-    #entrypoint {
-        max-width: 100%;
-        min-height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 12px 0px;
-    }
-
-    #results-layout {
-        display: flex;
-        flex-direction: row;
-        width: 100%;
-        min-height: 100%;
-    }
-
-    #results-layout main {
-        flex: 1;
-        padding: 16px;
-        overflow: auto;
-        min-width: 0;
-    }
-
-    #devices {
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-    }
-
-    .device-link {
-        display: block;
-        width: 100%;
-        padding-bottom: 8px;
-        text-decoration: none;
-    }
-
-    @media (max-width: 768px) {
-        #results-layout {
-            flex-direction: column;
-        }
-    }
-</style>
-
-<Layout>
-    {
-        typeof fetched === "undefined" ? (
-            <main id="entrypoint">
-                <h1>device database</h1>
-
-                <form id="entrypoint-form" method="get">
-                    <input type="search" placeholder="term" name="term" />
-                    <input type="submit" value="search" />
-                </form>
-            </main>
-        ) : (
-            <div id="results-layout">
-                <Sidebar fetched={fetched.response} />
-                <main>
-                    <div id="devices">
-                        {fetched.response
-                            .toSorted((a, b) => b.count - a.count)
-                            .map((device) => (
-                                <a class="device-link" href={`/device/${device.id}`}>
-                                    <InlineDevice self={device} />
-                                </a>
-                            ))}
-                    </div>
-                </main>
+<Layout page="home">
+    <div class="home-screen">
+        <section class="hero">
+            <div class="container hero-center">
+                <h1>Find the right device for your smart home</h1>
+                <p class="hero-lede">Real-world data from millions of Home Assistant installations</p>
+                <div class="hero-search-wrap">
+                    <device-search size="hero" placeholder="Search"></device-search>
+                </div>
+                <div class="hero-actions">
+                    <a href="/browse">Browse all {total} devices →</a>
+                </div>
             </div>
-        )
-    }
+        </section>
+    </div>
 </Layout>

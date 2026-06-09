@@ -9,10 +9,23 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepare": "husky"
   },
   "dependencies": {
     "@astrojs/node": "^10.0.4",
-    "astro": "^6.1.1"
+    "@home-assistant/webawesome": "3.3.1",
+    "@mdi/js": "^7.4.47",
+    "astro": "^6.4.4",
+    "lit": "^3.3.2",
+    "lucide": "^1.17.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "husky": "^9.1.7",
+    "typescript": "^6.0.3",
+    "vitest": "^3"
   }
 }

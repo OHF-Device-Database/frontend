@@ -1,0 +1,25 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { fetchDevices } from "../lib/api";
+import { applyFilters, parseBrowseFilters } from "../lib/browse-filters";
+
+export const prerender = false;
+
+const filters = parseBrowseFilters(Astro.url.searchParams);
+const all = await fetchDevices();
+const matchCount = applyFilters(all, filters).length;
+const devicesJson = JSON.stringify(all);
+---
+
+<Layout page="browse" title="Browse">
+    <div class="browse">
+        <browse-filters-sheet devices={devicesJson}></browse-filters-sheet>
+        <div class="container browse-grid">
+            <browse-toolbar matchCount={matchCount}></browse-toolbar>
+            <device-filters devices={devicesJson}></device-filters>
+            <div class="browse-main">
+                <browse-results devices={devicesJson}></browse-results>
+            </div>
+        </div>
+    </div>
+</Layout>

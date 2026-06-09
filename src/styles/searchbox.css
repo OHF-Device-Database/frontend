@@ -1,0 +1,255 @@
+.searchbox {
+  position: relative;
+}
+.searchbox-input {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-3);
+  padding: 0 var(--space-4);
+  background: var(--surface);
+  color: var(--fg-muted);
+}
+.searchbox-input:focus-within {
+  border-color: var(--fg);
+  box-shadow: none;
+}
+.searchbox-input input {
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font: inherit;
+  font-size: var(--fs-14);
+  color: var(--fg);
+  height: 100%;
+}
+.searchbox-input input::placeholder {
+  color: var(--fg-subtle);
+}
+.searchbox-input input:focus::placeholder {
+  color: transparent;
+}
+.searchbox-input input::-webkit-search-cancel-button {
+  display: none;
+}
+.searchbox-header {
+  width: 480px;
+  max-width: 100%;
+}
+.searchbox-header .searchbox-input {
+  height: 36px;
+}
+.searchbox-hero {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.searchbox-hero .searchbox-input {
+  height: 56px;
+  padding: 0 var(--space-5);
+  gap: var(--space-4);
+  border-radius: var(--radius-4);
+  box-shadow: var(--shadow-1);
+}
+.searchbox-hero .searchbox-input input {
+  font-size: var(--fs-18);
+}
+.appnav-search-clear {
+  background: none;
+  border: 0;
+  padding: 2px 4px;
+  font: var(--fw-medium) var(--fs-13) / 1 var(--font-sans);
+  color: var(--fg-muted);
+  cursor: pointer;
+  border-radius: var(--radius-2);
+}
+.appnav-search-clear:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.searchbox-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-4);
+  box-shadow: var(--shadow-3);
+  padding: var(--space-3) 0;
+  max-height: 480px;
+  overflow-y: auto;
+}
+.searchbox-section {
+  font-size: var(--fs-12);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  padding: var(--space-3) var(--space-5) var(--space-2);
+  text-align: left;
+}
+.searchbox-section:not(:first-child) {
+  border-top: 1px solid var(--border-subtle);
+  margin-top: var(--space-3);
+  padding-top: var(--space-4);
+}
+.searchbox-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  padding: var(--space-3) var(--space-5);
+  background: transparent;
+  border: 0;
+  font: inherit;
+  font-size: var(--fs-14);
+  text-align: left;
+  cursor: pointer;
+  color: var(--fg);
+  text-decoration: none;
+}
+.searchbox-row:hover,
+.searchbox-row.active {
+  background: var(--surface-tint-soft);
+}
+.searchbox-row svg {
+  color: var(--fg-muted);
+  flex-shrink: 0;
+}
+.searchbox-row-main {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.searchbox-row-meta {
+  color: var(--fg-muted);
+  font-size: var(--fs-12);
+  flex-shrink: 0;
+}
+.searchbox-row mark {
+  background: var(--highlight-soft);
+  color: inherit;
+  font-weight: var(--fw-semibold);
+  border-radius: var(--radius-1);
+  padding: 0 1px;
+}
+.searchbox-more-text {
+  color: var(--link);
+  font-weight: var(--fw-medium);
+}
+.searchbox-row.active .searchbox-more-text,
+.searchbox-row:hover .searchbox-more-text {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.searchbox-dropdown::-webkit-scrollbar {
+  width: 8px;
+}
+.searchbox-dropdown::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: var(--radius-pill);
+}
+.searchbox-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+body.search-fullscreen-open {
+  overflow: hidden;
+}
+body.search-fullscreen-open .appnav {
+  z-index: 30;
+}
+.searchbox-fs {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
+  z-index: 100;
+  background: transparent;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.searchbox-fs-bg {
+  position: absolute;
+  inset: 0;
+  background: var(--surface);
+  pointer-events: none;
+}
+.searchbox-fs-back {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 26px);
+  left: 12px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-3);
+  color: var(--fg);
+  cursor: pointer;
+  z-index: 1;
+}
+.searchbox-fs-back:hover {
+  background: var(--surface-tint-mid);
+}
+.searchbox-fs .searchbox-input {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 24px);
+  left: 56px;
+  width: calc(100vw - 56px - 16px);
+  height: 36px;
+  margin: 0;
+  border-color: var(--fg);
+  flex: 0 0 auto;
+}
+@media (min-width: 768px) {
+  .searchbox-fs .searchbox-input {
+    width: calc(100vw - 56px - 24px);
+  }
+}
+.searchbox-fs .searchbox-dropdown {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 72px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  width: 100%;
+  max-width: none;
+  border: 0;
+  border-top: 1px solid transparent;
+  border-radius: 0;
+  box-shadow: none;
+  max-height: none;
+  overflow-y: auto;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+  transition: border-color var(--transition-fast) ease;
+}
+.searchbox-fs .searchbox-dropdown.is-scrolled {
+  border-top-color: var(--border);
+}
+@media (min-width: 1024px) {
+  .searchbox-fs {
+    display: none;
+  }
+}
+@media (max-width: 767px) {
+  .searchbox-fs .searchbox-input {
+    top: calc(env(safe-area-inset-top, 0px) + 16px);
+  }
+  .searchbox-fs-back {
+    top: calc(env(safe-area-inset-top, 0px) + 18px);
+  }
+  .searchbox-fs .searchbox-dropdown {
+    top: calc(env(safe-area-inset-top, 0px) + 64px);
+  }
+}

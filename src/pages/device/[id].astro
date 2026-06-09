@@ -1,140 +1,206 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { MonoDevice } from "../../types/device";
+import { fetchDevice, fetchDevices } from "../../lib/api";
+import { CATEGORY_LABEL } from "../../lib/categories";
+import { requiresInternet } from "../../lib/device";
+import { categoryGlyph, icon } from "../../lib/icons";
 
 export const prerender = false;
+
 const { id } = Astro.params;
+const device = id ? await fetchDevice(id) : undefined;
 
-const result = await fetch(
-    `${import.meta.env.API_AUTHORITY ?? "http://localhost:3000"}/api/unstable/derived/devices/${id}`,
-    {
-        method: "GET",
-    },
-);
-
-let fetched: { device: MonoDevice; model: string } | undefined;
-if (result.status === 200) {
-    const device = MonoDevice.parse(await result.json());
-
-    let model;
-    if (typeof device.model !== "undefined") {
-        model = `${device.model}${typeof device.model_id !== "undefined" ? ` ${typeof device.model_id}` : ""}`;
-    } else {
-        model = device.model_id!;
-    }
-
-    fetched = { device, model };
-
-    Astro.cache.set({
-        maxAge: 604800,
-    });
+if (!device) {
+    Astro.response.status = 404;
 }
+
+const fmtDate = (iso: string): string | null =>
+    iso ? new Date(iso).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" }) : null;
+
+const view = device
+    ? (() => {
+          const needsInternet = requiresInternet(device);
+          const verdict =
+              device.local === "always" && device.cloud !== "required"
+                  ? { text: "Works without the cloud", color: "var(--success)" }
+                  : device.local === "never" || device.cloud === "required"
+                    ? { text: "Requires the manufacturer’s cloud", color: "var(--neutral-400)" }
+                    : { text: "Works locally, with limits", color: "var(--warning)" };
+          const body = needsInternet
+              ? "This device requires an active internet connection to function. Setup, day-to-day control, or both rely on a manufacturer service. If the manufacturer's servers go offline or the product is discontinued, the device may stop working."
+              : "This device works fully on your local network. It does not need an internet connection or a manufacturer account to be set up or controlled. If your internet goes down, the device keeps working.";
+          return {
+              category: CATEGORY_LABEL[device.category] ?? device.category,
+              needsInternet,
+              verdict,
+              body,
+              lastVerified: fmtDate(device.lastVerified),
+              firstSeen: fmtDate(device.firstSeen),
+          };
+      })()
+    : null;
+
+const total = (await fetchDevices()).length;
 ---
 
-<style>
-    main {
-        padding: 16px;
-        box-sizing: border-box;
-    }
+{
+    device && view ? (
+        <Layout page="detail" back="/browse" title={`${device.manufacturer} ${device.name}`}>
+            <div class="container detail-wrap">
+                <nav class="breadcrumb" aria-label="Breadcrumb">
+                    <a href="/browse">Devices</a>
+                    <span class="sep">›</span>
+                    <a href={`/browse?category=${device.category}`}>{view.category}</a>
+                </nav>
 
-    @media (min-width: 640px) {
-        main {
-            padding: 32px 24px;
-        }
-    }
-
-    #device-header {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-        max-width: 640px;
-        margin: 0 auto;
-    }
-
-    #device-image {
-        width: 96px;
-        height: 96px;
-        border-radius: 12px;
-        background-color: #e0e0e0;
-        flex-shrink: 0;
-    }
-
-    #device-info {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        min-width: 0;
-        width: 100%;
-    }
-
-    .integration {
-        font-size: 0.95em;
-        font-weight: 300;
-    }
-
-    .manufacturer {
-        font-size: 2em;
-    }
-
-    .model {
-        font-size: 1.5em;
-        font-weight: 600;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .model-id {
-        font-family: monospace;
-        font-size: 1em;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-</style>
-
-<Layout
-    title={typeof fetched !== "undefined"
-        ? `${fetched.device.manufacturer} ${fetched.model}`
-        : undefined}
->
-    {
-        typeof fetched !== "undefined" ? (
-            <Fragment slot="head">
-                <meta
-                    name="og-description"
-                    content={`device page of ${fetched.model} by by ${fetched.device.manufacturer}`}
-                />
-            </Fragment>
-        ) : (
-            <Fragment />
-        )
-    }
-
-    {
-        typeof fetched !== "undefined" ? (
-            <main>
-                <div id="device-header">
-                    <div id="device-image" />
-                    <div id="device-info">
-                        <div class="integration">{fetched.device.integration}</div>
-                        <div class="manufacturer">{fetched.device.manufacturer}</div>
-                        {typeof fetched.device.model !== "undefined" ? (
-                            <div class="model">{fetched.device.model}</div>
-                        ) : (
-                            <Fragment />
-                        )}
-                        {typeof fetched.device.model_id !== "undefined" ? (
-                            <code class="model-id">{fetched.device.model_id}</code>
-                        ) : (
-                            <Fragment />
-                        )}
+                <header class="detail-head">
+                    <div class="detail-image" set:html={categoryGlyph(device.category, 72)} />
+                    <div class="detail-title">
+                        <h1>{device.name}</h1>
+                        <div class="detail-manu">
+                            by{" "}
+                            <a href={`/browse?manufacturer=${encodeURIComponent(device.manufacturer)}`}>
+                                {device.manufacturer}
+                            </a>
+                        </div>
+                        <div class="glance">
+                            <span class="glance-key">Connectivity</span>
+                            <span class={"local-indicator " + (view.needsInternet ? "net-yes" : "net-no")}>
+                                <span class="dot" />
+                                {view.needsInternet ? "Requires internet" : "Local connection"}
+                            </span>
+                            <span class="glance-key">Integration</span>
+                            <span>{device.haIntegration || "-"}</span>
+                        </div>
                     </div>
+                </header>
+
+                <div class="detail-body">
+                    <main class="article">
+                        <section class="article-section">
+                            <figure class="detail-figure">
+                                <div class="detail-figure-frame">
+                                    <div class="verdict verdict-flush">
+                                        <span class="verdict-dot" style={`background:${view.verdict.color}`} />
+                                        <span class="verdict-text">{view.verdict.text}</span>
+                                    </div>
+                                    <p class="verdict-body">{view.body}</p>
+                                </div>
+                            </figure>
+                        </section>
+
+                        <section class="article-section">
+                            <h2>Home Assistant</h2>
+                            {device.haIntegration ? (
+                                <>
+                                    <p class="ha-integration">{device.haIntegration}</p>
+                                    {device.entityTypes.length > 0 && (
+                                        <p class="ha-entities">
+                                            <span class="meta">Entity types</span>
+                                            {device.entityTypes.map((et) => (
+                                                <span class="mono">{et}</span>
+                                            ))}
+                                        </p>
+                                    )}
+                                    <p class="muted">
+                                        Reported by community contributors. Open the documentation for installation
+                                        instructions and configuration options.
+                                    </p>
+                                </>
+                            ) : (
+                                <p class="muted">
+                                    No Home Assistant integration is currently associated with this device.
+                                </p>
+                            )}
+                        </section>
+
+                        <section class="article-section">
+                            <h2>Specifications</h2>
+                            <div class="spec-group">
+                                <h3 class="spec-group-title">Ecosystems</h3>
+                                <dl class="spec-dl">
+                                    <div class="trait-row">
+                                        <dt>Home Assistant</dt>
+                                        <dd>
+                                            <span class="eco-mark eco-mark-on" set:html={icon("check", 16)} />
+                                        </dd>
+                                    </div>
+                                </dl>
+                            </div>
+                            <div class="spec-group">
+                                <h3 class="spec-group-title">Product identifiers</h3>
+                                <dl class="spec-dl">
+                                    <div class="trait-row">
+                                        <dt>Model number</dt>
+                                        <dd>
+                                            <span class="mono">{device.model}</span>
+                                        </dd>
+                                    </div>
+                                </dl>
+                            </div>
+                            {device.softwareVersion && (
+                                <div class="spec-group">
+                                    <h3 class="spec-group-title">Software version</h3>
+                                    <dl class="spec-dl">
+                                        <div class="trait-row">
+                                            <dt>Current</dt>
+                                            <dd>{device.softwareVersion}</dd>
+                                        </div>
+                                    </dl>
+                                </div>
+                            )}
+                        </section>
+                    </main>
+
+                    <aside>
+                        <div class="aside-card aside-stats">
+                            <h4>Real-world data</h4>
+                            <dl class="aside-stat-list">
+                                <div class="aside-stat">
+                                    <dt>Reports</dt>
+                                    <dd>{device.reports.toLocaleString("en-US")}</dd>
+                                </div>
+                                <div class="aside-stat">
+                                    <dt>Installations</dt>
+                                    <dd>{device.installs.toLocaleString("en-US")}</dd>
+                                </div>
+                                <div class="aside-stat">
+                                    <dt>Last verified</dt>
+                                    <dd>{view.lastVerified ?? "-"}</dd>
+                                </div>
+                                {view.firstSeen && (
+                                    <div class="aside-stat">
+                                        <dt>First seen</dt>
+                                        <dd>{view.firstSeen}</dd>
+                                    </div>
+                                )}
+                            </dl>
+                            <p class="aside-stats-note">
+                                Anonymized telemetry from opt-in Home Assistant users. No accounts, no personal
+                                data, no tracking.
+                            </p>
+                            <p class="aside-source-linkrow">
+                                <a href="/how-it-works">
+                                    Learn about the methodology <span set:html={icon("open", 12)} />
+                                </a>
+                            </p>
+                            </p>
+                        </div>
+                    </aside>
                 </div>
-            </main>
-        ) : (
-            <Fragment />
-        )
-    }
-</Layout>
+            </div>
+        </Layout>
+    ) : (
+        <Layout page="page" title="Not found">
+            <div class="container" style="padding: 80px 0; text-align: center;">
+                <div class="eyebrow" style="margin-bottom: 12px;">
+                    404
+                </div>
+                <h1 style="margin-bottom: 16px;">Device not found.</h1>
+                <a class="btn btn-primary" href="/browse">
+                    Browse all {total} devices
+                </a>
+            </div>
+        </Layout>
+    )
+}
