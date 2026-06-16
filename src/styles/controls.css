@@ -72,3 +72,9 @@ input[type="checkbox"]:focus-visible {
 .local-indicator.net-yes .dot {
   background: var(--neutral-400);
 }
+.local-indicator.net-unknown {
+  color: var(--neutral-400);
+}
+.local-indicator.net-unknown .dot {
+  background: var(--neutral-300);
+}

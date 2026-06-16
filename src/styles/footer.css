@@ -1,7 +1,6 @@
 .appfoot {
   margin-top: var(--space-12);
   border-top: 1px solid var(--border);
-  background: var(--surface-sunken);
 }
 .appfoot.appfoot-flush {
   margin-top: 0;
@@ -13,7 +12,7 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: var(--space-4);
-  padding: var(--space-6) 0;
+  padding: var(--space-4) 0;
 }
 .appfoot-links {
   list-style: none;

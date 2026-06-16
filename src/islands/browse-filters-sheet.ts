@@ -1,3 +1,4 @@
+import { navigate } from "astro:transitions/client"
 import { LitElement, html, nothing } from "lit"
 import { property, state } from "lit/decorators.js"
 import { unsafeHTML } from "lit/directives/unsafe-html.js"
@@ -6,16 +7,13 @@ import {
   type FacetDimension,
   type FilterMode,
   activeFilterCount,
-  applyFilters,
   browseFiltersHref,
   categoryOptions,
-  facetCounts,
   groupByLetter,
-  manufacturerOptions,
   parseBrowseFilters,
 } from "../lib/browse-filters.js"
 import { defineElementOnce } from "../lib/define-element.js"
-import type { Category, Device } from "../lib/device.js"
+import type { Category } from "../lib/device.js"
 import { icon } from "../lib/icons.js"
 
 interface DimensionConfig {
@@ -26,7 +24,7 @@ interface DimensionConfig {
 }
 
 export class BrowseFiltersSheet extends LitElement {
-  @property({ type: Array }) devices: Device[] = []
+  @property({ type: Array }) manufacturers: string[] = []
 
   @state() private _open = false
   @state() private _subView: FacetDimension | null = null
@@ -82,15 +80,14 @@ export class BrowseFiltersSheet extends LitElement {
       {
         dim: "manufacturer",
         label: "Manufacturer",
-        options: manufacturerOptions(this.devices),
+        options: this.manufacturers.map((name) => ({ id: name, label: name })),
         letterGroups: true,
       },
     ]
   }
 
   private _commit(filters: BrowseFilters): void {
-    history.pushState(null, "", browseFiltersHref(filters))
-    window.dispatchEvent(new CustomEvent("browse:filter-change"))
+    navigate(browseFiltersHref(filters))
   }
 
   private _openSheet(subView: FacetDimension | null): void {
@@ -226,7 +223,6 @@ export class BrowseFiltersSheet extends LitElement {
 
   private _renderDimension(filters: BrowseFilters, config: DimensionConfig) {
     const selected = filters[config.dim]
-    const counts = facetCounts(this.devices, filters, config.dim)
     const term = this._query.trim().toLowerCase()
     const matched = term
       ? config.options.filter((o) => o.label.toLowerCase().includes(term))
@@ -257,7 +253,6 @@ export class BrowseFiltersSheet extends LitElement {
                               >`
                             : nothing}
                           <span class="filter-tap-row-text">${option.label}</span>
-                          <span class="filter-tap-row-count">${counts.get(option.id) ?? 0}</span>
                         </button>
                       `
                     })}
@@ -271,7 +266,6 @@ export class BrowseFiltersSheet extends LitElement {
 
   render() {
     const filters = this._filters
-    const matchCount = applyFilters(this.devices, filters).length
     const config = this._subView ? this._dimensions.find((d) => d.dim === this._subView) : null
     const activeCount = activeFilterCount(filters)
 
@@ -366,7 +360,7 @@ export class BrowseFiltersSheet extends LitElement {
                           Save
                         </button>`
                     : html`<button class="btn btn-primary sheet-cta" @click=${this._close}>
-                        Show ${matchCount} ${matchCount === 1 ? "device" : "devices"}
+                        Show results
                       </button>`}
                 </footer>
               </div>

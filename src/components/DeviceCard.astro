@@ -1,7 +1,7 @@
 ---
 import { CATEGORY_LABEL } from "../lib/categories";
 import type { Device } from "../lib/device";
-import { requiresInternet } from "../lib/device";
+import { connectivityDisplay } from "../lib/device";
 import { categoryGlyph } from "../lib/icons";
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 }
 
 const { device } = Astro.props;
-const needsInternet = requiresInternet(device);
+const connectivity = connectivityDisplay(device);
 ---
 
 <a class="device-row" href={`/device/${device.id}`}>
@@ -19,9 +19,9 @@ const needsInternet = requiresInternet(device);
         <div class="device-name">{device.name}</div>
         <div class="device-manu">{device.manufacturer}</div>
         <div>
-            <span class={"local-indicator " + (needsInternet ? "net-yes" : "net-no")}>
+            <span class={"local-indicator " + connectivity.cls}>
                 <span class="dot"></span>
-                {needsInternet ? "Requires internet" : "Local connection"}
+                {connectivity.label}
             </span>
         </div>
     </div>

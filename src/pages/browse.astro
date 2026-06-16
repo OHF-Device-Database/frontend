@@ -1,24 +1,84 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { fetchDevices } from "../lib/api";
-import { applyFilters, parseBrowseFilters } from "../lib/browse-filters";
+import DeviceCard from "../components/DeviceCard.astro";
+import { fetchDeviceResults, fetchManufacturers } from "../lib/api";
+import { parseBrowseFilters } from "../lib/browse-filters";
 
 export const prerender = false;
 
+// Cache the rendered HTML per filter+page URL: serve fresh for 60s, then serve stale
+// for up to 5min while revalidating in the background (uses the configured memoryCache).
+Astro.cache.set({ maxAge: 60, swr: 300, tags: ["devices"] });
+
 const filters = parseBrowseFilters(Astro.url.searchParams);
-const all = await fetchDevices();
-const matchCount = applyFilters(all, filters).length;
-const devicesJson = JSON.stringify(all);
+const pageParam = Number(Astro.url.searchParams.get("page") ?? "0");
+const page = Number.isFinite(pageParam) && pageParam > 0 ? Math.floor(pageParam) : 0;
+
+// Devices are filtered and paginated server-side; manufacturers feed the filter sidebar.
+const [results, manufacturers] = await Promise.all([
+    fetchDeviceResults(filters, page),
+    fetchManufacturers(),
+]);
+const manufacturersJson = JSON.stringify(manufacturers);
+
+const pageHref = (p: number): string => {
+    const params = new URLSearchParams(Astro.url.searchParams);
+    if (p <= 0) params.delete("page");
+    else params.set("page", String(p));
+    const qs = params.toString();
+    return qs ? `/browse?${qs}` : "/browse";
+};
+
+const hasPrev = results.page > 0;
+const hasNext = results.page < results.pageCount - 1;
+const rangeStart = results.total === 0 ? 0 : results.page * results.size + 1;
+const rangeEnd = Math.min(results.total, (results.page + 1) * results.size);
 ---
 
 <Layout page="browse" title="Browse">
     <div class="browse">
-        <browse-filters-sheet devices={devicesJson}></browse-filters-sheet>
+        <browse-filters-sheet manufacturers={manufacturersJson}></browse-filters-sheet>
         <div class="container browse-grid">
-            <browse-toolbar matchCount={matchCount}></browse-toolbar>
-            <device-filters devices={devicesJson}></device-filters>
+            <browse-toolbar matchCount={results.total}></browse-toolbar>
+            <device-filters manufacturers={manufacturersJson}></device-filters>
             <div class="browse-main">
-                <browse-results devices={devicesJson}></browse-results>
+                {
+                    results.devices.length === 0 ? (
+                        <p class="browse-empty">No devices match these filters.</p>
+                    ) : (
+                        <>
+                            <div class="device-list">
+                                {results.devices.map((device) => (
+                                    <DeviceCard device={device} />
+                                ))}
+                            </div>
+                            <nav class="browse-pagination" aria-label="Pagination">
+                                {hasPrev ? (
+                                    <a class="btn" href={pageHref(results.page - 1)} rel="prev">
+                                        ← Previous
+                                    </a>
+                                ) : (
+                                    <span class="btn is-disabled" aria-disabled="true">
+                                        ← Previous
+                                    </span>
+                                )}
+                                <span class="browse-pagination-info">
+                                    {rangeStart.toLocaleString()}–{rangeEnd.toLocaleString()} of{" "}
+                                    {results.total.toLocaleString()}
+                                </span>
+                                {hasNext ? (
+                                    <a class="btn" href={pageHref(results.page + 1)} rel="next">
+                                        Next →
+                                    </a>
+                                ) : (
+                                    <span class="btn is-disabled" aria-disabled="true">
+                                        Next →
+                                    </span>
+                                )}
+                            </nav>
+                        </>
+                    )
+                }
             </div>
         </div>
     </div>

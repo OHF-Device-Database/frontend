@@ -1,5 +1,6 @@
 import { LitElement, html, nothing } from "lit";
 import { property, state } from "lit/decorators.js";
+import { navigate } from "astro:transitions/client";
 import { defineElementOnce } from "../lib/define-element.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import {
@@ -60,8 +61,7 @@ export class BrowseToolbar extends LitElement {
     }
 
     private _remove(chip: FilterChip): void {
-        history.pushState(null, "", browseFiltersHref(removeFilterChip(this._filters, chip)));
-        window.dispatchEvent(new CustomEvent("browse:filter-change"));
+        navigate(browseFiltersHref(removeFilterChip(this._filters, chip)));
     }
 
     private _open(chip: FilterChip): void {
@@ -71,8 +71,7 @@ export class BrowseToolbar extends LitElement {
     }
 
     private _clearAll(): void {
-        history.pushState(null, "", browseFiltersHref(clearedFilters(this._filters)));
-        window.dispatchEvent(new CustomEvent("browse:filter-change"));
+        navigate(browseFiltersHref(clearedFilters(this._filters)));
     }
 
     render() {

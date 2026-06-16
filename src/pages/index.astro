@@ -1,8 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { MOCK_DEVICES } from "../lib/mock-devices";
+import { fetchDeviceCount } from "../lib/api";
 
-const total = MOCK_DEVICES.length;
+const total = await fetchDeviceCount();
 ---
 
 <Layout page="home">

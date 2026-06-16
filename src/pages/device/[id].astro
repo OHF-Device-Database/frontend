@@ -1,11 +1,14 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { fetchDevice, fetchDevices } from "../../lib/api";
+import { fetchDevice, fetchDeviceCount } from "../../lib/api";
 import { CATEGORY_LABEL } from "../../lib/categories";
-import { requiresInternet } from "../../lib/device";
+import { connectivityDisplay, internetStatus } from "../../lib/device";
 import { categoryGlyph, icon } from "../../lib/icons";
 
 export const prerender = false;
+
+// Cache rendered device pages (fresh 5min, stale-while-revalidate 1h); they change rarely.
+Astro.cache.set({ maxAge: 300, swr: 3600, tags: ["devices"] });
 
 const { id } = Astro.params;
 const device = id ? await fetchDevice(id) : undefined;
@@ -19,19 +22,22 @@ const fmtDate = (iso: string): string | null =>
 
 const view = device
     ? (() => {
-          const needsInternet = requiresInternet(device);
+          const status = internetStatus(device);
           const verdict =
-              device.local === "always" && device.cloud !== "required"
+              status === "local"
                   ? { text: "Works without the cloud", color: "var(--success)" }
-                  : device.local === "never" || device.cloud === "required"
+                  : status === "requires"
                     ? { text: "Requires the manufacturer’s cloud", color: "var(--neutral-400)" }
-                    : { text: "Works locally, with limits", color: "var(--warning)" };
-          const body = needsInternet
-              ? "This device requires an active internet connection to function. Setup, day-to-day control, or both rely on a manufacturer service. If the manufacturer's servers go offline or the product is discontinued, the device may stop working."
-              : "This device works fully on your local network. It does not need an internet connection or a manufacturer account to be set up or controlled. If your internet goes down, the device keeps working.";
+                    : { text: "Connectivity data not yet available", color: "var(--neutral-400)" };
+          const body =
+              status === "requires"
+                  ? "This device requires an active internet connection to function. Setup, day-to-day control, or both rely on a manufacturer service. If the manufacturer's servers go offline or the product is discontinued, the device may stop working."
+                  : status === "local"
+                    ? "This device works fully on your local network. It does not need an internet connection or a manufacturer account to be set up or controlled. If your internet goes down, the device keeps working."
+                    : "We don't yet have connectivity data for this device, so we can't say whether it depends on the manufacturer's cloud. This page will update as more reports come in.";
           return {
               category: CATEGORY_LABEL[device.category] ?? device.category,
-              needsInternet,
+              connectivity: connectivityDisplay(device),
               verdict,
               body,
               lastVerified: fmtDate(device.lastVerified),
@@ -40,7 +46,7 @@ const view = device
       })()
     : null;
 
-const total = (await fetchDevices()).length;
+const total = await fetchDeviceCount();
 ---
 
 {
@@ -65,9 +71,9 @@ const total = (await fetchDevices()).length;
                         </div>
                         <div class="glance">
                             <span class="glance-key">Connectivity</span>
-                            <span class={"local-indicator " + (view.needsInternet ? "net-yes" : "net-no")}>
+                            <span class={"local-indicator " + view.connectivity.cls}>
                                 <span class="dot" />
-                                {view.needsInternet ? "Requires internet" : "Local connection"}
+                                {view.connectivity.label}
                             </span>
                             <span class="glance-key">Integration</span>
                             <span>{device.haIntegration || "-"}</span>

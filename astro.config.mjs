@@ -12,6 +12,8 @@ export default defineConfig({
   env: {
     schema: {
       API_AUTHORITY: envField.string({ context: "server", access: "public", optional: true }),
+      // Preview edition is no-indexed by default. Set NOINDEX=false for a real production deploy.
+      NOINDEX: envField.boolean({ context: "server", access: "public", optional: true, default: true }),
     },
   },
   adapter: node({
