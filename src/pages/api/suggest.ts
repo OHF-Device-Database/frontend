@@ -3,6 +3,7 @@ import { fetchDeviceResults, fetchManufacturers } from "../../lib/api"
 import { EMPTY_BROWSE_FILTERS } from "../../lib/browse-filters"
 import { DEVICE_CATEGORIES } from "../../lib/categories"
 import { pickFacetSuggestions, type SuggestDevice, type Suggestions } from "../../lib/search"
+import { CACHE_POLICY, applyCdnCache } from "../../lib/cache"
 
 export const prerender = false
 
@@ -22,7 +23,7 @@ export const GET: APIRoute = async ({ url, cache }) => {
   }
 
   // Cache identical queries briefly; the in-process memo in api-client dedupes upstream.
-  cache.set({ maxAge: 30, swr: 120, tags: ["devices"] })
+  cache.set({ maxAge: CACHE_POLICY.suggest.maxAge, swr: CACHE_POLICY.suggest.swr, tags: ["devices"] })
 
   const [results, manufacturers] = await Promise.all([
     fetchDeviceResults({ ...EMPTY_BROWSE_FILTERS, q }, 0, FETCH_SIZE),
@@ -49,5 +50,7 @@ export const GET: APIRoute = async ({ url, cache }) => {
     out.manufacturers = facets.manufacturers
   }
 
-  return json(out)
+  const res = json(out)
+  applyCdnCache(res.headers, CACHE_POLICY.suggest)
+  return res
 }

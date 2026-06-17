@@ -3,12 +3,15 @@ import DeviceCard from "../components/DeviceCard.astro";
 import Layout from "../layouts/Layout.astro";
 import { fetchDeviceResults, fetchManufacturers } from "../lib/api";
 import { parseBrowseFilters } from "../lib/browse-filters";
+import { CACHE_POLICY, applyCdnCache } from "../lib/cache";
 
 export const prerender = false;
 
-// Cache the rendered HTML per filter+page URL: serve fresh for 60s, then serve stale
-// for up to 5min while revalidating in the background (uses the configured memoryCache).
-Astro.cache.set({ maxAge: 60, swr: 300, tags: ["devices"] });
+// Cache the rendered HTML per filter+page URL, both in the origin memoryCache (Astro.cache)
+// and at the CDN edge (Cloudflare) via the response headers — serve fresh briefly, then
+// serve stale while revalidating in the background.
+Astro.cache.set({ maxAge: CACHE_POLICY.browse.maxAge, swr: CACHE_POLICY.browse.swr, tags: ["devices"] });
+applyCdnCache(Astro.response.headers, CACHE_POLICY.browse);
 
 const filters = parseBrowseFilters(Astro.url.searchParams);
 const pageParam = Number(Astro.url.searchParams.get("page") ?? "0");
