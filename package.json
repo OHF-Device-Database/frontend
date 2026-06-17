@@ -2,8 +2,10 @@
   "name": "device-database-testing-astro",
   "type": "module",
   "version": "0.0.1",
+  "packageManager": "pnpm@11.5.2",
   "engines": {
-    "node": ">=24"
+    "node": ">=24",
+    "pnpm": ">=11"
   },
   "scripts": {
     "dev": "astro dev",
