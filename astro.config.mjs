@@ -1,7 +1,7 @@
 // @ts-check
 import { defineConfig, envField, memoryCache } from "astro/config";
 
-import node from "@astrojs/node";
+import netlify from "@astrojs/netlify";
 
 // https://astro.build/config
 export default defineConfig({
@@ -16,9 +16,7 @@ export default defineConfig({
       NOINDEX: envField.boolean({ context: "server", access: "public", optional: true, default: true }),
     },
   },
-  adapter: node({
-    mode: "standalone",
-  }),
+  adapter: netlify(),
   experimental: {
     cache: {
       provider: memoryCache(),
