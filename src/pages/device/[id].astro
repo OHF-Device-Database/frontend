@@ -4,17 +4,21 @@ import { fetchDevice, fetchDeviceCount } from "../../lib/api";
 import { CATEGORY_LABEL } from "../../lib/categories";
 import { connectivityDisplay, internetStatus } from "../../lib/device";
 import { categoryGlyph, icon } from "../../lib/icons";
+import { CACHE_POLICY, applyCdnCache } from "../../lib/cache";
 
 export const prerender = false;
-
-// Cache rendered device pages (fresh 5min, stale-while-revalidate 1h); they change rarely.
-Astro.cache.set({ maxAge: 300, swr: 3600, tags: ["devices"] });
 
 const { id } = Astro.params;
 const device = id ? await fetchDevice(id) : undefined;
 
-if (!device) {
+if (device) {
+    // Device pages change rarely: cache hard at the origin and the CDN edge (fresh 5min,
+    // stale-while-revalidate 1h).
+    Astro.cache.set({ maxAge: CACHE_POLICY.device.maxAge, swr: CACHE_POLICY.device.swr, tags: ["devices"] });
+    applyCdnCache(Astro.response.headers, CACHE_POLICY.device);
+} else {
     Astro.response.status = 404;
+    applyCdnCache(Astro.response.headers, CACHE_POLICY.deviceMissing);
 }
 
 const fmtDate = (iso: string): string | null =>
