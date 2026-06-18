@@ -48,7 +48,7 @@
 }
 .brand-logo {
   display: block;
-  height: 40px;
+  height: 32px;
   width: auto;
   color: var(--fg);
 }
@@ -67,4 +67,29 @@
 }
 .appnav-back:hover {
   background: var(--surface-tint-mid);
+}
+
+@media (max-width: 899px) {
+  /* Stack the header: logo on the first row, the search full-width on the next. */
+  .appnav {
+    height: auto;
+  }
+  .appnav-inner {
+    grid-template-columns: 1fr;
+    align-items: center;
+    gap: var(--space-3);
+    /* Only add vertical room — keep .container's left/right padding so the logo and
+       search aren't flush against the screen edges. */
+    padding-top: var(--space-3);
+    padding-bottom: var(--space-3);
+  }
+  /* Drop the empty layout placeholder cells so nothing reserves a blank row. */
+  .appnav-inner > div:empty {
+    display: none;
+  }
+  .appnav .searchbox-header {
+    width: 100%;
+    max-width: none;
+    justify-self: stretch;
+  }
 }

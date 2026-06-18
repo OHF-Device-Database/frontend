@@ -238,21 +238,23 @@ button.filter-chip {
     align-items: center;
     gap: var(--space-2);
     padding: 9px 14px;
-    background: var(--surface);
-    color: var(--fg);
-    border: 1px solid var(--border-strong);
+    background: var(--fg);
+    color: var(--fg-on-primary);
+    border: 1px solid var(--fg);
     border-radius: var(--radius-2);
     font: var(--fw-medium) 14px / 1 var(--font-sans);
     cursor: pointer;
   }
   .filters-fab:hover {
-    border-color: var(--fg);
+    background: var(--neutral-700);
+    border-color: var(--neutral-700);
   }
   .filters-fab svg {
-    color: var(--fg-muted);
+    color: var(--fg-on-primary);
   }
   .filters-fab-count {
     font-variant-numeric: tabular-nums;
-    color: var(--fg-muted);
+    color: var(--fg-on-primary);
+    opacity: 0.7;
   }
 }

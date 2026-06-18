@@ -7,6 +7,11 @@
   grid-template-rows: auto 1fr;
   gap: 0;
   align-items: start;
+  /* Pack rows to the top: min-height makes the grid taller than its content, and
+     without this the extra height is shared out to the auto rows — stretching the
+     toolbar's row and leaving a gap above the first result. Free space goes to the
+     bottom instead. (No-op on desktop, where the 1fr row already absorbs the slack.) */
+  align-content: start;
   min-height: calc(100vh - 72px);
 }
 browse-toolbar {
@@ -16,6 +21,15 @@ browse-toolbar {
 .browse-main {
   min-width: 0;
   border-left: 1px solid var(--border);
+  /* Stretch to fill the grid row so the divider runs the full height of the page,
+     even when there are few or no results. */
+  align-self: stretch;
+}
+.browse-main:has(.browse-empty) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
 }
 .browse-toolbar {
   display: grid;
@@ -111,7 +125,8 @@ browse-toolbar {
 }
 .browse-empty {
   color: var(--fg-muted);
-  padding: var(--space-7) 0;
+  text-align: center;
+  padding: var(--space-7) var(--space-5);
 }
 .browse-pagination {
   display: flex;
