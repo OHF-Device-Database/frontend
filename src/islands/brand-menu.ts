@@ -3,7 +3,6 @@ import { state } from "lit/decorators.js"
 import { unsafeHTML } from "lit/directives/unsafe-html.js"
 import { defineElementOnce } from "../lib/define-element.js"
 import { icon } from "../lib/icons.js"
-import { LOGO_SVG } from "../lib/logo.js"
 
 interface DemoStateApi {
   getTheme(): string
@@ -41,6 +40,9 @@ const STAGES = [
 
 const LONG_PRESS_MS = 600
 
+// Progressive enhancement: the logo link is server-rendered (see Nav.astro) so it shows
+// instantly without waiting for this bundle. This element enhances that link in place —
+// it adds the long-press gesture and renders only the Experiments dialog.
 export class BrandMenu extends LitElement {
   @state() private _open = false
   @state() private _theme = "auto"
@@ -63,8 +65,15 @@ export class BrandMenu extends LitElement {
     }
   }
 
+  private _link: HTMLAnchorElement | null = null
+
+  // Render the dialog into a child wrapper, leaving the server-rendered logo link untouched.
+  // display:contents keeps the wrapper out of layout when no dialog is open.
   protected createRenderRoot(): HTMLElement {
-    return this
+    const root = document.createElement("div")
+    root.style.display = "contents"
+    this.appendChild(root)
+    return root
   }
 
   connectedCallback(): void {
@@ -73,6 +82,13 @@ export class BrandMenu extends LitElement {
     this._osDark = window.matchMedia("(prefers-color-scheme: dark)").matches
     window.addEventListener("devicedb:demostate", this._onState)
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", this._onOsChange)
+    this._link = this.querySelector<HTMLAnchorElement>("a.brand")
+    this._link?.addEventListener("pointerdown", this._onPointerDown)
+    this._link?.addEventListener("pointermove", this._onPointerMove)
+    this._link?.addEventListener("pointerup", this._endPress)
+    this._link?.addEventListener("pointerleave", this._endPress)
+    this._link?.addEventListener("pointercancel", this._endPress)
+    this._link?.addEventListener("click", this._onClick)
   }
 
   disconnectedCallback(): void {
@@ -91,7 +107,7 @@ export class BrandMenu extends LitElement {
     }
   }
 
-  private _onPointerDown(e: PointerEvent): void {
+  private _onPointerDown = (e: PointerEvent): void => {
     if (e.button > 0) {
       return
     }
@@ -107,7 +123,7 @@ export class BrandMenu extends LitElement {
     }, LONG_PRESS_MS)
   }
 
-  private _onPointerMove(e: PointerEvent): void {
+  private _onPointerMove = (e: PointerEvent): void => {
     if (!this._start) {
       return
     }
@@ -116,12 +132,12 @@ export class BrandMenu extends LitElement {
     }
   }
 
-  private _endPress(): void {
+  private _endPress = (): void => {
     this._clearTimer()
     this._start = null
   }
 
-  private _onClick(e: MouseEvent): void {
+  private _onClick = (e: MouseEvent): void => {
     if (this._fired) {
       e.preventDefault()
       this._fired = false
@@ -230,23 +246,7 @@ export class BrandMenu extends LitElement {
   }
 
   render() {
-    return html`
-      <a
-        href="/"
-        class="brand"
-        aria-label="Device Database, home"
-        @pointerdown=${this._onPointerDown}
-        @pointermove=${this._onPointerMove}
-        @pointerup=${this._endPress}
-        @pointerleave=${this._endPress}
-        @pointercancel=${this._endPress}
-        @click=${this._onClick}
-        style="margin-top: 4px;"
-      >
-        ${unsafeHTML(LOGO_SVG)}
-      </a>
-      ${this._open ? this._renderDialog() : nothing}
-    `
+    return this._open ? this._renderDialog() : nothing
   }
 }
 

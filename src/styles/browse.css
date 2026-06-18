@@ -118,9 +118,7 @@ browse-toolbar {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  margin-top: var(--space-6);
   padding-top: var(--space-5);
-  border-top: 1px solid var(--border);
 }
 .browse-pagination-info {
   color: var(--fg-muted);

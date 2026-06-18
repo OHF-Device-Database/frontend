@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import SearchBox from "../components/SearchBox.astro";
 import { fetchDeviceCount } from "../lib/api";
 
 const total = await fetchDeviceCount();
@@ -12,7 +13,7 @@ const total = await fetchDeviceCount();
                 <h1>Find the right device for your smart home</h1>
                 <p class="hero-lede">Real-world data from millions of Home Assistant installations</p>
                 <div class="hero-search-wrap">
-                    <device-search size="hero" placeholder="Search"></device-search>
+                    <SearchBox size="hero" placeholder="Search" />
                 </div>
                 <div class="hero-actions">
                     <a href="/browse">Browse all {total} devices →</a>

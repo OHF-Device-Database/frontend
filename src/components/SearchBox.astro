@@ -1,0 +1,33 @@
+---
+// The search field is plain server-rendered HTML so it's visible immediately, without
+// waiting for the island bundle. The <device-search> element enhances this markup in
+// place (adds the suggestions dropdown / mobile fullscreen). Without JS, the form still
+// works: it submits as a GET to /browse?q=…
+import { icon } from "../lib/icons";
+
+interface Props {
+    size?: "header" | "hero";
+    placeholder?: string;
+}
+
+const { size = "header", placeholder = "Search" } = Astro.props;
+const iconSize = size === "hero" ? 22 : 18;
+---
+
+<device-search size={size} placeholder={placeholder}>
+    <div class={`searchbox searchbox-${size}`}>
+        <form class="searchbox-input" role="search" action="/browse" method="get">
+            <Fragment set:html={icon("search", iconSize)} />
+            <input
+                type="search"
+                name="q"
+                placeholder={placeholder}
+                aria-label="Search devices"
+                aria-autocomplete="list"
+                aria-expanded="false"
+                autocomplete="off"
+            />
+            <button type="button" class="appnav-search-clear" hidden>Clear</button>
+        </form>
+    </div>
+</device-search>

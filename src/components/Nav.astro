@@ -1,5 +1,7 @@
 ---
 import { icon } from "../lib/icons";
+import { LOGO_SVG } from "../lib/logo";
+import SearchBox from "./SearchBox.astro";
 
 interface Props {
     page: string;
@@ -18,9 +20,17 @@ const showSearch = page !== "home";
                     <a href={back} class="appnav-back" aria-label="Back to devices" set:html={icon("arrowL", 18)} />
                 )
             }
-            <brand-menu></brand-menu>
+            <brand-menu>
+                <a
+                    href="/"
+                    class="brand"
+                    aria-label="Device Database, home"
+                    style="margin-top: 4px;"
+                    set:html={LOGO_SVG}
+                />
+            </brand-menu>
         </div>
-        {showSearch ? <device-search size="header"></device-search> : <div></div>}
+        {showSearch ? <SearchBox size="header" /> : <div></div>}
         <div></div>
     </div>
 </header>

@@ -31,6 +31,10 @@ type Row =
 
 const FS_QUERY = "(max-width: 1023px)"
 
+// Progressive enhancement: the search field itself is server-rendered (see SearchBox.astro)
+// so the logo/search chrome is visible instantly without waiting for this bundle. This element
+// enhances that markup in place — it binds behaviour to the existing <input> and renders only
+// the dynamic parts (the suggestions dropdown and the mobile fullscreen overlay).
 export class DeviceSearch extends LitElement {
   @property() size: "header" | "hero" = "header"
   @property() placeholder = "Search"
@@ -46,6 +50,10 @@ export class DeviceSearch extends LitElement {
   private _suggestAbort?: AbortController
   private _suggestSeq = 0
 
+  // The server-rendered field we enhance (looked up on connect, not rendered by us).
+  private _input: HTMLInputElement | null = null
+  private _clearBtn: HTMLButtonElement | null = null
+
   private _onDocPointer = (event: MouseEvent) => {
     if (this._fullscreen) {
       return
@@ -60,12 +68,27 @@ export class DeviceSearch extends LitElement {
     this._closeFullscreen({ fromPopState: true })
   }
 
+  // Render the dynamic overlay (dropdown + fullscreen) inside .searchbox so the absolutely
+  // positioned dropdown anchors to it, while leaving the server-rendered form untouched.
+  // display:contents keeps the wrapper from affecting layout when empty.
   protected createRenderRoot(): HTMLElement {
-    return this
+    const root = document.createElement("div")
+    root.style.display = "contents"
+    ;(this.querySelector(".searchbox") ?? this).appendChild(root)
+    return root
   }
 
   connectedCallback(): void {
     super.connectedCallback()
+    const form = this.querySelector<HTMLFormElement>(".searchbox-input")
+    this._input = form?.querySelector<HTMLInputElement>("input") ?? null
+    this._clearBtn = this.querySelector<HTMLButtonElement>(".appnav-search-clear")
+    this._q = this._input?.value ?? ""
+    form?.addEventListener("submit", this._onSubmit)
+    this._input?.addEventListener("input", this._onInput)
+    this._input?.addEventListener("focus", this._onStaticFocus)
+    this._input?.addEventListener("keydown", this._onKeyDown)
+    this._clearBtn?.addEventListener("click", this._clear)
     document.addEventListener("mousedown", this._onDocPointer)
     window.addEventListener("popstate", this._onPopState)
   }
@@ -183,7 +206,7 @@ export class DeviceSearch extends LitElement {
     }
   }
 
-  private _onSubmit(event: Event): void {
+  private _onSubmit = (event: Event): void => {
     event.preventDefault()
     const { selectable } = this._rows
     if (this._activeIdx >= 0 && this._activeIdx < selectable.length) {
@@ -201,7 +224,7 @@ export class DeviceSearch extends LitElement {
     this._goBrowse({ q: term })
   }
 
-  private _onKeyDown(event: KeyboardEvent): void {
+  private _onKeyDown = (event: KeyboardEvent): void => {
     const { selectable } = this._rows
     if (event.key === "ArrowDown") {
       event.preventDefault()
@@ -216,7 +239,7 @@ export class DeviceSearch extends LitElement {
     }
   }
 
-  private _onInput(event: Event): void {
+  private _onInput = (event: Event): void => {
     this._q = (event.target as HTMLInputElement).value
     this._open = true
     this._activeIdx = -1
@@ -256,6 +279,10 @@ export class DeviceSearch extends LitElement {
     clearTimeout(this._suggestTimer)
     this._suggestAbort?.abort()
     this._suggestions = null
+  }
+
+  private _onStaticFocus = (): void => {
+    this._onFocus(false)
   }
 
   private _onFocus(fromFs: boolean): void {
@@ -301,17 +328,18 @@ export class DeviceSearch extends LitElement {
     document.body.classList.remove("search-fullscreen-open")
   }
 
-  private _clear(): void {
+  private _clear = (): void => {
     this._q = ""
     this._resetSuggest()
     this._open = false
-    this.updateComplete.then(() => {
-      this.querySelector<HTMLInputElement>("input")?.focus()
-    })
+    if (this._input) {
+      this._input.value = ""
+      this._input.focus()
+    }
   }
 
-  private _renderForm(isFs: boolean) {
-    const iconSize = this.size === "hero" && !isFs ? 22 : 18
+  // The fullscreen overlay has its own (dynamic) input, so we render that one with lit.
+  private _renderFsForm() {
     return html`
       <form
         class="searchbox-input"
@@ -323,7 +351,7 @@ export class DeviceSearch extends LitElement {
           }
         }}
       >
-        ${unsafeHTML(icon("search", iconSize))}
+        ${unsafeHTML(icon("search", 18))}
         <input
           type="search"
           .value=${this._q}
@@ -332,7 +360,7 @@ export class DeviceSearch extends LitElement {
           aria-autocomplete="list"
           aria-expanded=${this._showDropdown}
           @input=${this._onInput}
-          @focus=${() => this._onFocus(isFs)}
+          @focus=${() => this._onFocus(true)}
           @keydown=${this._onKeyDown}
         />
         ${this._q
@@ -416,14 +444,25 @@ export class DeviceSearch extends LitElement {
     )}`
   }
 
+  // Keep the server-rendered field in sync with state we change programmatically (clear,
+  // post-navigation reset) without disturbing the caret while the user is typing into it.
+  protected updated(): void {
+    if (this._input) {
+      if (this._input !== document.activeElement && this._input.value !== this._q) {
+        this._input.value = this._q
+      }
+      this._input.setAttribute("aria-expanded", String(this._showDropdown))
+    }
+    if (this._clearBtn) {
+      this._clearBtn.hidden = this._isEmpty
+    }
+  }
+
   render() {
     return html`
-      <div class=${"searchbox searchbox-" + this.size}>
-        ${this._renderForm(false)}
-        ${this._showDropdown && !this._fullscreen
-          ? html`<div class="searchbox-dropdown" role="listbox">${this._renderRows()}</div>`
-          : nothing}
-      </div>
+      ${this._showDropdown && !this._fullscreen
+        ? html`<div class="searchbox-dropdown" role="listbox">${this._renderRows()}</div>`
+        : nothing}
       ${this._fullscreen
         ? html`
             <div class="searchbox-fs">
@@ -439,7 +478,7 @@ export class DeviceSearch extends LitElement {
               >
                 ${unsafeHTML(icon("arrowL", 20))}
               </button>
-              ${this._renderForm(true)}
+              ${this._renderFsForm()}
               ${this._showDropdown
                 ? html`<div
                     class=${"searchbox-dropdown" + (this._fsScrolled ? " is-scrolled" : "")}
