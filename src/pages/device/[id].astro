@@ -1,5 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import ConnectionSchematic from "../../components/ConnectionSchematic.astro";
 import { fetchDevice, fetchDeviceCount } from "../../lib/api";
 import { CATEGORY_LABEL } from "../../lib/categories";
 import { connectivityDisplay, internetStatus } from "../../lib/device";
@@ -42,6 +43,7 @@ const view = device
           return {
               category: CATEGORY_LABEL[device.category] ?? device.category,
               connectivity: connectivityDisplay(device),
+              status,
               verdict,
               body,
               lastVerified: fmtDate(device.lastVerified),
@@ -51,6 +53,16 @@ const view = device
     : null;
 
 const total = await fetchDeviceCount();
+
+// Version histories can be long; show the most recent few, newest last (the
+// current version), and summarize the rest.
+const MAX_VERSIONS = 10;
+const recentVersions = (all: string[]): { hidden: number; shown: string[] } => ({
+    hidden: Math.max(0, all.length - MAX_VERSIONS),
+    shown: all.slice(-MAX_VERSIONS),
+});
+const software = device ? recentVersions(device.softwareVersions) : { hidden: 0, shown: [] };
+const hardware = device ? recentVersions(device.hardwareVersions) : { hidden: 0, shown: [] };
 ---
 
 {
@@ -95,6 +107,11 @@ const total = await fetchDeviceCount();
                                         <span class="verdict-text">{view.verdict.text}</span>
                                     </div>
                                     <p class="verdict-body">{view.body}</p>
+                                    {view.status !== "unknown" && (
+                                        <div class="schematic-wrap">
+                                            <ConnectionSchematic kind={view.status} />
+                                        </div>
+                                    )}
                                 </div>
                             </figure>
                         </section>
@@ -148,15 +165,47 @@ const total = await fetchDeviceCount();
                                     </div>
                                 </dl>
                             </div>
-                            {device.softwareVersion && (
+                            {software.shown.length > 0 && (
                                 <div class="spec-group">
-                                    <h3 class="spec-group-title">Software version</h3>
-                                    <dl class="spec-dl">
-                                        <div class="trait-row">
-                                            <dt>Current</dt>
-                                            <dd>{device.softwareVersion}</dd>
-                                        </div>
-                                    </dl>
+                                    <h3 class="spec-group-title">Software versions</h3>
+                                    <ol class="version-track">
+                                        {software.hidden > 0 && (
+                                            <li class="version-chip version-chip-more">
+                                                +{software.hidden.toLocaleString()} earlier
+                                            </li>
+                                        )}
+                                        {software.shown.map((version, i) => (
+                                            <li
+                                                class={
+                                                    "version-chip" +
+                                                    (i === software.shown.length - 1 ? " is-current" : "")
+                                                }
+                                            >
+                                                <span class="mono">{version}</span>
+                                                {i === software.shown.length - 1 && (
+                                                    <span class="version-current">current</span>
+                                                )}
+                                            </li>
+                                        ))}
+                                    </ol>
+                                    <p class="version-note">Versions observed in community reports, oldest to newest.</p>
+                                </div>
+                            )}
+                            {hardware.shown.length > 0 && (
+                                <div class="spec-group">
+                                    <h3 class="spec-group-title">Hardware versions</h3>
+                                    <ol class="version-track">
+                                        {hardware.hidden > 0 && (
+                                            <li class="version-chip version-chip-more">
+                                                +{hardware.hidden.toLocaleString()} earlier
+                                            </li>
+                                        )}
+                                        {hardware.shown.map((version) => (
+                                            <li class="version-chip">
+                                                <span class="mono">{version}</span>
+                                            </li>
+                                        ))}
+                                    </ol>
                                 </div>
                             )}
                         </section>
@@ -193,7 +242,6 @@ const total = await fetchDeviceCount();
                                 <a href="/how-it-works">
                                     Learn about the methodology <span set:html={icon("open", 12)} />
                                 </a>
-                            </p>
                             </p>
                         </div>
                     </aside>

@@ -7,6 +7,8 @@ import { icon } from "../lib/icons.js"
 interface DemoStateApi {
   getTheme(): string
   setTheme(theme: string): void
+  getView(): string
+  setView(view: string): void
 }
 
 declare global {
@@ -19,6 +21,11 @@ const THEME_OPTIONS = [
   { id: "auto", label: "System" },
   { id: "light", label: "Light" },
   { id: "dark", label: "Dark" },
+]
+
+const VIEW_OPTIONS = [
+  { id: "list", label: "List" },
+  { id: "grid", label: "Grid" },
 ]
 
 const STAGES = [
@@ -46,6 +53,7 @@ const LONG_PRESS_MS = 600
 export class BrandMenu extends LitElement {
   @state() private _open = false
   @state() private _theme = "auto"
+  @state() private _view = "list"
   @state() private _osDark = false
   @state() private _stages: Record<string, boolean> = {}
 
@@ -55,6 +63,7 @@ export class BrandMenu extends LitElement {
 
   private _onState = () => {
     this._theme = window.DemoState?.getTheme() ?? "auto"
+    this._view = window.DemoState?.getView() ?? "list"
   }
   private _onOsChange = (e: MediaQueryListEvent) => {
     this._osDark = e.matches
@@ -79,6 +88,7 @@ export class BrandMenu extends LitElement {
   connectedCallback(): void {
     super.connectedCallback()
     this._theme = window.DemoState?.getTheme() ?? "auto"
+    this._view = window.DemoState?.getView() ?? "list"
     this._osDark = window.matchMedia("(prefers-color-scheme: dark)").matches
     window.addEventListener("devicedb:demostate", this._onState)
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", this._onOsChange)
@@ -155,6 +165,11 @@ export class BrandMenu extends LitElement {
     window.DemoState?.setTheme(id)
   }
 
+  private _pickView(id: string): void {
+    this._view = id
+    window.DemoState?.setView(id)
+  }
+
   private _toggleStage(key: string): void {
     this._stages = { ...this._stages, [key]: !this._stages[key] }
   }
@@ -203,6 +218,26 @@ export class BrandMenu extends LitElement {
                   : html`Overrides system preference (currently
                       <b>${this._osDark ? "Dark" : "Light"}</b>).`}
               </p>
+            </section>
+
+            <section class="exp-section">
+              <h3 class="exp-section-title">Browse layout</h3>
+              <div class="exp-seg" role="radiogroup" aria-label="Browse layout">
+                ${VIEW_OPTIONS.map(
+                  (opt) => html`
+                    <button
+                      type="button"
+                      role="radio"
+                      aria-checked=${this._view === opt.id}
+                      class=${"exp-seg-btn" + (this._view === opt.id ? " is-active" : "")}
+                      @click=${() => this._pickView(opt.id)}
+                    >
+                      ${opt.label}
+                    </button>
+                  `,
+                )}
+              </div>
+              <p class="exp-seg-meta">How devices are shown on the Browse page.</p>
             </section>
 
             <section class="exp-section">

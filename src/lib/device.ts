@@ -24,10 +24,13 @@ export const Device = z.object({
   haIntegration: z.string().default(""),
   entityTypes: z.array(z.string()).default([]),
   softwareVersion: z.string().default(""),
+  softwareVersions: z.array(z.string()).default([]),
+  hardwareVersions: z.array(z.string()).default([]),
   firstSeen: z.string().default(""),
   lastVerified: z.string().default(""),
 })
 export type Device = z.infer<typeof Device>
+export type DeviceInput = z.input<typeof Device>
 
 export interface Category {
   id: string

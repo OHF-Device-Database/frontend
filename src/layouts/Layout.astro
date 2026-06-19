@@ -40,6 +40,7 @@ const { title, page = "page", back } = Astro.props;
                 }
                 function apply(state) {
                     document.documentElement.setAttribute("data-resolved-theme", resolve(state.theme));
+                    document.documentElement.setAttribute("data-view", state.view === "grid" ? "grid" : "list");
                 }
                 var state = read();
                 apply(state);
@@ -53,6 +54,18 @@ const { title, page = "page", back } = Astro.props;
                     setTheme: function (theme) {
                         var s = read();
                         s.theme = theme;
+                        try {
+                            localStorage.setItem(KEY, JSON.stringify(s));
+                        } catch (e) {}
+                        apply(s);
+                        window.dispatchEvent(new CustomEvent("devicedb:demostate", { detail: s }));
+                    },
+                    getView: function () {
+                        return read().view === "grid" ? "grid" : "list";
+                    },
+                    setView: function (view) {
+                        var s = read();
+                        s.view = view === "grid" ? "grid" : "list";
                         try {
                             localStorage.setItem(KEY, JSON.stringify(s));
                         } catch (e) {}

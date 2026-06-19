@@ -18,6 +18,7 @@ export class BrowseToolbar extends LitElement {
     @property({ type: Number }) matchCount = 0;
 
     @state() private _count = 0;
+    @state() private _view = "list";
 
     private _sync = () => {
         this._count = this.matchCount;
@@ -30,6 +31,14 @@ export class BrowseToolbar extends LitElement {
 
     private _onPageLoad = () => this._sync();
     private _onFilterChange = () => this.requestUpdate();
+    private _onDemoState = () => {
+        this._view = window.DemoState?.getView() ?? "list";
+    };
+
+    private _setView(view: string): void {
+        this._view = view;
+        window.DemoState?.setView(view);
+    }
 
     protected createRenderRoot(): HTMLElement {
         return this;
@@ -38,10 +47,12 @@ export class BrowseToolbar extends LitElement {
     connectedCallback(): void {
         super.connectedCallback();
         this._count = this.matchCount;
+        this._view = window.DemoState?.getView() ?? "list";
         document.addEventListener("astro:page-load", this._onPageLoad);
         window.addEventListener("browse:filter-change", this._onFilterChange);
         window.addEventListener("browse:count", this._onCount as EventListener);
         window.addEventListener("popstate", this._onFilterChange);
+        window.addEventListener("devicedb:demostate", this._onDemoState);
     }
 
     disconnectedCallback(): void {
@@ -50,6 +61,7 @@ export class BrowseToolbar extends LitElement {
         window.removeEventListener("browse:filter-change", this._onFilterChange);
         window.removeEventListener("browse:count", this._onCount as EventListener);
         window.removeEventListener("popstate", this._onFilterChange);
+        window.removeEventListener("devicedb:demostate", this._onDemoState);
     }
 
     private get _filters() {
@@ -118,6 +130,28 @@ export class BrowseToolbar extends LitElement {
                     <p class="browse-match-count">
                         <b>${count.toLocaleString()}</b> ${count === 1 ? "device matches" : "devices match"}
                     </p>
+                    <div class="view-toggle" role="radiogroup" aria-label="Browse layout">
+                        <button
+                            type="button"
+                            role="radio"
+                            aria-checked=${this._view === "list"}
+                            aria-label="List view"
+                            class=${"view-toggle-btn" + (this._view === "list" ? " is-active" : "")}
+                            @click=${() => this._setView("list")}
+                        >
+                            ${unsafeHTML(icon("list", 16))}
+                        </button>
+                        <button
+                            type="button"
+                            role="radio"
+                            aria-checked=${this._view === "grid"}
+                            aria-label="Grid view"
+                            class=${"view-toggle-btn" + (this._view === "grid" ? " is-active" : "")}
+                            @click=${() => this._setView("grid")}
+                        >
+                            ${unsafeHTML(icon("grid", 16))}
+                        </button>
+                    </div>
                 </div>
             </div>
         `;

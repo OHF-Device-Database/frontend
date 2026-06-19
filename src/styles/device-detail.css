@@ -135,6 +135,114 @@
   background: var(--surface);
   padding: var(--space-6);
 }
+/* Connection schematic figure: line-based, theme-adaptive (all stroke/fill via
+   tokens), one accent reserved for the path that is live for this device. */
+.schematic-wrap {
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--border-subtle);
+}
+.schematic {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.sch-link {
+  stroke: var(--border-strong);
+  stroke-width: 2;
+}
+.sch-link.is-live {
+  stroke: var(--fg);
+}
+.sch-link.is-off {
+  stroke: var(--border-strong);
+  stroke-dasharray: 4 5;
+}
+.sch-node {
+  fill: none;
+  stroke-width: 1.5;
+}
+.sch-node.is-live {
+  stroke: var(--fg);
+}
+.sch-node.is-off {
+  stroke: var(--border-strong);
+}
+.sch-node-label {
+  fill: var(--fg);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+.sch-node-label.is-dim {
+  fill: var(--fg-muted);
+}
+.sch-edge-label {
+  fill: var(--fg-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+.sch-chip-bg {
+  fill: var(--surface);
+}
+.sch-chip-text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+.sch-chip-text.is-off {
+  fill: var(--success);
+}
+.sch-chip-text.is-live {
+  fill: var(--fg);
+}
+.sch-strike line {
+  stroke: var(--fg-muted);
+  stroke-width: 2;
+}
+
+/* Version history: observed software/hardware versions, oldest to newest. */
+.version-track {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+.version-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2);
+  font-size: var(--fs-13);
+  color: var(--fg-muted);
+}
+.version-chip.is-current {
+  border-color: var(--fg);
+  color: var(--fg);
+}
+.version-chip-more {
+  border-style: dashed;
+  font-size: var(--fs-12);
+}
+.version-current {
+  font-size: var(--fs-12);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.version-note {
+  margin-top: var(--space-3) !important;
+  font-size: var(--fs-13);
+  color: var(--fg-muted);
+}
+
 .spec-group {
   margin-bottom: var(--space-6);
 }

@@ -1,0 +1,117 @@
+/* Shared layout for the static content pages (About, Editorial stance, How it
+   works). Full-width sections provide vertical rhythm and hairline dividers; an
+   inner container sets the reading measure. */
+.content-page {
+  padding-bottom: var(--space-10);
+}
+.content-section {
+  padding-top: var(--space-9);
+  margin-top: var(--space-9);
+  border-top: 1px solid var(--border);
+}
+.content-section:first-child {
+  margin-top: 0;
+  border-top: 0;
+}
+.content-intro {
+  padding-top: var(--space-8);
+}
+.content-eyebrow {
+  color: var(--primary);
+  margin-bottom: var(--space-2);
+}
+.content-intro h1 {
+  margin-bottom: var(--space-4);
+}
+.content-section h2 {
+  margin-bottom: var(--space-5);
+}
+.content-lede {
+  font-size: var(--fs-20);
+  line-height: var(--lh-snug);
+  color: var(--fg);
+  margin: 0 0 var(--space-5);
+  max-width: 60ch;
+}
+.content-prose {
+  color: var(--fg-muted);
+  line-height: var(--lh-loose);
+  margin: 0 0 var(--space-4);
+  max-width: 62ch;
+}
+.content-prose:last-child {
+  margin-bottom: 0;
+}
+.content-prose strong,
+.content-prose em {
+  color: var(--fg);
+}
+.content-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--link);
+}
+
+/* Numbered "how it works" steps. */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-7);
+}
+.step-num {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  color: var(--fg-on-primary);
+  font-family: var(--font-mono);
+  font-size: var(--fs-14);
+  font-weight: var(--fw-medium);
+  margin-bottom: var(--space-4);
+}
+.step h3 {
+  font-size: var(--fs-18);
+  margin-bottom: var(--space-2);
+}
+.step p {
+  color: var(--fg-muted);
+  line-height: var(--lh-normal);
+  font-size: var(--fs-14);
+  margin: 0;
+}
+
+/* "A project from the Open Home Foundation" footer badge on the About page. */
+.content-ohf {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-top: var(--space-7);
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-4);
+  text-decoration: none;
+}
+.content-ohf:hover {
+  border-color: var(--border-strong);
+  text-decoration: none;
+}
+.content-ohf-eyebrow {
+  font-size: var(--fs-12);
+  color: var(--fg-muted);
+}
+.content-ohf-name {
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-18);
+  color: var(--fg);
+}
+
+@media (max-width: 767px) {
+  .steps {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+}

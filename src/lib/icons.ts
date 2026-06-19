@@ -25,6 +25,8 @@ import {
     Blinds,
     Check,
     ExternalLink,
+    List,
+    LayoutGrid,
     type IconNode,
 } from "lucide";
 
@@ -37,6 +39,8 @@ const ICONS: Record<string, IconNode> = {
     pencil: Pencil,
     check: Check,
     open: ExternalLink,
+    list: List,
+    grid: LayoutGrid,
 };
 
 const GLYPHS: Record<string, IconNode> = {

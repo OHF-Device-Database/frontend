@@ -1,0 +1,58 @@
+---
+// Editorial figure: where control travels for this device. Home Assistant and
+// the device sit on the local network; the manufacturer cloud branches off it.
+// The path that is actually live is drawn solid; the unused path is dashed and
+// struck through. This is a visualization of the connectivity verdict already
+// shown on the page, not a new claim, so it is only rendered when we have a
+// verdict (local or requires-internet), never for "unknown".
+interface Props {
+    kind: "local" | "requires";
+}
+
+const { kind } = Astro.props;
+
+const local = kind === "local";
+const status = local ? "NOT REQUIRED" : "REQUIRED";
+const chipW = status.length * 7.4 + 22;
+const lanClass = local ? "is-live" : "is-off";
+const cloudClass = local ? "is-off" : "is-live";
+const chipClass = local ? "is-off" : "is-live";
+const ariaLabel = local
+    ? "Home Assistant controls the device over the local network. The manufacturer cloud is not required."
+    : "Home Assistant reaches the device through the manufacturer cloud, which is required.";
+---
+
+<svg class="schematic" viewBox="0 0 640 220" role="img" aria-label={ariaLabel}>
+    <line class={"sch-link " + lanClass} x1="172" y1="70" x2="468" y2="70"></line>
+    <text class="sch-edge-label" x="320" y="56" text-anchor="middle">LOCAL NETWORK</text>
+
+    <line class={"sch-link " + cloudClass} x1="320" y1="70" x2="320" y2="152"></line>
+
+    {
+        local && (
+            <g class="sch-strike">
+                <line x1="310" y1="101" x2="330" y2="121" />
+                <line x1="330" y1="101" x2="310" y2="121" />
+            </g>
+        )
+    }
+
+    <rect class="sch-chip-bg" x={320 - chipW / 2} y="124" width={chipW} height="24" rx="2"></rect>
+    <text class={"sch-chip-text " + chipClass} x="320" y="140" text-anchor="middle">{status}</text>
+
+    <g>
+        <rect class="sch-node is-live" x="22" y="48" width="150" height="44" rx="3"></rect>
+        <text class="sch-node-label" x="97" y="75" text-anchor="middle">HOME ASSISTANT</text>
+    </g>
+    <g>
+        <rect class="sch-node is-live" x="468" y="48" width="150" height="44" rx="3"></rect>
+        <text class="sch-node-label" x="543" y="75" text-anchor="middle">DEVICE</text>
+    </g>
+    <g>
+        <rect class={"sch-node " + (local ? "is-off" : "is-live")} x="218" y="152" width="204" height="44" rx="3"
+        ></rect>
+        <text class={"sch-node-label " + (local ? "is-dim" : "")} x="320" y="179" text-anchor="middle"
+            >MANUFACTURER CLOUD</text
+        >
+    </g>
+</svg>

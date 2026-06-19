@@ -1,6 +1,9 @@
-import type { Device } from "./device";
+import { Device, type DeviceInput } from "./device";
 
-export const MOCK_DEVICES: Device[] = [
+// Seed literals are validated against the schema's input shape (new fields with
+// defaults stay optional here); the exported list is parsed so consumers get a
+// fully-populated Device with every default applied.
+const MOCK_DEVICE_SEED: DeviceInput[] = [
     {
         id: "philips-hue-white-a19",
         name: "Hue White A19",
@@ -784,3 +787,5 @@ export const MOCK_DEVICES: Device[] = [
         lastVerified: "2026-03-08",
     },
 ];
+
+export const MOCK_DEVICES: Device[] = MOCK_DEVICE_SEED.map((seed) => Device.parse(seed));

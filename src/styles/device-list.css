@@ -55,3 +55,45 @@
   color: var(--fg-muted);
   margin-top: 2px;
 }
+
+/* Grid view — the same card markup, reflowed into a responsive photo-forward
+   grid. Driven by the data-view attribute the DemoState script writes to <html>
+   (toggled from the logo menu), so it applies before first paint with no flash. */
+html[data-view="grid"] .device-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--border);
+}
+@media (min-width: 768px) {
+  html[data-view="grid"] .device-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1280px) {
+  html[data-view="grid"] .device-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+html[data-view="grid"] .device-row {
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border-bottom: 0;
+  background: var(--surface);
+}
+html[data-view="grid"] .device-row:first-child {
+  padding-top: var(--space-5);
+}
+html[data-view="grid"] .device-thumb {
+  width: 100%;
+  align-self: auto;
+  aspect-ratio: 1 / 1;
+}
+html[data-view="grid"] .device-thumb svg {
+  width: 38%;
+  height: auto;
+}
+html[data-view="grid"] .device-row-body {
+  padding-top: 0;
+}

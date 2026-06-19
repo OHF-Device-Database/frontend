@@ -86,6 +86,38 @@ browse-toolbar {
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
+.view-toggle {
+  display: inline-flex;
+  flex: none;
+  margin-left: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2);
+  overflow: hidden;
+}
+.view-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-right: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--fg-muted);
+  cursor: pointer;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+.view-toggle-btn:last-child {
+  border-right: 0;
+}
+.view-toggle-btn:hover {
+  color: var(--fg);
+}
+.view-toggle-btn.is-active {
+  background: var(--surface-tint-mid);
+  color: var(--fg);
+}
 .browse-match-count b {
   color: var(--fg);
   font-weight: var(--fw-semibold);

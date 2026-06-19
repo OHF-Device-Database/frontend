@@ -22,8 +22,15 @@ function deviceName(dto: DerivedDeviceMono): string {
   return dto.model || dto.model_id || dto.integration.name || "Unknown device"
 }
 
+function versionList(entries: { version: string }[]): string[] {
+  // Ordered oldest to newest, de-duplicated (the API can repeat a version
+  // string across reports); Set preserves first-seen order.
+  return [...new Set(entries.map((entry) => cleanVersion(entry.version)).filter(Boolean))]
+}
+
 function toDevice(dto: DerivedDevicePoly | DerivedDeviceMono, id: string): Device {
-  const software = dto.versions.software
+  const software = versionList(dto.versions.software)
+  const hardware = versionList(dto.versions.hardware)
 
   return Device.parse({
     id,
@@ -37,7 +44,9 @@ function toDevice(dto: DerivedDevicePoly | DerivedDeviceMono, id: string): Devic
     installs: dto.count,
     haIntegration: dto.integration.name || dto.integration.domain || "",
     entityTypes: [],
-    softwareVersion: cleanVersion(software[software.length - 1]?.version),
+    softwareVersion: software[software.length - 1] ?? "",
+    softwareVersions: software,
+    hardwareVersions: hardware,
     firstSeen: dto.first_encountered ?? "",
     lastVerified: "",
   })
@@ -73,10 +82,7 @@ export async function fetchDeviceResults(
   size = MAX_PAGE_SIZE,
 ): Promise<DeviceResults> {
   if (!apiConfigured) {
-    const matched = applyFilters(
-      MOCK_DEVICES.map((d) => Device.parse(d)),
-      filters,
-    )
+    const matched = applyFilters(MOCK_DEVICES, filters)
     const start = page * size
 
     return {
@@ -117,8 +123,7 @@ export async function fetchManufacturers(): Promise<string[]> {
 
 export async function fetchDevice(id: string): Promise<Device | undefined> {
   if (!apiConfigured) {
-    const device = MOCK_DEVICES.find((candidate) => candidate.id === id)
-    return device ? Device.parse(device) : undefined
+    return MOCK_DEVICES.find((candidate) => candidate.id === id)
   }
   const dto = await getDerivedDevice(id)
 
