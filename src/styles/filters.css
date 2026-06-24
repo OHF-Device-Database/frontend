@@ -190,7 +190,7 @@ browse-filters-sheet {
   pointer-events: none;
 }
 .switch.is-on .switch-track {
-  background: var(--primary);
+  background: var(--accent);
 }
 .switch.is-on .switch-thumb {
   transform: translateX(16px);

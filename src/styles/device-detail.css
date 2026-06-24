@@ -27,14 +27,86 @@
 }
 .detail-image {
   aspect-ratio: 1 / 1;
-  background: var(--surface-tint-mid);
+  background: var(--accent-soft);
+  border-radius: var(--radius-5);
   display: grid;
   place-items: center;
-  color: var(--neutral-400);
+  color: var(--accent);
+}
+.detail-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 13px 5px 10px;
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-13);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.01em;
+  border: 1px solid transparent;
+}
+.detail-pill-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+.detail-pill.is-local {
+  background: var(--success-soft);
+  color: var(--success-strong);
+  border-color: color-mix(in srgb, var(--success) 25%, transparent);
+}
+.detail-pill.is-local .detail-pill-dot {
+  background: var(--success);
+}
+.detail-pill.is-cloud {
+  background: var(--warning-soft);
+  color: var(--warning-strong);
+  border-color: color-mix(in srgb, var(--warning) 28%, transparent);
+}
+.detail-pill.is-cloud .detail-pill-dot {
+  background: var(--warning);
+}
+.detail-pill.is-unknown {
+  background: var(--surface-tint-mid);
+  color: var(--fg-muted);
+  border-color: var(--border);
+}
+.detail-pill.is-unknown .detail-pill-dot {
+  background: var(--neutral-400);
 }
 .detail-title h1 {
-  font-size: var(--fs-38);
-  margin: var(--space-3) 0 var(--space-3);
+  font-size: var(--fs-48);
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  margin: var(--space-4) 0 var(--space-3);
+}
+.detail-stats {
+  display: flex;
+  gap: var(--space-7);
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border-subtle);
+}
+.dstat {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.dstat-num {
+  font-family: var(--font-mono);
+  font-size: var(--fs-30);
+  font-weight: var(--fw-medium);
+  letter-spacing: -0.01em;
+  color: var(--fg-strong);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.dstat-label {
+  font-size: var(--fs-12);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--fg-muted);
 }
 .detail-manu {
   color: var(--fg-muted);
@@ -73,7 +145,19 @@
   font-family: var(--font-display);
   font-size: var(--fs-24);
   letter-spacing: var(--ls-tight);
-  margin: 0 0 var(--space-4);
+  margin: 0 0 var(--space-5);
+  padding-left: var(--space-4);
+  position: relative;
+}
+.article-section h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.18em;
+  bottom: 0.18em;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--accent);
 }
 .article-section p {
   font-size: var(--fs-16);
@@ -131,9 +215,18 @@
 }
 .detail-figure-frame {
   border: 1px solid var(--border);
+  border-left: 3px solid var(--border-strong);
   border-radius: var(--radius-4);
   background: var(--surface);
   padding: var(--space-6);
+}
+.verdict-frame-local {
+  border-left-color: var(--success);
+  background: linear-gradient(100deg, var(--success-soft), var(--surface) 52%);
+}
+.verdict-frame-requires {
+  border-left-color: var(--warning);
+  background: linear-gradient(100deg, var(--warning-soft), var(--surface) 52%);
 }
 /* Connection schematic figure: line-based, theme-adaptive (all stroke/fill via
    tokens), one accent reserved for the path that is live for this device. */
@@ -152,7 +245,7 @@
   stroke-width: 2;
 }
 .sch-link.is-live {
-  stroke: var(--fg);
+  stroke: var(--accent);
 }
 .sch-link.is-off {
   stroke: var(--border-strong);
@@ -163,7 +256,7 @@
   stroke-width: 1.5;
 }
 .sch-node.is-live {
-  stroke: var(--fg);
+  stroke: var(--accent);
 }
 .sch-node.is-off {
   stroke: var(--border-strong);
@@ -195,7 +288,7 @@
   fill: var(--success);
 }
 .sch-chip-text.is-live {
-  fill: var(--fg);
+  fill: var(--accent);
 }
 .sch-strike line {
   stroke: var(--fg-muted);
@@ -223,7 +316,8 @@
   color: var(--fg-muted);
 }
 .version-chip.is-current {
-  border-color: var(--fg);
+  border-color: var(--accent);
+  background: var(--accent-soft);
   color: var(--fg);
 }
 .version-chip-more {
@@ -289,9 +383,13 @@
   color: var(--success-strong);
 }
 .aside-card {
-  border: 0;
-  border-radius: 0;
-  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-5);
+  background: var(--surface-raised);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-2);
+  position: sticky;
+  top: calc(72px + var(--space-5));
 }
 .aside-card h4 {
   font-family: var(--font-sans);

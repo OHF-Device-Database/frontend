@@ -15,9 +15,9 @@
     --primary-press: var(--ink-700);
     --primary-soft: var(--ink-50);
 
-    --accent: #e85a1a;
-    --accent-hover: #c84813;
-    --accent-soft: #fce6db;
+    --accent: #03a9f4;
+    --accent-hover: #0288d1;
+    --accent-soft: #e3f4fd;
 
     --neutral-0: #ffffff;
     --neutral-50: #fafaf7;
@@ -52,7 +52,7 @@
     --border: var(--neutral-200);
     --border-strong: var(--neutral-300);
     --border-subtle: var(--neutral-100);
-    --border-focus: var(--ink-500);
+    --border-focus: var(--accent);
 
     --link: var(--ink-600);
     --link-hover: var(--accent);
@@ -134,11 +134,11 @@
     --radius-pill: 999px;
 
     --shadow-0: none;
-    --shadow-1: 0 0 0 1px rgba(17, 16, 15, 0.06);
-    --shadow-2: var(--shadow-1);
-    --shadow-3: var(--shadow-1);
-    --shadow-4: var(--shadow-1);
-    --ring-focus: 0 0 0 2px var(--ink-500);
+    --shadow-1: 0 1px 2px rgba(17, 16, 15, 0.05), 0 1px 1px rgba(17, 16, 15, 0.04);
+    --shadow-2: 0 2px 6px -1px rgba(17, 16, 15, 0.08), 0 1px 2px rgba(17, 16, 15, 0.05);
+    --shadow-3: 0 10px 28px -8px rgba(17, 16, 15, 0.14), 0 2px 6px -2px rgba(17, 16, 15, 0.08);
+    --shadow-4: 0 20px 50px -16px rgba(17, 16, 15, 0.22), 0 4px 12px -4px rgba(17, 16, 15, 0.1);
+    --ring-focus: 0 0 0 3px rgba(3, 169, 244, 0.32);
 
     --container-narrow: 720px;
     --container: 1080px;
@@ -177,16 +177,16 @@
     --border: var(--neutral-700);
     --border-strong: var(--neutral-600);
     --border-subtle: #232220;
-    --border-focus: var(--neutral-100);
+    --border-focus: var(--accent);
 
     --primary: var(--neutral-100);
     --primary-hover: var(--neutral-0);
     --primary-press: var(--neutral-50);
     --primary-soft: #1f1e1c;
 
-    --accent: #ff7a3a;
-    --accent-hover: #ff9560;
-    --accent-soft: #3a1d10;
+    --accent: #29b6f6;
+    --accent-hover: #4fc3f7;
+    --accent-soft: #08303f;
 
     --link: var(--neutral-100);
     --link-hover: var(--accent);
@@ -211,11 +211,11 @@
 
     --highlight-soft: var(--surface-tint-strong);
 
-    --shadow-1: 0 0 0 1px rgba(255, 255, 255, 0.06);
-    --shadow-2: var(--shadow-1);
-    --shadow-3: var(--shadow-1);
-    --shadow-4: var(--shadow-1);
-    --ring-focus: 0 0 0 2px var(--neutral-100);
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.04);
+    --shadow-2: 0 2px 8px -1px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04);
+    --shadow-3: 0 12px 30px -8px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    --shadow-4: 0 22px 52px -16px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.06);
+    --ring-focus: 0 0 0 3px rgba(41, 182, 246, 0.4);
 
     --nav-bg: var(--surface);
 
