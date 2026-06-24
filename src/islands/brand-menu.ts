@@ -9,8 +9,6 @@ interface DemoStateApi {
   setTheme(theme: string): void
   getView(): string
   setView(view: string): void
-  getExperiment(key: string): boolean
-  setExperiment(key: string, on: boolean): void
 }
 
 declare global {
@@ -42,7 +40,7 @@ const STAGES = [
     key: "community-edit",
     number: "02",
     label: "Community editing",
-    hint: "Adds sign-in, an edit mode on device pages for the overview and references, draft autosave, and submit-to-review with a Your edits dashboard.",
+    hint: "Adds sign-in, account settings, a photo gallery on device pages, an edit mode for community members, and an edit history with attribution.",
     locked: false,
   },
 ]
@@ -91,7 +89,6 @@ export class BrandMenu extends LitElement {
     super.connectedCallback()
     this._theme = window.DemoState?.getTheme() ?? "auto"
     this._view = window.DemoState?.getView() ?? "list"
-    this._stages = { "community-edit": window.DemoState?.getExperiment("community-edit") ?? false }
     this._osDark = window.matchMedia("(prefers-color-scheme: dark)").matches
     window.addEventListener("devicedb:demostate", this._onState)
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", this._onOsChange)
@@ -174,9 +171,7 @@ export class BrandMenu extends LitElement {
   }
 
   private _toggleStage(key: string): void {
-    const on = !this._stages[key]
-    this._stages = { ...this._stages, [key]: on }
-    window.DemoState?.setExperiment(key, on)
+    this._stages = { ...this._stages, [key]: !this._stages[key] }
   }
 
   private _renderDialog() {

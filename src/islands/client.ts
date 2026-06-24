@@ -1,8 +1,4 @@
 import "./brand-menu.js";
-import "./community-auth.js";
-import "./device-contributions.js";
-import "./your-edits.js";
-import "./sign-in-form.js";
 import "./device-search.js";
 import "./device-filters.js";
 import "./browse-toolbar.js";
