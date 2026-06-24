@@ -14,8 +14,14 @@
 .device-row:first-child {
   padding-top: var(--space-4);
 }
+.device-row {
+  transition:
+    background var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
 .device-row:hover {
   background: var(--surface-tint-soft);
+  box-shadow: inset 3px 0 0 var(--accent);
   text-decoration: none;
   color: inherit;
 }
@@ -23,7 +29,7 @@
   width: 72px;
   align-self: stretch;
   flex-shrink: 0;
-  background: var(--surface-tint-mid);
+  background: var(--accent-soft);
   border-radius: var(--radius-1);
   display: grid;
   place-items: center;
@@ -31,7 +37,7 @@
   overflow: hidden;
 }
 .device-thumb svg {
-  color: var(--neutral-400);
+  color: var(--accent);
 }
 .device-row-body {
   flex: 1;
@@ -81,6 +87,25 @@ html[data-view="grid"] .device-row {
   padding: var(--space-5);
   border-bottom: 0;
   background: var(--surface);
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+html[data-view="grid"] .device-row:hover {
+  background: var(--surface);
+  box-shadow: var(--shadow-3);
+  transform: translateY(-3px);
+  position: relative;
+  z-index: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .device-row,
+  html[data-view="grid"] .device-row {
+    transition: none;
+  }
+  html[data-view="grid"] .device-row:hover {
+    transform: none;
+  }
 }
 html[data-view="grid"] .device-row:first-child {
   padding-top: var(--space-5);

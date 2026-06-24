@@ -1,11 +1,10 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import ConnectionSchematic from "../../components/ConnectionSchematic.astro";
 import { fetchDevice, fetchDeviceCount } from "../../lib/api";
+import { CACHE_POLICY, applyCdnCache } from "../../lib/cache";
 import { CATEGORY_LABEL } from "../../lib/categories";
 import { connectivityDisplay, internetStatus } from "../../lib/device";
 import { categoryGlyph, icon } from "../../lib/icons";
-import { CACHE_POLICY, applyCdnCache } from "../../lib/cache";
 
 export const prerender = false;
 
@@ -40,11 +39,18 @@ const view = device
                   : status === "local"
                     ? "This device works fully on your local network. It does not need an internet connection or a manufacturer account to be set up or controlled. If your internet goes down, the device keeps working."
                     : "We don't yet have connectivity data for this device, so we can't say whether it depends on the manufacturer's cloud. This page will update as more reports come in.";
+          const pill =
+              status === "local"
+                  ? { text: "Runs locally", cls: "is-local" }
+                  : status === "requires"
+                    ? { text: "Needs the cloud", cls: "is-cloud" }
+                    : { text: "Unverified", cls: "is-unknown" };
           return {
               category: CATEGORY_LABEL[device.category] ?? device.category,
               connectivity: connectivityDisplay(device),
               status,
               verdict,
+              pill,
               body,
               lastVerified: fmtDate(device.lastVerified),
               firstSeen: fmtDate(device.firstSeen),
@@ -78,6 +84,10 @@ const hardware = device ? recentVersions(device.hardwareVersions) : { hidden: 0,
                 <header class="detail-head">
                     <div class="detail-image" set:html={categoryGlyph(device.category, 72)} />
                     <div class="detail-title">
+                        <span class={"detail-pill " + view.pill.cls}>
+                            <span class="detail-pill-dot" />
+                            {view.pill.text}
+                        </span>
                         <h1>{device.name}</h1>
                         <div class="detail-manu">
                             by{" "}
@@ -94,6 +104,16 @@ const hardware = device ? recentVersions(device.hardwareVersions) : { hidden: 0,
                             <span class="glance-key">Integration</span>
                             <span>{device.haIntegration || "-"}</span>
                         </div>
+                        <div class="detail-stats">
+                            <div class="dstat">
+                                <span class="dstat-num">{device.installs.toLocaleString("en-US")}</span>
+                                <span class="dstat-label">Installations</span>
+                            </div>
+                            <div class="dstat">
+                                <span class="dstat-num">{device.reports.toLocaleString("en-US")}</span>
+                                <span class="dstat-label">Reports</span>
+                            </div>
+                        </div>
                     </div>
                 </header>
 
@@ -101,17 +121,12 @@ const hardware = device ? recentVersions(device.hardwareVersions) : { hidden: 0,
                     <main class="article">
                         <section class="article-section">
                             <figure class="detail-figure">
-                                <div class="detail-figure-frame">
+                                <div class={"detail-figure-frame verdict-frame-" + view.status}>
                                     <div class="verdict verdict-flush">
                                         <span class="verdict-dot" style={`background:${view.verdict.color}`} />
                                         <span class="verdict-text">{view.verdict.text}</span>
                                     </div>
                                     <p class="verdict-body">{view.body}</p>
-                                    {view.status !== "unknown" && (
-                                        <div class="schematic-wrap">
-                                            <ConnectionSchematic kind={view.status} />
-                                        </div>
-                                    )}
                                 </div>
                             </figure>
                         </section>
@@ -213,16 +228,8 @@ const hardware = device ? recentVersions(device.hardwareVersions) : { hidden: 0,
 
                     <aside>
                         <div class="aside-card aside-stats">
-                            <h4>Real-world data</h4>
+                            <h4>About the data</h4>
                             <dl class="aside-stat-list">
-                                <div class="aside-stat">
-                                    <dt>Reports</dt>
-                                    <dd>{device.reports.toLocaleString("en-US")}</dd>
-                                </div>
-                                <div class="aside-stat">
-                                    <dt>Installations</dt>
-                                    <dd>{device.installs.toLocaleString("en-US")}</dd>
-                                </div>
                                 <div class="aside-stat">
                                     <dt>Last verified</dt>
                                     <dd>{view.lastVerified ?? "-"}</dd>

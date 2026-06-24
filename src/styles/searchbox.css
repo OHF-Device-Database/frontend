@@ -12,8 +12,8 @@
   color: var(--fg-muted);
 }
 .searchbox-input:focus-within {
-  border-color: var(--fg);
-  box-shadow: none;
+  border-color: var(--accent);
+  box-shadow: var(--ring-focus);
 }
 .searchbox-input input {
   flex: 1;
