@@ -116,6 +116,14 @@ const hardware = device ? recentVersions(device.hardwareVersions) : { hidden: 0,
                             </figure>
                         </section>
 
+                        <device-contributions
+                            device-id={device.id}
+                            device-name={device.name}
+                            device-manufacturer={device.manufacturer}
+                            device-category={device.category}
+                        />
+
+
                         <section class="article-section">
                             <h2>Home Assistant</h2>
                             {device.haIntegration ? (

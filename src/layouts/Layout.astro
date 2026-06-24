@@ -41,6 +41,8 @@ const { title, page = "page", back } = Astro.props;
                 function apply(state) {
                     document.documentElement.setAttribute("data-resolved-theme", resolve(state.theme));
                     document.documentElement.setAttribute("data-view", state.view === "grid" ? "grid" : "list");
+                    var exp = (state && state.experiments) || {};
+                    document.documentElement.toggleAttribute("data-community-edit", !!exp["community-edit"]);
                 }
                 var state = read();
                 apply(state);
@@ -66,6 +68,19 @@ const { title, page = "page", back } = Astro.props;
                     setView: function (view) {
                         var s = read();
                         s.view = view === "grid" ? "grid" : "list";
+                        try {
+                            localStorage.setItem(KEY, JSON.stringify(s));
+                        } catch (e) {}
+                        apply(s);
+                        window.dispatchEvent(new CustomEvent("devicedb:demostate", { detail: s }));
+                    },
+                    getExperiment: function (key) {
+                        return !!(read().experiments || {})[key];
+                    },
+                    setExperiment: function (key, on) {
+                        var s = read();
+                        s.experiments = s.experiments || {};
+                        s.experiments[key] = !!on;
                         try {
                             localStorage.setItem(KEY, JSON.stringify(s));
                         } catch (e) {}
