@@ -1,11 +1,10 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import ConnectionSchematic from "../../components/ConnectionSchematic.astro";
 import { fetchDevice, fetchDeviceCount } from "../../lib/api";
+import { CACHE_POLICY, applyCdnCache } from "../../lib/cache";
 import { CATEGORY_LABEL } from "../../lib/categories";
 import { connectivityDisplay, internetStatus } from "../../lib/device";
 import { categoryGlyph, icon } from "../../lib/icons";
-import { CACHE_POLICY, applyCdnCache } from "../../lib/cache";
 
 export const prerender = false;
 
@@ -128,11 +127,6 @@ const hardware = device ? recentVersions(device.hardwareVersions) : { hidden: 0,
                                         <span class="verdict-text">{view.verdict.text}</span>
                                     </div>
                                     <p class="verdict-body">{view.body}</p>
-                                    {view.status !== "unknown" && (
-                                        <div class="schematic-wrap">
-                                            <ConnectionSchematic kind={view.status} />
-                                        </div>
-                                    )}
                                 </div>
                             </figure>
                         </section>

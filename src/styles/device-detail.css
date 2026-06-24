@@ -215,84 +215,15 @@
 }
 .detail-figure-frame {
   border: 1px solid var(--border);
-  border-left: 3px solid var(--border-strong);
   border-radius: var(--radius-4);
   background: var(--surface);
   padding: var(--space-6);
 }
 .verdict-frame-local {
-  border-left-color: var(--success);
   background: linear-gradient(100deg, var(--success-soft), var(--surface) 52%);
 }
 .verdict-frame-requires {
-  border-left-color: var(--warning);
   background: linear-gradient(100deg, var(--warning-soft), var(--surface) 52%);
-}
-/* Connection schematic figure: line-based, theme-adaptive (all stroke/fill via
-   tokens), one accent reserved for the path that is live for this device. */
-.schematic-wrap {
-  margin-top: var(--space-6);
-  padding-top: var(--space-6);
-  border-top: 1px solid var(--border-subtle);
-}
-.schematic {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-.sch-link {
-  stroke: var(--border-strong);
-  stroke-width: 2;
-}
-.sch-link.is-live {
-  stroke: var(--accent);
-}
-.sch-link.is-off {
-  stroke: var(--border-strong);
-  stroke-dasharray: 4 5;
-}
-.sch-node {
-  fill: none;
-  stroke-width: 1.5;
-}
-.sch-node.is-live {
-  stroke: var(--accent);
-}
-.sch-node.is-off {
-  stroke: var(--border-strong);
-}
-.sch-node-label {
-  fill: var(--fg);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.04em;
-}
-.sch-node-label.is-dim {
-  fill: var(--fg-muted);
-}
-.sch-edge-label {
-  fill: var(--fg-muted);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-}
-.sch-chip-bg {
-  fill: var(--surface);
-}
-.sch-chip-text {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.06em;
-}
-.sch-chip-text.is-off {
-  fill: var(--success);
-}
-.sch-chip-text.is-live {
-  fill: var(--accent);
-}
-.sch-strike line {
-  stroke: var(--fg-muted);
-  stroke-width: 2;
 }
 
 /* Version history: observed software/hardware versions, oldest to newest. */
