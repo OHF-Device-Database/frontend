@@ -4,7 +4,7 @@ import Layout from "../../layouts/Layout.astro";
 import { fetchDevice, fetchDeviceCount } from "../../lib/api";
 import { CACHE_POLICY, applyCdnCache } from "../../lib/cache";
 import { CATEGORY_LABEL } from "../../lib/categories";
-import { connectivityDisplay, internetStatus } from "../../lib/device";
+import { connectivityDisplay, internetStatus, type VersionInfo } from "../../lib/device";
 import { categoryGlyph, icon } from "../../lib/icons";
 
 export const prerender = false;
@@ -57,31 +57,43 @@ const total = await fetchDeviceCount();
 // Version histories can be long; show the most recent few, newest last (the
 // current version), and summarize the rest.
 const MAX_VERSIONS = 10;
-const recentVersions = (all: string[]): { hidden: number; shown: string[] } => ({
+
+const versionInfos = (info: VersionInfo[], strings: string[]): VersionInfo[] =>
+    info.length > 0 ? info : strings.map((version) => ({ version, firstEncountered: "" }));
+const recentVersions = (all: VersionInfo[]): { hidden: number; shown: VersionInfo[] } => ({
     hidden: Math.max(0, all.length - MAX_VERSIONS),
     shown: all.slice(-MAX_VERSIONS),
 });
-const software = device ? recentVersions(device.softwareVersions) : { hidden: 0, shown: [] };
-const hardware = device ? recentVersions(device.hardwareVersions) : { hidden: 0, shown: [] };
+const software = device
+    ? recentVersions(versionInfos(device.softwareVersionInfo, device.softwareVersions))
+    : { hidden: 0, shown: [] };
+const hardware = device
+    ? recentVersions(versionInfos(device.hardwareVersionInfo, device.hardwareVersions))
+    : { hidden: 0, shown: [] };
 
-const lastVerified = view?.lastVerified ?? null;
-const firstSeen = view?.firstSeen ?? null;
-const toVersionEntries = (versions: string[]) =>
-    [...versions].reverse().map((version, i) => ({
-        version,
+const versionMeta = (entry: VersionInfo): string => {
+    const seen = fmtDate(entry.firstEncountered);
+    return [
+        seen ? `First seen ${seen}` : "",
+        entry.active && entry.active > 0 ? `${entry.active.toLocaleString("en-US")} active installs` : "",
+    ]
+        .filter(Boolean)
+        .join(" · ");
+};
+const toVersionEntries = (entries: VersionInfo[]) =>
+    [...entries].reverse().map((entry, i) => ({
+        version: entry.version,
         current: i === 0,
-        meta: i === 0
-            ? lastVerified
-                ? `Last verified ${lastVerified}`
-                : ""
-            : firstSeen
-              ? `Last seen ${firstSeen}`
-              : "",
+        meta: versionMeta(entry),
     }));
 const softwareEntries = toVersionEntries(software.shown);
 const hardwareEntries = toVersionEntries(hardware.shown);
-const currentSoftware = software.shown.at(-1) ?? "";
-const currentHardware = hardware.shown.at(-1) ?? "";
+const currentSoftware = software.shown.at(-1)?.version ?? "";
+const currentHardware = hardware.shown.at(-1)?.version ?? "";
+
+const haDocsUrl = device?.haIntegrationDomain
+    ? `https://www.home-assistant.io/integrations/${device.haIntegrationDomain}`
+    : null;
 ---
 
 {
@@ -130,23 +142,37 @@ const currentHardware = hardware.shown.at(-1) ?? "";
                             </figure>
                         </section>
 
-                        <section class="article-section">
-                            <h2>Home Assistant</h2>
+                        <section class="article-section ha-connect">
+                            <span class="ha-connect-logo" aria-hidden="true" set:html={haLogo} />
+                            <h2>Connects with Home Assistant</h2>
                             {device.haIntegration ? (
                                 <>
-                                    <p class="ha-integration">{device.haIntegration}</p>
-                                    {device.entityTypes.length > 0 && (
-                                        <p class="ha-entities">
-                                            <span class="meta">Entity types</span>
-                                            {device.entityTypes.map((et) => (
-                                                <span class="mono">{et}</span>
-                                            ))}
+                                    <p>
+                                        Add the matching integration from Settings, Devices and services, Add
+                                        integration. Follow the on-screen steps to connect this device.
+                                    </p>
+                                    <dl class="ha-meta">
+                                        <dt>Integration</dt>
+                                        <dd>{device.haIntegration}</dd>
+                                        {device.entityTypes.length > 0 && (
+                                            <>
+                                                <dt>Supported entities</dt>
+                                                <dd class="ha-entity-chips">
+                                                    {device.entityTypes.map((et) => (
+                                                        <span class="ha-entity-chip mono">{et}</span>
+                                                    ))}
+                                                </dd>
+                                            </>
+                                        )}
+                                    </dl>
+                                    {haDocsUrl && (
+                                        <p class="ha-docs-link">
+                                            <a href={haDocsUrl} target="_blank" rel="noopener">
+                                                Read the Home Assistant documentation{" "}
+                                                <span set:html={icon("open", 14)} />
+                                            </a>
                                         </p>
                                     )}
-                                    <p class="muted">
-                                        Reported by community contributors. Open the documentation for installation
-                                        instructions and configuration options.
-                                    </p>
                                 </>
                             ) : (
                                 <p class="muted">

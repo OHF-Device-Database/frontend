@@ -9,6 +9,13 @@ export type CloudDependency = z.infer<typeof CloudDependency>
 export const Connectivity = z.enum(["online", "offline"])
 export type Connectivity = z.infer<typeof Connectivity>
 
+export const VersionInfo = z.object({
+  version: z.string(),
+  active: z.number().optional(),
+  firstEncountered: z.string().default(""),
+})
+export type VersionInfo = z.infer<typeof VersionInfo>
+
 export const Device = z.object({
   id: z.string(),
   name: z.string(),
@@ -22,10 +29,13 @@ export const Device = z.object({
   reports: z.number().default(0),
   installs: z.number().default(0),
   haIntegration: z.string().default(""),
+  haIntegrationDomain: z.string().default(""),
   entityTypes: z.array(z.string()).default([]),
   softwareVersion: z.string().default(""),
   softwareVersions: z.array(z.string()).default([]),
   hardwareVersions: z.array(z.string()).default([]),
+  softwareVersionInfo: z.array(VersionInfo).default([]),
+  hardwareVersionInfo: z.array(VersionInfo).default([]),
   firstSeen: z.string().default(""),
   lastVerified: z.string().default(""),
 })

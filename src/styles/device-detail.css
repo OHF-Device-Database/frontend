@@ -88,17 +88,51 @@
 .article-section p.muted {
   color: var(--fg-muted);
 }
-.ha-integration {
-  font-weight: var(--fw-semibold);
+.ha-connect-logo {
+  display: inline-flex;
+  margin-bottom: var(--space-4);
 }
-.ha-entities {
+.ha-connect-logo svg {
+  display: block;
+  width: 48px;
+  height: 48px;
+}
+.ha-meta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-4) var(--space-6);
+  align-items: baseline;
+  margin: var(--space-6) 0 0;
+  font-size: var(--fs-14);
+}
+.ha-meta dt {
+  color: var(--fg-muted);
+}
+.ha-meta dd {
+  margin: 0;
+  color: var(--fg);
+}
+.ha-entity-chips {
   display: flex;
-  gap: 6px;
   flex-wrap: wrap;
-  align-items: center;
+  gap: 6px;
 }
-.ha-entities .meta {
-  margin-right: 4px;
+.ha-entity-chip {
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2);
+  background: var(--surface-tint-soft);
+  color: var(--fg);
+}
+.ha-docs-link a {
+  margin-top: var(--space-4);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-14);
+}
+.ha-docs-link span {
+  margin-top: var(--space-1);
 }
 .verdict {
   display: flex;

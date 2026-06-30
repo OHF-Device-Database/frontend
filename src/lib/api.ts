@@ -1,18 +1,20 @@
 import {
   apiConfigured,
+  BROWSE_PAGE_SIZE,
   getDerivedDevice,
   getDeviceCount,
   getDevicesPage,
   getDimensions,
-  BROWSE_PAGE_SIZE,
   type DerivedDeviceMono,
   type DerivedDevicePoly,
   type DeviceQuery,
 } from "./api-client"
 import { applyFilters, type BrowseFilters } from "./browse-filters"
 import { toApiCategories, toUiCategory } from "./category-map"
-import { Device } from "./device"
+import { Device, type VersionInfo } from "./device"
 import { MOCK_DEVICES } from "./mock-devices"
+
+type VersionInfoInput = VersionInfo
 
 function cleanVersion(raw: string | undefined): string {
   return (raw ?? "").replace(/^"+|"+$/g, "").trim()
@@ -22,15 +24,46 @@ function deviceName(dto: DerivedDeviceMono): string {
   return dto.model || dto.model_id || dto.integration.name || "Unknown device"
 }
 
-function versionList(entries: { version: string }[]): string[] {
-  // Ordered oldest to newest, de-duplicated (the API can repeat a version
-  // string across reports); Set preserves first-seen order.
-  return [...new Set(entries.map((entry) => cleanVersion(entry.version)).filter(Boolean))]
+type ApiVersionEntry = { version: string; active?: number; first_encountered?: string }
+
+function versionInfo(entries: ApiVersionEntry[]): VersionInfoInput[] {
+  const byVersion = new Map<string, VersionInfoInput>()
+
+  for (const entry of entries) {
+    const version = cleanVersion(entry.version)
+    if (!version) continue
+    const existing = byVersion.get(version)
+    if (existing) {
+      if (entry.active !== undefined) existing.active = (existing.active ?? 0) + entry.active
+      if (
+        entry.first_encountered &&
+        (!existing.firstEncountered || entry.first_encountered < existing.firstEncountered)
+      ) {
+        existing.firstEncountered = entry.first_encountered
+      }
+    } else {
+      byVersion.set(version, {
+        version,
+        active: entry.active,
+        firstEncountered: entry.first_encountered ?? "",
+      })
+    }
+  }
+
+  return [...byVersion.values()].sort((a, b) =>
+    (a.firstEncountered ?? "").localeCompare(b.firstEncountered ?? ""),
+  )
+}
+
+function entityDomains(entities: { domain: string }[]): string[] {
+  return [...new Set(entities.map((entity) => entity.domain).filter(Boolean))]
 }
 
 function toDevice(dto: DerivedDevicePoly | DerivedDeviceMono, id: string): Device {
-  const software = versionList(dto.versions.software)
-  const hardware = versionList(dto.versions.hardware)
+  const software = versionInfo(dto.versions.software)
+  const hardware = versionInfo(dto.versions.hardware)
+  const softwareVersions = software.map((entry) => entry.version)
+  const hardwareVersions = hardware.map((entry) => entry.version)
 
   return Device.parse({
     id,
@@ -43,10 +76,13 @@ function toDevice(dto: DerivedDevicePoly | DerivedDeviceMono, id: string): Devic
     reports: dto.count,
     installs: dto.count,
     haIntegration: dto.integration.name || dto.integration.domain || "",
-    entityTypes: [],
-    softwareVersion: software[software.length - 1] ?? "",
-    softwareVersions: software,
-    hardwareVersions: hardware,
+    haIntegrationDomain: dto.integration.domain || "",
+    entityTypes: entityDomains(dto.entities),
+    softwareVersion: softwareVersions[softwareVersions.length - 1] ?? "",
+    softwareVersions,
+    hardwareVersions,
+    softwareVersionInfo: software,
+    hardwareVersionInfo: hardware,
     firstSeen: dto.first_encountered ?? "",
     lastVerified: "",
   })

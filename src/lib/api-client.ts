@@ -17,7 +17,16 @@ function baseUrl(): string {
 export const ApiConnectivity = z.enum(["online", "offline"])
 export type ApiConnectivity = z.infer<typeof ApiConnectivity>
 
-const VersionEntry = z.object({ version: z.string() })
+const VersionEntry = z.object({
+  version: z.string(),
+  active: z.number().optional(),
+  first_encountered: z.string().optional(),
+})
+
+const EntityEntry = z.object({
+  domain: z.string(),
+  original_device_class: z.string().optional(),
+})
 
 const DerivedDeviceBase = z.object({
   integration: z.object({
@@ -34,6 +43,7 @@ const DerivedDeviceBase = z.object({
     })
     .default({ software: [], hardware: [] }),
   categories: z.array(z.object({ id: z.string(), source: z.string().optional() })).default([]),
+  entities: z.array(EntityEntry).default([]),
   model: z.string().optional(),
   model_id: z.string().optional(),
   count: z.number().default(0),
