@@ -129,19 +129,19 @@ const haDocsUrl = device?.haIntegrationDomain
                 </header>
 
                 <div class="detail-body">
-                    <main class="article">
-                        <section class="article-section">
-                            <figure class="detail-figure">
-                                <div class="detail-figure-frame">
-                                    <div class="verdict verdict-flush">
-                                        <span class="verdict-dot" style={`background:${view.verdict.color}`} />
-                                        <span class="verdict-text">{view.verdict.text}</span>
-                                    </div>
-                                    <p class="verdict-body">{view.body}</p>
+                    <section class="detail-verdict">
+                        <figure class="detail-figure">
+                            <div class="detail-figure-frame">
+                                <div class="verdict verdict-flush">
+                                    <span class="verdict-dot" style={`background:${view.verdict.color}`} />
+                                    <span class="verdict-text">{view.verdict.text}</span>
                                 </div>
-                            </figure>
-                        </section>
+                                <p class="verdict-body">{view.body}</p>
+                            </div>
+                        </figure>
+                    </section>
 
+                    <main class="article">
                         <section class="article-section ha-connect">
                             <span class="ha-connect-logo" aria-hidden="true" set:html={haLogo} />
                             <h2>Connects with Home Assistant</h2>

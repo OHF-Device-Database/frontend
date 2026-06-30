@@ -57,7 +57,26 @@
 .detail-body {
   display: grid;
   grid-template-columns: 1fr 280px;
-  gap: var(--space-9);
+  grid-template-areas:
+    "verdict side"
+    "main    side";
+  column-gap: var(--space-9);
+  row-gap: var(--space-9);
+  align-items: start;
+}
+.detail-verdict {
+  grid-area: verdict;
+}
+.detail-body > .article {
+  grid-area: main;
+}
+.detail-body > aside {
+  grid-area: side;
+}
+.detail-verdict .verdict-body {
+  font-size: var(--fs-16);
+  line-height: var(--lh-loose);
+  max-width: 62ch;
 }
 .article {
   max-width: none;
@@ -462,13 +481,26 @@
 @media (max-width: 767px) {
   .detail-head {
     grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
     gap: var(--space-6);
   }
   .detail-image {
-    max-width: 200px;
+    width: 100%;
+    max-width: 220px;
+  }
+  .glance {
+    text-align: left;
+    width: max-content;
+    max-width: 100%;
+    margin-inline: auto;
   }
   .detail-body {
     grid-template-columns: 1fr;
-    gap: var(--space-7);
+    grid-template-areas:
+      "verdict"
+      "side"
+      "main";
+    row-gap: var(--space-7);
   }
 }
