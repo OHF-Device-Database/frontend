@@ -14,6 +14,19 @@ import {
 } from "../lib/browse-filters.js";
 import { icon } from "../lib/icons.js";
 
+interface DemoStateApi {
+    getTheme(): string;
+    setTheme(theme: string): void;
+    getView(): string;
+    setView(view: string): void;
+}
+
+declare global {
+    interface Window {
+        DemoState?: DemoStateApi;
+    }
+}
+
 export class BrowseToolbar extends LitElement {
     @property({ type: Number }) matchCount = 0;
 

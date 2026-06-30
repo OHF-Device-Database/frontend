@@ -4,7 +4,7 @@ import {
   getDeviceCount,
   getDevicesPage,
   getDimensions,
-  MAX_PAGE_SIZE,
+  BROWSE_PAGE_SIZE,
   type DerivedDeviceMono,
   type DerivedDevicePoly,
   type DeviceQuery,
@@ -79,7 +79,7 @@ export interface DeviceResults {
 export async function fetchDeviceResults(
   filters: BrowseFilters,
   page = 0,
-  size = MAX_PAGE_SIZE,
+  size = BROWSE_PAGE_SIZE,
 ): Promise<DeviceResults> {
   if (!apiConfigured) {
     const matched = applyFilters(MOCK_DEVICES, filters)

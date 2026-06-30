@@ -68,6 +68,8 @@ export class DeviceSearch extends LitElement {
     this._closeFullscreen({ fromPopState: true })
   }
 
+  private _onResize = () => this._sizeDropdown()
+
   // Render the dynamic overlay (dropdown + fullscreen) inside .searchbox so the absolutely
   // positioned dropdown anchors to it, while leaving the server-rendered form untouched.
   // display:contents keeps the wrapper from affecting layout when empty.
@@ -91,14 +93,33 @@ export class DeviceSearch extends LitElement {
     this._clearBtn?.addEventListener("click", this._clear)
     document.addEventListener("mousedown", this._onDocPointer)
     window.addEventListener("popstate", this._onPopState)
+    window.addEventListener("resize", this._onResize)
+    window.addEventListener("scroll", this._onResize, { passive: true })
   }
 
   disconnectedCallback(): void {
     super.disconnectedCallback()
     document.removeEventListener("mousedown", this._onDocPointer)
     window.removeEventListener("popstate", this._onPopState)
+    window.removeEventListener("resize", this._onResize)
+    window.removeEventListener("scroll", this._onResize)
     this._releaseBody()
     this._resetSuggest()
+  }
+
+  private _sizeDropdown(): void {
+    if (!this._showDropdown || this._fullscreen) {
+      return
+    }
+    const dropdown = this.querySelector<HTMLElement>(".searchbox-dropdown")
+    const wrap = this.querySelector<HTMLElement>(".searchbox")
+    if (!dropdown || !wrap) {
+      return
+    }
+    const margin = 16
+    const gap = 6
+    const available = window.innerHeight - wrap.getBoundingClientRect().bottom - gap - margin
+    dropdown.style.maxHeight = `${Math.max(160, Math.min(480, available))}px`
   }
 
   private get _isEmpty(): boolean {
@@ -366,11 +387,11 @@ export class DeviceSearch extends LitElement {
         ${this._q
           ? html`<button
               type="button"
-              class="appnav-search-clear"
+              class="searchbox-fs-clear"
               aria-label="Clear search"
               @click=${this._clear}
             >
-              Clear
+              ${unsafeHTML(icon("x", 18))}
             </button>`
           : nothing}
       </form>
@@ -456,6 +477,7 @@ export class DeviceSearch extends LitElement {
     if (this._clearBtn) {
       this._clearBtn.hidden = this._isEmpty
     }
+    this._sizeDropdown()
   }
 
   render() {

@@ -17,8 +17,12 @@
 }
 .searchbox-input input {
   flex: 1;
+  min-width: 0;
+  appearance: none;
+  -webkit-appearance: none;
   border: 0;
   outline: 0;
+  padding: 0;
   background: transparent;
   font: inherit;
   font-size: var(--fs-14);
@@ -205,16 +209,46 @@ body.search-fullscreen-open .appnav {
   position: absolute;
   top: calc(env(safe-area-inset-top, 0px) + 24px);
   left: 56px;
-  width: calc(100vw - 56px - 16px);
-  height: 36px;
+  right: 16px;
+  height: 40px;
   margin: 0;
+  padding: 0 var(--space-4);
+  gap: var(--space-3);
   border-color: var(--fg);
+  border-radius: var(--radius-3);
+  box-shadow: none;
   flex: 0 0 auto;
 }
 @media (min-width: 768px) {
   .searchbox-fs .searchbox-input {
-    width: calc(100vw - 56px - 24px);
+    right: 24px;
   }
+}
+.searchbox-fs .searchbox-input > svg {
+  flex-shrink: 0;
+  color: var(--fg-muted);
+}
+.searchbox-fs .searchbox-input input {
+  font-size: var(--fs-16);
+}
+.searchbox-fs-clear {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-right: -6px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--fg-muted);
+  cursor: pointer;
+}
+.searchbox-fs-clear:hover {
+  background: var(--surface-tint-mid);
+  color: var(--fg);
 }
 .searchbox-fs .searchbox-dropdown {
   position: absolute;

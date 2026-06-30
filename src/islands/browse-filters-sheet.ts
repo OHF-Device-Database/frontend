@@ -29,6 +29,7 @@ export class BrowseFiltersSheet extends LitElement {
   @state() private _open = false
   @state() private _subView: FacetDimension | null = null
   @state() private _query = ""
+  @state() private _draft: BrowseFilters | null = null
 
   private _onChange = () => this.requestUpdate()
 
@@ -74,6 +75,10 @@ export class BrowseFiltersSheet extends LitElement {
     return parseBrowseFilters(new URLSearchParams(window.location.search))
   }
 
+  private get _active(): BrowseFilters {
+    return this._draft ?? this._filters
+  }
+
   private get _dimensions(): DimensionConfig[] {
     return [
       { dim: "category", label: "Category", options: categoryOptions(), letterGroups: false },
@@ -86,11 +91,12 @@ export class BrowseFiltersSheet extends LitElement {
     ]
   }
 
-  private _commit(filters: BrowseFilters): void {
-    navigate(browseFiltersHref(filters))
+  private _patch(filters: BrowseFilters): void {
+    this._draft = filters
   }
 
   private _openSheet(subView: FacetDimension | null): void {
+    this._draft = this._filters
     this._open = true
     this._subView = subView
     this._query = ""
@@ -99,10 +105,16 @@ export class BrowseFiltersSheet extends LitElement {
   }
 
   private _close(): void {
+    const draft = this._draft
     this._open = false
     this._subView = null
+    this._draft = null
     this._releaseBody()
     document.removeEventListener("keydown", this._onKey)
+
+    if (draft && browseFiltersHref(draft) !== browseFiltersHref(this._filters)) {
+      navigate(browseFiltersHref(draft))
+    }
   }
 
   private _releaseBody(): void {
@@ -110,12 +122,12 @@ export class BrowseFiltersSheet extends LitElement {
   }
 
   private _setLocal(on: boolean): void {
-    this._commit({ ...this._filters, localOnly: on })
+    this._patch({ ...this._active, localOnly: on })
   }
 
   private _setMode(dim: FacetDimension, mode: FilterMode): void {
-    const filters = this._filters
-    this._commit(
+    const filters = this._active
+    this._patch(
       dim === "category"
         ? { ...filters, categoryMode: mode }
         : { ...filters, manufacturerMode: mode },
@@ -123,23 +135,23 @@ export class BrowseFiltersSheet extends LitElement {
   }
 
   private _toggle(dim: FacetDimension, id: string): void {
-    const filters = this._filters
+    const filters = this._active
     const set = new Set(filters[dim])
     if (set.has(id)) {
       set.delete(id)
     } else {
       set.add(id)
     }
-    this._commit({ ...filters, [dim]: set })
+    this._patch({ ...filters, [dim]: set })
   }
 
   private _clearDimension(dim: FacetDimension): void {
-    this._commit({ ...this._filters, [dim]: new Set() })
+    this._patch({ ...this._active, [dim]: new Set() })
   }
 
   private _clearAll(): void {
-    this._commit({
-      ...this._filters,
+    this._patch({
+      ...this._active,
       category: new Set(),
       manufacturer: new Set(),
       localOnly: false,
@@ -247,11 +259,9 @@ export class BrowseFiltersSheet extends LitElement {
                           aria-pressed=${on}
                           @click=${() => this._toggle(config.dim, option.id)}
                         >
-                          ${on
-                            ? html`<span class="filter-tap-row-check"
-                                >${unsafeHTML(icon("arrow", 16))}</span
-                              >`
-                            : nothing}
+                          <span class="filter-tap-row-check">
+                            ${on ? unsafeHTML(icon("check", 16)) : nothing}
+                          </span>
                           <span class="filter-tap-row-text">${option.label}</span>
                         </button>
                       `
@@ -265,7 +275,7 @@ export class BrowseFiltersSheet extends LitElement {
   }
 
   render() {
-    const filters = this._filters
+    const filters = this._active
     const config = this._subView ? this._dimensions.find((d) => d.dim === this._subView) : null
     const activeCount = activeFilterCount(filters)
 

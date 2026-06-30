@@ -62,8 +62,8 @@
 html[data-view="grid"] .device-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1px;
-  background: var(--border);
+  gap: 0;
+  background: transparent;
 }
 @media (min-width: 768px) {
   html[data-view="grid"] .device-list {
@@ -81,6 +81,9 @@ html[data-view="grid"] .device-row {
   padding: var(--space-5);
   border-bottom: 0;
   background: var(--surface);
+  box-shadow:
+    1px 0 0 var(--border),
+    0 1px 0 var(--border);
 }
 html[data-view="grid"] .device-row:first-child {
   padding-top: var(--space-5);

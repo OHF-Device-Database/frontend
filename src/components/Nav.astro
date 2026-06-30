@@ -1,5 +1,4 @@
 ---
-import { icon } from "../lib/icons";
 import { LOGO_SVG } from "../lib/logo";
 import SearchBox from "./SearchBox.astro";
 
@@ -8,30 +7,31 @@ interface Props {
     back?: string;
 }
 
-const { page, back } = Astro.props;
+const { page } = Astro.props;
 const showSearch = page !== "home";
 ---
 
 <header class="appnav" data-appnav>
     <div class="container appnav-inner">
         <div class="appnav-left">
-            {
-                back && (
-                    <a href={back} class="appnav-back" aria-label="Back to devices" set:html={icon("arrowL", 18)} />
-                )
-            }
-            <brand-menu>
-                <a
-                    href="/"
-                    class="brand"
-                    aria-label="Device Database, home"
-                    style="margin-top: 4px;"
-                    set:html={LOGO_SVG}
-                />
-            </brand-menu>
+            <a
+                href="/"
+                class="brand"
+                aria-label="Device Database, home"
+                set:html={LOGO_SVG}
+            />
         </div>
-        {showSearch ? <SearchBox size="header" /> : <div></div>}
-        <div></div>
+        {showSearch ? <SearchBox size="header" /> : <div class="appnav-search-empty"></div>}
+        <div class="appnav-right">
+            <a
+                class="preview-badge"
+                href="https://github.com/OHF-Device-Database"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                <span>Preview Edition</span>
+            </a>
+        </div>
     </div>
 </header>
 

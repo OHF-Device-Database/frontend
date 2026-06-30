@@ -4,6 +4,7 @@ import Layout from "../layouts/Layout.astro";
 import { fetchDeviceResults, fetchManufacturers } from "../lib/api";
 import { parseBrowseFilters } from "../lib/browse-filters";
 import { CACHE_POLICY, applyCdnCache } from "../lib/cache";
+import { icon } from "../lib/icons";
 
 export const prerender = false;
 
@@ -33,8 +34,24 @@ const pageHref = (p: number): string => {
 
 const hasPrev = results.page > 0;
 const hasNext = results.page < results.pageCount - 1;
-const rangeStart = results.total === 0 ? 0 : results.page * results.size + 1;
-const rangeEnd = Math.min(results.total, (results.page + 1) * results.size);
+
+type PageItem = { gap: true } | { gap: false; page: number };
+const paginationItems = (current: number, count: number): PageItem[] => {
+    const wanted = new Set<number>();
+    for (const p of [0, count - 1, current - 1, current, current + 1]) {
+        if (p >= 0 && p < count) wanted.add(p);
+    }
+    const ordered = [...wanted].sort((a, b) => a - b);
+    const items: PageItem[] = [];
+    let prev = -1;
+    for (const p of ordered) {
+        if (p - prev > 1) items.push({ gap: true });
+        items.push({ gap: false, page: p });
+        prev = p;
+    }
+    return items;
+};
+const pages = results.pageCount > 1 ? paginationItems(results.page, results.pageCount) : [];
 ---
 
 <Layout page="browse" title="Browse">
@@ -54,30 +71,56 @@ const rangeEnd = Math.min(results.total, (results.page + 1) * results.size);
                                     <DeviceCard device={device} />
                                 ))}
                             </div>
-                            <nav class="browse-pagination" aria-label="Pagination">
-                                {hasPrev ? (
-                                    <a class="btn" href={pageHref(results.page - 1)} rel="prev">
-                                        ← Previous
-                                    </a>
-                                ) : (
-                                    <span class="btn is-disabled" aria-disabled="true">
-                                        ← Previous
+                            {pages.length > 0 && (
+                                <nav class="browse-pagination" aria-label="Pagination">
+                                    {hasPrev ? (
+                                        <a class="browse-pagination-step" href={pageHref(results.page - 1)} rel="prev">
+                                            <span set:html={icon("chevronL", 16)} />
+                                            <span>Previous</span>
+                                        </a>
+                                    ) : (
+                                        <span class="browse-pagination-step is-disabled" aria-disabled="true">
+                                            <span set:html={icon("chevronL", 16)} />
+                                            <span>Previous</span>
+                                        </span>
+                                    )}
+                                    <span class="browse-pagination-pages">
+                                        {pages.map((item) =>
+                                            item.gap ? (
+                                                <span class="browse-pagination-gap" aria-hidden="true">
+                                                    …
+                                                </span>
+                                            ) : item.page === results.page ? (
+                                                <span
+                                                    class="browse-pagination-page is-current"
+                                                    aria-current="page"
+                                                >
+                                                    {(item.page + 1).toLocaleString()}
+                                                </span>
+                                            ) : (
+                                                <a
+                                                    class="browse-pagination-page"
+                                                    href={pageHref(item.page)}
+                                                    aria-label={`Page ${item.page + 1}`}
+                                                >
+                                                    {(item.page + 1).toLocaleString()}
+                                                </a>
+                                            ),
+                                        )}
                                     </span>
-                                )}
-                                <span class="browse-pagination-info">
-                                    {rangeStart.toLocaleString()}–{rangeEnd.toLocaleString()} of{" "}
-                                    {results.total.toLocaleString()}
-                                </span>
-                                {hasNext ? (
-                                    <a class="btn" href={pageHref(results.page + 1)} rel="next">
-                                        Next →
-                                    </a>
-                                ) : (
-                                    <span class="btn is-disabled" aria-disabled="true">
-                                        Next →
-                                    </span>
-                                )}
-                            </nav>
+                                    {hasNext ? (
+                                        <a class="browse-pagination-step" href={pageHref(results.page + 1)} rel="next">
+                                            <span>Next</span>
+                                            <span set:html={icon("chevronR", 16)} />
+                                        </a>
+                                    ) : (
+                                        <span class="browse-pagination-step is-disabled" aria-disabled="true">
+                                            <span>Next</span>
+                                            <span set:html={icon("chevronR", 16)} />
+                                        </span>
+                                    )}
+                                </nav>
+                            )}
                         </>
                     )
                 }

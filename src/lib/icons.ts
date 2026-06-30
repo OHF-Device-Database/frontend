@@ -27,6 +27,9 @@ import {
     ExternalLink,
     List,
     LayoutGrid,
+    ChevronLeft,
+    ChevronRight,
+    ChevronDown,
     type IconNode,
 } from "lucide";
 
@@ -41,6 +44,9 @@ const ICONS: Record<string, IconNode> = {
     open: ExternalLink,
     list: List,
     grid: LayoutGrid,
+    chevronL: ChevronLeft,
+    chevronR: ChevronRight,
+    chevronDown: ChevronDown,
 };
 
 const GLYPHS: Record<string, IconNode> = {

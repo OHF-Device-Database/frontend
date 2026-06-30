@@ -175,8 +175,12 @@
 }
 .filter-tap-row-check {
   flex-shrink: 0;
-  color: var(--fg);
+  width: 16px;
+  height: 16px;
+  color: var(--primary);
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .filter-tap-row-text {
   flex: 1;

@@ -231,17 +231,30 @@ button.filter-chip {
   }
   .filters-fab-wrap {
     display: block;
-    padding: 0 0 var(--space-4);
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 50;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: var(--space-3) 0 calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+  }
+  .filters-fab-wrap .container {
+    display: flex;
+    justify-content: center;
   }
   .filters-fab {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: var(--space-2);
-    padding: 9px 14px;
+    width: 100%;
+    padding: 11px 18px;
     background: var(--fg);
     color: var(--fg-on-primary);
     border: 1px solid var(--fg);
-    border-radius: var(--radius-2);
+    border-radius: var(--radius-4);
     font: var(--fw-medium) 14px / 1 var(--font-sans);
     cursor: pointer;
   }

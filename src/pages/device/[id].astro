@@ -1,11 +1,11 @@
 ---
+import haLogo from "../../assets/ha-logo.svg?raw";
 import Layout from "../../layouts/Layout.astro";
-import ConnectionSchematic from "../../components/ConnectionSchematic.astro";
 import { fetchDevice, fetchDeviceCount } from "../../lib/api";
+import { CACHE_POLICY, applyCdnCache } from "../../lib/cache";
 import { CATEGORY_LABEL } from "../../lib/categories";
 import { connectivityDisplay, internetStatus } from "../../lib/device";
 import { categoryGlyph, icon } from "../../lib/icons";
-import { CACHE_POLICY, applyCdnCache } from "../../lib/cache";
 
 export const prerender = false;
 
@@ -63,6 +63,25 @@ const recentVersions = (all: string[]): { hidden: number; shown: string[] } => (
 });
 const software = device ? recentVersions(device.softwareVersions) : { hidden: 0, shown: [] };
 const hardware = device ? recentVersions(device.hardwareVersions) : { hidden: 0, shown: [] };
+
+const lastVerified = view?.lastVerified ?? null;
+const firstSeen = view?.firstSeen ?? null;
+const toVersionEntries = (versions: string[]) =>
+    [...versions].reverse().map((version, i) => ({
+        version,
+        current: i === 0,
+        meta: i === 0
+            ? lastVerified
+                ? `Last verified ${lastVerified}`
+                : ""
+            : firstSeen
+              ? `Last seen ${firstSeen}`
+              : "",
+    }));
+const softwareEntries = toVersionEntries(software.shown);
+const hardwareEntries = toVersionEntries(hardware.shown);
+const currentSoftware = software.shown.at(-1) ?? "";
+const currentHardware = hardware.shown.at(-1) ?? "";
 ---
 
 {
@@ -107,11 +126,6 @@ const hardware = device ? recentVersions(device.hardwareVersions) : { hidden: 0,
                                         <span class="verdict-text">{view.verdict.text}</span>
                                     </div>
                                     <p class="verdict-body">{view.body}</p>
-                                    {view.status !== "unknown" && (
-                                        <div class="schematic-wrap">
-                                            <ConnectionSchematic kind={view.status} />
-                                        </div>
-                                    )}
                                 </div>
                             </figure>
                         </section>
@@ -143,71 +157,88 @@ const hardware = device ? recentVersions(device.hardwareVersions) : { hidden: 0,
 
                         <section class="article-section">
                             <h2>Specifications</h2>
-                            <div class="spec-group">
-                                <h3 class="spec-group-title">Ecosystems</h3>
-                                <dl class="spec-dl">
-                                    <div class="trait-row">
-                                        <dt>Home Assistant</dt>
-                                        <dd>
-                                            <span class="eco-mark eco-mark-on" set:html={icon("check", 16)} />
-                                        </dd>
+                            <div class="spec-accordions">
+                                <details class="spec-acc" open>
+                                    <summary class="spec-acc-summary">
+                                        <span>Ecosystems</span>
+                                        <span class="spec-acc-chevron" set:html={icon("chevronDown", 18)} />
+                                    </summary>
+                                    <div class="spec-acc-body">
+                                        <dl class="spec-dl">
+                                            <div class="trait-row">
+                                                <dt>Connects with</dt>
+                                                <dd>
+                                                    <span class="ha-chip">
+                                                        <span class="ha-chip-badge" aria-hidden="true" set:html={haLogo} />
+                                                        Home Assistant
+                                                    </span>
+                                                </dd>
+                                            </div>
+                                        </dl>
                                     </div>
-                                </dl>
-                            </div>
-                            <div class="spec-group">
-                                <h3 class="spec-group-title">Product identifiers</h3>
-                                <dl class="spec-dl">
-                                    <div class="trait-row">
-                                        <dt>Model number</dt>
-                                        <dd>
-                                            <span class="mono">{device.model}</span>
-                                        </dd>
+                                </details>
+
+                                {software.shown.length > 0 && (
+                                    <details class="spec-acc" open>
+                                        <summary class="spec-acc-summary">
+                                            <span>Software version</span>
+                                            <span class="spec-acc-chevron" set:html={icon("chevronDown", 18)} />
+                                        </summary>
+                                        <div class="spec-acc-body">
+                                            <dl class="spec-dl">
+                                                <div class="trait-row">
+                                                    <dt>Current</dt>
+                                                    <dd class="spec-version-dd">
+                                                        <span class="mono">{currentSoftware}</span>
+                                                        {software.shown.length > 1 && (
+                                                            <version-history entries={JSON.stringify(softwareEntries)}></version-history>
+                                                        )}
+                                                    </dd>
+                                                </div>
+                                            </dl>
+                                        </div>
+                                    </details>
+                                )}
+
+                                {hardware.shown.length > 0 && (
+                                    <details class="spec-acc" open>
+                                        <summary class="spec-acc-summary">
+                                            <span>Hardware version</span>
+                                            <span class="spec-acc-chevron" set:html={icon("chevronDown", 18)} />
+                                        </summary>
+                                        <div class="spec-acc-body">
+                                            <dl class="spec-dl">
+                                                <div class="trait-row">
+                                                    <dt>Current</dt>
+                                                    <dd class="spec-version-dd">
+                                                        <span class="mono">{currentHardware}</span>
+                                                        {hardware.shown.length > 1 && (
+                                                            <version-history entries={JSON.stringify(hardwareEntries)}></version-history>
+                                                        )}
+                                                    </dd>
+                                                </div>
+                                            </dl>
+                                        </div>
+                                    </details>
+                                )}
+
+                                <details class="spec-acc" open>
+                                    <summary class="spec-acc-summary">
+                                        <span>Product identifiers</span>
+                                        <span class="spec-acc-chevron" set:html={icon("chevronDown", 18)} />
+                                    </summary>
+                                    <div class="spec-acc-body">
+                                        <dl class="spec-dl">
+                                            <div class="trait-row">
+                                                <dt>Model number</dt>
+                                                <dd>
+                                                    <span class="spec-chip mono">{device.model}</span>
+                                                </dd>
+                                            </div>
+                                        </dl>
                                     </div>
-                                </dl>
+                                </details>
                             </div>
-                            {software.shown.length > 0 && (
-                                <div class="spec-group">
-                                    <h3 class="spec-group-title">Software versions</h3>
-                                    <ol class="version-track">
-                                        {software.hidden > 0 && (
-                                            <li class="version-chip version-chip-more">
-                                                +{software.hidden.toLocaleString()} earlier
-                                            </li>
-                                        )}
-                                        {software.shown.map((version, i) => (
-                                            <li
-                                                class={
-                                                    "version-chip" +
-                                                    (i === software.shown.length - 1 ? " is-current" : "")
-                                                }
-                                            >
-                                                <span class="mono">{version}</span>
-                                                {i === software.shown.length - 1 && (
-                                                    <span class="version-current">current</span>
-                                                )}
-                                            </li>
-                                        ))}
-                                    </ol>
-                                    <p class="version-note">Versions observed in community reports, oldest to newest.</p>
-                                </div>
-                            )}
-                            {hardware.shown.length > 0 && (
-                                <div class="spec-group">
-                                    <h3 class="spec-group-title">Hardware versions</h3>
-                                    <ol class="version-track">
-                                        {hardware.hidden > 0 && (
-                                            <li class="version-chip version-chip-more">
-                                                +{hardware.hidden.toLocaleString()} earlier
-                                            </li>
-                                        )}
-                                        {hardware.shown.map((version) => (
-                                            <li class="version-chip">
-                                                <span class="mono">{version}</span>
-                                            </li>
-                                        ))}
-                                    </ol>
-                                </div>
-                            )}
                         </section>
                     </main>
 

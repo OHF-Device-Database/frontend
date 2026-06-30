@@ -33,8 +33,32 @@
   color: var(--fg);
 }
 .appfoot-legal-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
   font-size: var(--fs-13);
   color: var(--fg-muted);
+}
+.appfoot-ohf-logo {
+  display: inline-flex;
+  align-items: center;
+}
+.appfoot-ohf-logo svg {
+  display: block;
+  width: auto;
+  height: 18px;
+}
+.appfoot-ohf-logo .ohf-logo-light {
+  display: inline-flex;
+}
+.appfoot-ohf-logo .ohf-logo-dark {
+  display: none;
+}
+:root[data-resolved-theme="dark"] .appfoot-ohf-logo .ohf-logo-light {
+  display: none;
+}
+:root[data-resolved-theme="dark"] .appfoot-ohf-logo .ohf-logo-dark {
+  display: inline-flex;
 }
 @media (max-width: 767px) {
   .appfoot-row {

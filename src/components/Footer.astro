@@ -1,4 +1,7 @@
 ---
+import ohfLogoLight from "../assets/ohf-logo-light.svg?raw";
+import ohfLogoDark from "../assets/ohf-logo-dark.svg?raw";
+
 interface Props {
     flush?: boolean;
 }
@@ -15,6 +18,12 @@ const { flush = false } = Astro.props;
             <li><a href="/about">About</a></li>
             <li><a href="https://www.openhomefoundation.org/">Open Home Foundation</a></li>
         </ul>
-        <span class="appfoot-legal-inline">© 2026 Open Home Foundation · Preview edition</span>
+        <span class="appfoot-legal-inline">
+            <span class="appfoot-ohf-logo" aria-hidden="true">
+                <span class="ohf-logo-light" set:html={ohfLogoLight} />
+                <span class="ohf-logo-dark" set:html={ohfLogoDark} />
+            </span>
+            © 2026 Open Home Foundation · Preview edition
+        </span>
     </div>
 </footer>

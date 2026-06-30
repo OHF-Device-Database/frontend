@@ -2,6 +2,7 @@ import { z } from "astro/zod"
 import { API_AUTHORITY } from "astro:env/server"
 
 export const MAX_PAGE_SIZE = 50
+export const BROWSE_PAGE_SIZE = 15
 const REQUEST_TIMEOUT_MS = 8000
 
 export const apiConfigured = Boolean(API_AUTHORITY)
