@@ -81,7 +81,9 @@ export default defineConfig({
 			paraglideVitePlugin({
 				project: "./project.inlang",
 				outdir: "./src/paraglide",
-				strategy: ["url", "baseLocale"],
+				// `globalVariable` is only consulted at build time, where the prerender
+				// middleware stores the route's locale with `setLocale()` (middleware.ts)
+				strategy: ["url", "globalVariable", "baseLocale"],
 				urlPatterns: [
 					{
 						pattern: ":protocol://:domain(.*)::port?/:path(.*)?",

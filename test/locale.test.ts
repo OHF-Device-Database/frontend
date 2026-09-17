@@ -1,12 +1,7 @@
 import { describe, test } from "vitest";
 
-import { m } from "../src/paraglide/messages.js";
-import { baseLocale, getLocale, locales } from "../src/paraglide/runtime.js";
-import {
-	localeFromParam,
-	localeStaticPaths,
-	localeStorage,
-} from "../src/utilities/locale";
+import { baseLocale, locales } from "../src/paraglide/runtime.js";
+import { localeFromParam, localeStaticPaths } from "../src/utilities/locale";
 
 describe("localeFromParam", () => {
 	test("missing param is the base locale", (t) => {
@@ -40,32 +35,5 @@ describe("localeStaticPaths", () => {
 		t.expect(
 			paths.map(({ params }) => params.locale ?? baseLocale).toSorted(),
 		).toEqual([...locales].toSorted());
-	});
-});
-
-// guards the Paraglide internals the build-time middleware relies on.
-// if an upgrade changes them, prerendered pages would otherwise silently
-// render in the base locale
-describe("localeStorage", () => {
-	test("returns the same storage on repeated calls", (t) => {
-		t.expect(localeStorage()).toBe(localeStorage());
-	});
-
-	test("scopes getLocale() to the seeded locale", (t) => {
-		t.expect(localeStorage().run({ locale: "de" }, () => getLocale())).toBe(
-			"de",
-		);
-		t.expect(localeStorage().run({ locale: "fr" }, () => getLocale())).toBe(
-			"fr",
-		);
-	});
-
-	test("scopes messages to the seeded locale", (t) => {
-		t.expect(localeStorage().run({ locale: "de" }, () => m.about_title())).toBe(
-			"Über",
-		);
-		t.expect(
-			localeStorage().run({ locale: baseLocale }, () => m.about_title()),
-		).toBe("About");
 	});
 });
