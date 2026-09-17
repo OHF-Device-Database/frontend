@@ -98,6 +98,9 @@ const view =
 										: m.device_connectivity_unknown_explanation(),
 						},
 						docsUrl: `https://www.home-assistant.io/integrations/${device.integration.domain}`,
+						entityDomains: [
+							...new Set(device.entities.map((entity) => entity.domain)),
+						],
 						firstEncountered: formatDate(device.firstEncountered),
 						duplicates: (result.device.duplicates?.items ?? []).map(listingRow),
 						canonical:
@@ -214,12 +217,12 @@ const view =
 							<dl class="ha-meta">
 								<dt>{m.device_integration()}</dt>
 								<dd>{view.device.integration.name}</dd>
-								{view.device.entities.length > 0 && (
+								{view.derived.entityDomains.length > 0 && (
 									<>
 										<dt>{m.device_supported_entities()}</dt>
 										<dd class="ha-entity-chips">
-											{view.device.entities.map((et) => (
-												<span class="ha-entity-chip mono">{et.domain}</span>
+											{view.derived.entityDomains.map((domain) => (
+												<span class="ha-entity-chip mono">{domain}</span>
 											))}
 										</dd>
 									</>
