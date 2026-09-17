@@ -152,6 +152,7 @@
 	--transition: 180ms cubic-bezier(0.2, 0, 0.2, 1);
 
 	--nav-bg: var(--surface);
+	--nav-h: 72px;
 
 	color-scheme: light;
 
@@ -233,6 +234,8 @@ html {
 	font-family: var(--font-sans);
 	-webkit-font-smoothing: antialiased;
 	text-rendering: optimizeLegibility;
+	/* offset in-page anchor jumps by the sticky header height so targets aren't obscured */
+	scroll-padding-top: var(--nav-h);
 }
 body {
 	font-size: var(--fs-16);

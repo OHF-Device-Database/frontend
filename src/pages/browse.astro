@@ -15,6 +15,8 @@ import {
 	withCategoryToggled,
 	withLocalOnly,
 	withManufacturerToggled,
+	withoutCategory,
+	withoutManufacturer,
 	withoutTerm,
 } from "../types/browse";
 import {
@@ -37,23 +39,45 @@ const pageParam = Number(Astro.url.searchParams.get("page") ?? "0");
 const page =
 	Number.isInteger(pageParam) && pageParam > 0 ? Math.floor(pageParam) : 0;
 
-const [result, { dimensions }] = await Promise.all([
+// each facet is counted against every other active filter. selecting a
+// category narrows the manufacturers, while the category list itself
+// keeps showing the alternatives (and vice versa)
+const categoryFacetFilters = withoutCategory(filters);
+const manufacturerFacetFilters = withoutManufacturer(filters);
+const categoryDimensionsRequest = getDimensions(
+	browseFiltersToQuery(categoryFacetFilters),
+);
+// with at most one dimension selected both facets share the same query
+const manufacturerDimensionsRequest =
+	browseFiltersToHref(categoryFacetFilters) ===
+	browseFiltersToHref(manufacturerFacetFilters)
+		? categoryDimensionsRequest
+		: getDimensions(browseFiltersToQuery(manufacturerFacetFilters));
+
+const [
+	result,
+	{ dimensions: categoryDimensions },
+	{ dimensions: manufacturerDimensions },
+] = await Promise.all([
 	getDevices({
 		...browseFiltersToQuery(filters),
 		...(page > 0 ? { page } : {}),
 		size: PAGE_SIZE,
 	}),
-	getDimensions(),
+	categoryDimensionsRequest,
+	manufacturerDimensionsRequest,
 ]);
 
 Astro.cache.set({ ...cachePolicy(result.caching), tags: ["devices"] });
 
 const devices = result.devices.map(devicePolyMap);
-const resolveCategory = topLevelCategoryResolver(dimensions.categories);
+// the category facet ignores the category filter, so it covers every
+// category a listed device can carry
+const resolveCategory = topLevelCategoryResolver(categoryDimensions.categories);
 const total = result.total;
 const pageCount = result.pages;
 
-const categoryFacets = Object.entries(dimensions.categories)
+const categoryFacets = Object.entries(categoryDimensions.categories)
 	.flatMap(([id, node]) => {
 		const parsed = DeviceCategoryTopLevelId.safeParse(id);
 
@@ -83,20 +107,35 @@ const categoryVisible = [
 ];
 const categoryOverflow = categoryRows.length - categoryVisible.length;
 
+// a selected manufacturer may have no devices left under the other filters;
+// keep it listed so it can still be deselected
+const manufacturerRows = [
+	...manufacturerDimensions.manufacturers,
+	...[...filters.manufacturer]
+		.filter(
+			(name) =>
+				!manufacturerDimensions.manufacturers.some(
+					(manufacturer) => manufacturer.name === name,
+				),
+		)
+		.toSorted()
+		.map((name) => ({ name, count: 0 })),
+];
+
 const manufacturerVisible = [
-	...dimensions.manufacturers.slice(0, SIDEBAR_LIMIT),
-	...dimensions.manufacturers
+	...manufacturerRows.slice(0, SIDEBAR_LIMIT),
+	...manufacturerRows
 		.slice(SIDEBAR_LIMIT)
 		.filter((manufacturer) => filters.manufacturer.has(manufacturer.name)),
 ];
 const manufacturerOverflow =
-	dimensions.manufacturers.length - manufacturerVisible.length;
+	manufacturerRows.length - manufacturerVisible.length;
 
 const categoryOptions = JSON.stringify(
 	categoryRows.map(({ id, label, count }) => ({ id, label, count })),
 );
 const manufacturerOptions = JSON.stringify(
-	dimensions.manufacturers.map(({ name, count }) => ({
+	manufacturerRows.map(({ name, count }) => ({
 		id: name,
 		label: name,
 		count,

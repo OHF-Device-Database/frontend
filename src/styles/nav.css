@@ -2,7 +2,7 @@
 	position: sticky;
 	top: 0;
 	z-index: 20;
-	height: 72px;
+	height: var(--nav-h);
 	background: var(--nav-bg);
 	border-bottom: 1px solid transparent;
 	transition: border-color 0.15s ease;
@@ -130,8 +130,8 @@ html[data-preview-banner="off"] .preview-banner {
 	background: color-mix(in srgb, currentColor 14%, transparent);
 }
 @media (max-width: 899px) {
-	.appnav {
-		height: auto;
+	:root {
+		--nav-h: 104px;
 	}
 	.appnav-inner {
 		grid-template-columns: 1fr auto;

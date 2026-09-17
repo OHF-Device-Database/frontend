@@ -144,6 +144,20 @@ export const withoutTerm = (filters: BrowseFilters): BrowseFilters => ({
 	term: undefined,
 });
 
+/** drops the category selection, e.g. to compute the category facet itself */
+export const withoutCategory = (filters: BrowseFilters): BrowseFilters => ({
+	...filters,
+	category: new Set(),
+	categoryMode: "include",
+});
+
+/** drops the manufacturer selection, e.g. to compute the manufacturer facet itself */
+export const withoutManufacturer = (filters: BrowseFilters): BrowseFilters => ({
+	...filters,
+	manufacturer: new Set(),
+	manufacturerMode: "include",
+});
+
 export const cleared = (filters: BrowseFilters): BrowseFilters => ({
 	...(typeof filters.term !== "undefined" ? { term: filters.term } : {}),
 	category: new Set(),

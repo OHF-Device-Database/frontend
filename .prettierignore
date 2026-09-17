@@ -8,3 +8,4 @@ project.inlang/**
 !project.inlang/settings.json
 messages/*.json
 !messages/en.json
+src/pages/surveys/*.html

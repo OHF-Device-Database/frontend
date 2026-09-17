@@ -1,5 +1,5 @@
 {
-	"$schema": "https:\/\/inlang.com\/schema\/inlang-message-format",
+	"$schema": "https://inlang.com/schema/inlang-message-format",
 	"home_title": "Trouvez le bon appareil pour votre maison connectée",
 	"home_lede": "Des données réelles issues de millions d'installations Home Assistant",
 	"home_search_placeholder": "Rechercher",

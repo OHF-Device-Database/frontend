@@ -1,0 +1,63 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+import { m } from "../paraglide/messages.js";
+import { generic, render } from "../utilities/presentation";
+import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/preset";
+
+Astro.cache.set({ maxAge: 86400 });
+
+// reports themselves are served as partial routes
+const surveys = [
+	{ id: "august-2026", label: "August 2026" },
+	{ id: "june-2026", label: "June 2026" },
+	{ id: "april-2026", label: "April 2026" },
+] as const;
+
+const requestedId = Astro.url.searchParams.get("survey");
+const active =
+	surveys.find((survey) => survey.id === requestedId) ?? surveys[0];
+---
+
+<Layout page="page" title={m.surveys_title()}>
+	<div class="container survey-page">
+		<section class="survey-intro">
+			<h1>{m.surveys_heading()}</h1>
+			<p class="content-lede">{m.surveys_lede()}</p>
+		</section>
+
+		<div class="survey-carousel" id="survey-carousel">
+			<nav class="survey-carousel-bar">
+				<div class="survey-tabs" aria-label={m.surveys_editions_label()}>
+					{
+						surveys.map((survey) => (
+							<a
+								class="survey-tab"
+								href={`?survey=${survey.id}#survey-carousel`}
+								aria-current={survey.id === active.id ? "page" : undefined}
+							>
+								{survey.label}
+							</a>
+						))
+					}
+				</div>
+			</nav>
+
+			<div class="survey-frame-container">
+				<a class="survey-frame-open" href={`/surveys/${active.id}`}>
+					<Fragment
+						set:html={render(
+							generic("open"),
+							PresentationRenderPresetRoleIcon.withSize(16),
+						)}
+					/>
+					{m.surveys_open_report()}
+				</a>
+				<iframe
+					class="survey-frame"
+					title={m.surveys_report_title({ label: active.label })}
+					src={`/surveys/${active.id}`}></iframe>
+			</div>
+		</div>
+	</div>
+</Layout>
