@@ -1,11 +1,11 @@
 ---
-import SearchBox from "../components/SearchBox.astro";
-import Layout from "../layouts/Layout.astro";
+import SearchBox from "../../components/SearchBox.astro";
+import Layout from "../../layouts/Layout.astro";
 
-import { getDeviceCount } from "../io/device";
-import { m } from "../paraglide/messages.js";
-import { getLocale, localizeHref } from "../paraglide/runtime.js";
-import { cachePolicy } from "../utilities/cache";
+import { getDeviceCount } from "../../io/device";
+import { m } from "../../paraglide/messages.js";
+import { getLocale, localizeHref } from "../../paraglide/runtime.js";
+import { cachePolicy } from "../../utilities/cache";
 
 export const prerender = false;
 
