@@ -8,6 +8,8 @@ import {
 	cleared,
 	withCategoryToggled,
 	withManufacturerToggled,
+	withoutCategory,
+	withoutManufacturer,
 } from "../src/types/browse";
 
 vi.mock("astro:env/server", () => ({ API_AUTHORITY: "https://example.com" }));
@@ -154,6 +156,38 @@ describe("modifiers", () => {
 		t.expect(withCategoryToggled(base, "lighting").categoryMode).toBe(
 			"exclude",
 		);
+	});
+
+	test("withoutCategory drops only the category dimension", (t) => {
+		const base = browseFiltersFromSearchParams(
+			new URLSearchParams(
+				"q=hue&category=lighting&categoryMode=exclude&manufacturer=Signify&manufacturerMode=exclude&local=1",
+			),
+		);
+		t.expect(withoutCategory(base)).toEqual({
+			term: "hue",
+			category: new Set(),
+			categoryMode: "include",
+			manufacturer: new Set(["Signify"]),
+			manufacturerMode: "exclude",
+			localOnly: true,
+		});
+	});
+
+	test("withoutManufacturer drops only the manufacturer dimension", (t) => {
+		const base = browseFiltersFromSearchParams(
+			new URLSearchParams(
+				"q=hue&category=lighting&categoryMode=exclude&manufacturer=Signify&manufacturerMode=exclude&local=1",
+			),
+		);
+		t.expect(withoutManufacturer(base)).toEqual({
+			term: "hue",
+			category: new Set(["lighting"]),
+			categoryMode: "exclude",
+			manufacturer: new Set(),
+			manufacturerMode: "include",
+			localOnly: true,
+		});
 	});
 
 	test("cleared drops filters but keeps the term", (t) => {
