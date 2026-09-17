@@ -48,7 +48,6 @@ export default defineConfig({
 		// External stylesheets persist correctly across ClientRouter navigations.
 		inlineStylesheets: "never",
 	},
-	output: "server",
 	env: {
 		schema: {
 			// access: "secret" keeps the value out of the build output; it is read
@@ -66,7 +65,8 @@ export default defineConfig({
 			}),
 			// Preview edition is no-indexed by default. Set NOINDEX=false in the runtime
 			// environment for a real production deploy. Like API_AUTHORITY it is not baked
-			// into the image: every page that consumes it is server-rendered.
+			// into the image: server-rendered responses consume it at request time,
+			// prerendered pages leave indexing to robots.txt (see Layout.astro).
 			NOINDEX: envField.boolean({
 				context: "server",
 				access: "secret",
