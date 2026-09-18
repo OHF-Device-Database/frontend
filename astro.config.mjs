@@ -47,6 +47,9 @@ export default defineConfig({
 	build: {
 		// External stylesheets persist correctly across ClientRouter navigations.
 		inlineStylesheets: "never",
+		// increasing concurrency breaks the prerender middleware, which stores
+		// the locale in a process-wide variable (middleware.ts).
+		concurrency: 1,
 	},
 	env: {
 		schema: {
