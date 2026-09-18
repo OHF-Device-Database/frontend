@@ -47,8 +47,10 @@ export default defineConfig({
 	build: {
 		// External stylesheets persist correctly across ClientRouter navigations.
 		inlineStylesheets: "never",
+		// increasing concurrency breaks the prerender middleware, which stores
+		// the locale in a process-wide variable (middleware.ts).
+		concurrency: 1,
 	},
-	output: "server",
 	env: {
 		schema: {
 			// access: "secret" keeps the value out of the build output; it is read
@@ -66,7 +68,8 @@ export default defineConfig({
 			}),
 			// Preview edition is no-indexed by default. Set NOINDEX=false in the runtime
 			// environment for a real production deploy. Like API_AUTHORITY it is not baked
-			// into the image: every page that consumes it is server-rendered.
+			// into the image: server-rendered responses consume it at request time,
+			// prerendered pages leave indexing to robots.txt (see Layout.astro).
 			NOINDEX: envField.boolean({
 				context: "server",
 				access: "secret",
@@ -81,7 +84,9 @@ export default defineConfig({
 			paraglideVitePlugin({
 				project: "./project.inlang",
 				outdir: "./src/paraglide",
-				strategy: ["url", "baseLocale"],
+				// `globalVariable` is only consulted at build time, where the prerender
+				// middleware stores the route's locale with `setLocale()` (middleware.ts)
+				strategy: ["url", "globalVariable", "baseLocale"],
 				urlPatterns: [
 					{
 						pattern: ":protocol://:domain(.*)::port?/:path(.*)?",

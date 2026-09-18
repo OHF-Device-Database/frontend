@@ -1,11 +1,11 @@
 ---
-import DeviceCard from "../components/DeviceCard.astro";
-import Layout from "../layouts/Layout.astro";
+import DeviceCard from "../../components/DeviceCard.astro";
+import Layout from "../../layouts/Layout.astro";
 
-import { getDevices } from "../io/device";
-import { getDimensions } from "../io/dimension";
-import { m } from "../paraglide/messages.js";
-import { getLocale, localizeHref } from "../paraglide/runtime.js";
+import { getDevices } from "../../io/device";
+import { getDimensions } from "../../io/dimension";
+import { m } from "../../paraglide/messages.js";
+import { getLocale, localizeHref } from "../../paraglide/runtime.js";
 import {
 	browseFiltersCount,
 	browseFiltersFromSearchParams,
@@ -18,16 +18,16 @@ import {
 	withoutCategory,
 	withoutManufacturer,
 	withoutTerm,
-} from "../types/browse";
+} from "../../types/browse";
 import {
 	DeviceCategoryTopLevelId,
 	topLevelCategoryResolver,
-} from "../types/category";
-import { devicePolyMap } from "../types/device";
-import { paginationItems } from "../types/pagination";
-import { cachePolicy } from "../utilities/cache";
-import * as presentation from "../utilities/presentation";
-import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/preset";
+} from "../../types/category";
+import { devicePolyMap } from "../../types/device";
+import { paginationItems } from "../../types/pagination";
+import { cachePolicy } from "../../utilities/cache";
+import * as presentation from "../../utilities/presentation";
+import { PresentationRenderPresetRoleIcon } from "../../utilities/presentation/preset";
 
 export const prerender = false;
 

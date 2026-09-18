@@ -1,9 +1,12 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import Layout from "../../layouts/Layout.astro";
 
-import { m } from "../paraglide/messages.js";
-import { generic, render } from "../utilities/presentation";
-import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/preset";
+import { m } from "../../paraglide/messages.js";
+import { generic, render } from "../../utilities/presentation";
+import { PresentationRenderPresetRoleIcon } from "../../utilities/presentation/preset";
+
+// The active edition comes from `?survey=`, so this page stays server-rendered.
+export const prerender = false;
 
 Astro.cache.set({ maxAge: 86400 });
 

@@ -1,5 +1,5 @@
 ---
-import { CSR_API_AUTHORITY, NOINDEX } from "astro:env/server";
+import { NOINDEX } from "astro:env/server";
 import { ClientRouter } from "astro:transitions";
 
 import Footer from "../components/Footer.astro";
@@ -25,11 +25,21 @@ const { title, page = "page", back } = Astro.props;
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
 		<meta name="generator" content={Astro.generator} />
 		<meta name="theme-color" content="#2a2a27" />
-		{NOINDEX && <meta name="robots" content="noindex, nofollow" />}
+		{
+			/* NOINDEX is a runtime value. A prerendered page would freeze whatever the
+			   build saw, so it carries no robots meta; robots.txt (server-rendered)
+			   remains the crawl gate for preview deploys. */
+			NOINDEX && !Astro.isPrerendered && (
+				<meta name="robots" content="noindex, nofollow" />
+			)
+		}
 
-		<script define:vars={{ CSR_API_AUTHORITY }} is:inline>
-			window.__API_AUTHORITY__ = CSR_API_AUTHORITY;
-		</script>
+		{
+			/* Runtime API authority for client-side fetches, served by
+			   src/pages/config.js.ts so prerendered pages pick it up too. `defer`
+			   keeps it ahead of the island modules without blocking parsing. */
+		}
+		<script src="/config.js" defer is:inline></script>
 
 		<script is:inline>
 			(function () {
