@@ -40,12 +40,13 @@ All commands are run from the root of the project, from a terminal:
 
 ## ⚙️ Configuration
 
-The app renders **server-side** (`prerender = false`) and proxies requests to a device API. It reads one env var:
+The app is a mix of **prerendered** content pages (about, how it works, editorial stance, imprint — one static file per locale, generated under `src/pages/[...locale]/`) and **server-rendered** pages that depend on the device API or on query parameters (home, browse, device detail, surveys, 404, `robots.txt`). It reads these env vars:
 
-| Variable        | Required | Default                 | Description                                                                                         |
-| :-------------- | :------- | :---------------------- | :-------------------------------------------------------------------------------------------------- |
-| `API_AUTHORITY` | No       | `http://localhost:3000` | Base URL of the device API. The app fetches `/api/unstable/derived/devices` from here, server-side. |
-| `NOINDEX`       | No       | `true`                  | Adds `noindex` for preview deploys. Set to `false` for a real production deploy.                    |
+| Variable            | Required | Default                 | Description                                                                                                                 |
+| :------------------ | :------- | :---------------------- | :-------------------------------------------------------------------------------------------------------------------------- |
+| `API_AUTHORITY`     | No       | `http://localhost:3000` | Base URL of the device API. The app fetches `/api/unstable/derived/devices` from here, server-side.                         |
+| `CSR_API_AUTHORITY` | No       | `http://localhost:3000` | Base URL of the device API for client-side fetches (search box, filters). Served to the browser by `/config.js` at runtime. |
+| `NOINDEX`           | No       | `true`                  | Adds `noindex` for preview deploys. Set to `false` for a real production deploy.                                            |
 
 Create a `.env` for local runs (auto-loaded by Astro and `netlify dev`):
 
@@ -88,7 +89,7 @@ docker run -p 4321:4321 \
   device-database-frontend
 ```
 
-**Runtime config.** All app config is runtime-only: the server reads `API_AUTHORITY` and `NOINDEX` from the environment (`-e`), so a single image serves every environment — nothing is baked in at build time. `NOINDEX` defaults to `true` (no indexing) when unset; every page is server-rendered, so a flip takes effect on container restart (plus CDN cache TTL).
+**Runtime config.** All app config is runtime-only: the server reads `API_AUTHORITY`, `CSR_API_AUTHORITY` and `NOINDEX` from the environment (`-e`), so a single image serves every environment — nothing is baked in at build time. `NOINDEX` defaults to `true` (no indexing) when unset; a flip takes effect on container restart (plus CDN cache TTL). Two consequences of prerendering: the client-side API authority is served by the `/config.js` endpoint rather than inlined into the HTML, and prerendered pages carry no `robots` meta tag or `X-Robots-Tag` header (they would freeze the build-time value) — `robots.txt`, which is server-rendered, remains the crawl gate for preview deploys.
 
 The server listens on `HOST=0.0.0.0` and `PORT=4321` (both overridable via env vars). The runtime image ships only the bundled server output — the node build bundles all dependencies into `dist/` (`vite.ssr.noExternal`), so there is no `node_modules` in the final image. One consequence: Astro's sharp-backed `/_image` endpoint is unavailable in the container (the project doesn't use `astro:assets`, so nothing depends on it — revisit if that changes).
 

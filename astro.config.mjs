@@ -44,12 +44,14 @@ const prefixedLocales = [
 
 // https://astro.build/config
 export default defineConfig({
+	// `localizeHref()` emits links without a trailing slash; `/about/` redirects to `/about`.
+	trailingSlash: "never",
 	build: {
 		// External stylesheets persist correctly across ClientRouter navigations.
 		inlineStylesheets: "never",
-		// increasing concurrency breaks the prerender middleware, which stores
-		// the locale in a process-wide variable (middleware.ts).
-		concurrency: 1,
+		// Write prerendered pages as `about.html`, with `about/index.html` Netlify
+		// would redirect every `/about` link to `/about/`.
+		format: "file",
 	},
 	env: {
 		schema: {
@@ -84,9 +86,7 @@ export default defineConfig({
 			paraglideVitePlugin({
 				project: "./project.inlang",
 				outdir: "./src/paraglide",
-				// `globalVariable` is only consulted at build time, where the prerender
-				// middleware stores the route's locale with `setLocale()` (middleware.ts)
-				strategy: ["url", "globalVariable", "baseLocale"],
+				strategy: ["url", "baseLocale"],
 				urlPatterns: [
 					{
 						pattern: ":protocol://:domain(.*)::port?/:path(.*)?",
