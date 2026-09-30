@@ -1,23 +1,23 @@
 ---
-import haLogo from "../../assets/ha-logo.svg?raw";
+import haLogo from "../../../assets/ha-logo.svg?raw";
 
-import Layout from "../../layouts/Layout.astro";
+import Layout from "../../../layouts/Layout.astro";
 
-import { getDevice, getDeviceCount } from "../../io/device";
-import { getDimensions } from "../../io/dimension";
-import { m } from "../../paraglide/messages.js";
-import { getLocale, localizeHref } from "../../paraglide/runtime.js";
-import { topLevelCategoryResolver } from "../../types/category";
-import { deviceMonoMap, devicePolyMap } from "../../types/device";
-import { Unknown } from "../../types/unknown";
-import { cachePolicy } from "../../utilities/cache";
-import * as presentation from "../../utilities/presentation";
+import { getDevice, getDeviceCount } from "../../../io/device";
+import { getDimensions } from "../../../io/dimension";
+import { m } from "../../../paraglide/messages.js";
+import { getLocale, localizeHref } from "../../../paraglide/runtime.js";
+import { topLevelCategoryResolver } from "../../../types/category";
+import { deviceMonoMap, devicePolyMap } from "../../../types/device";
+import { Unknown } from "../../../types/unknown";
+import { cachePolicy } from "../../../utilities/cache";
+import * as presentation from "../../../utilities/presentation";
 import {
 	PresentationRenderPresetRoleGlyph,
 	PresentationRenderPresetRoleIcon,
-} from "../../utilities/presentation/preset";
-import type { IoDevicePoly } from "../../io/device";
-import type { DeviceCategoryTopLevelId } from "../../types/category";
+} from "../../../utilities/presentation/preset";
+import type { IoDevicePoly } from "../../../io/device";
+import type { DeviceCategoryTopLevelId } from "../../../types/category";
 
 export const prerender = false;
 

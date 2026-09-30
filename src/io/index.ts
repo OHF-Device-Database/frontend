@@ -3,18 +3,37 @@ import { z } from "astro/zod";
 import { exactlyOne } from "../types/exactly-one";
 
 const REQUEST_TIMEOUT_MS = 8000;
-let API_AUTHORITY: string;
+let SERVER_API_AUTHORITY: string | undefined;
 if (import.meta.env.SSR) {
-	({ API_AUTHORITY } = await import("astro:env/server"));
-} else {
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any -- defined dynamically in `Layout.astro``
-	API_AUTHORITY = (window as any).__API_AUTHORITY__;
+	({ API_AUTHORITY: SERVER_API_AUTHORITY } = await import("astro:env/server"));
 }
 
-export const ioBaseUrl = (): string =>
-	/^https?:\/\//.test(API_AUTHORITY)
-		? API_AUTHORITY
-		: `https://${API_AUTHORITY}`;
+declare global {
+	interface Window {
+		/** set by `/config.js`, see `src/pages/config.js.ts` */
+		__API_AUTHORITY__?: string;
+	}
+}
+
+// resolved per call rather than at module evaluation, so the island bundle
+// never depends on `/config.js` having run before it was imported
+const apiAuthority = (): string => {
+	const authority = import.meta.env.SSR
+		? SERVER_API_AUTHORITY
+		: window.__API_AUTHORITY__;
+
+	if (typeof authority === "undefined") {
+		throw new Error("API authority is not configured");
+	}
+
+	return authority;
+};
+
+export const ioBaseUrl = (): string => {
+	const authority = apiAuthority();
+
+	return /^https?:\/\//.test(authority) ? authority : `https://${authority}`;
+};
 
 export class IoError extends Error {
 	constructor(
