@@ -87,20 +87,22 @@ export default defineConfig({
 				project: "./project.inlang",
 				outdir: "./src/paraglide",
 				strategy: ["url", "baseLocale"],
+				// `:path*`, not `:path?`: paraglide fills an empty `?` param as `/nl/`,
+				// which `trailingSlash: "never"` rejects; `*` drops it, giving `/nl`.
 				urlPatterns: [
 					{
-						pattern: ":protocol://:domain(.*)::port?/:path(.*)?",
+						pattern: ":protocol://:domain(.*)::port?/:path(.*)*",
 						localized: [
 							...prefixedLocales.map(
 								(locale) =>
 									/** @type {[string, string]} */ ([
 										locale,
-										`:protocol://:domain(.*)::port?/${locale}/:path(.*)?`,
+										`:protocol://:domain(.*)::port?/${locale}/:path(.*)*`,
 									]),
 							),
 							/** @type {[string, string]} */ ([
 								"en",
-								":protocol://:domain(.*)::port?/:path(.*)?",
+								":protocol://:domain(.*)::port?/:path(.*)*",
 							]),
 						],
 					},
