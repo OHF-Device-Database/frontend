@@ -1,4 +1,9 @@
 import { getGlobalDispatcher, interceptors, setGlobalDispatcher } from "undici";
 
-// node.js adapter caching http fetch setup
-setGlobalDispatcher(getGlobalDispatcher().compose(interceptors.cache({})));
+// node.js adapter http fetch setup: cache responses, fold concurrent identical requests into one
+setGlobalDispatcher(
+	getGlobalDispatcher().compose(
+		interceptors.deduplicate(),
+		interceptors.cache({}),
+	),
+);
