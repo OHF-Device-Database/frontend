@@ -23,7 +23,7 @@ const languages = LANGUAGES.map((locale) => ({
 	locale,
 	native: nameIn(locale, locale),
 	translated: nameIn(locale, current),
-	href: localizeHref(Astro.url.pathname, { locale }),
+	href: localizeHref(Astro.url.pathname + Astro.url.search, { locale }),
 })).toSorted((a, b) => a.native.localeCompare(b.native, current));
 
 const icon = PresentationRenderPresetRoleIcon.withSize(16);
@@ -34,6 +34,8 @@ const icon = PresentationRenderPresetRoleIcon.withSize(16);
 		type="button"
 		class="langpicker-trigger"
 		popovertarget="langpicker-menu"
+		aria-label={`${m.nav_language_label()}: ${nameIn(current, current)}`}
+		translate="no"
 	>
 		<Fragment set:html={render(generic("languages"), icon)} />
 		<span class="langpicker-long">{nameIn(current, current)}</span>
