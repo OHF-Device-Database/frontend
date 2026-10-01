@@ -3,9 +3,9 @@ import Layout from "../layouts/Layout.astro";
 
 import { localizeHref } from "../paraglide/runtime.js";
 
-// Like every other page: the locale comes from the request, so this cannot be
-// prerendered. Prerendering it would resolve the locale at build time and send
-// a base-locale page to everyone, whatever prefix they asked for.
+// Astro only serves a 404 route from the root of src/pages, so this page has
+// no locale segment. The locale comes from the request URL instead, which is
+// why it cannot be prerendered: a static file would be base-locale for everyone.
 export const prerender = false;
 ---
 

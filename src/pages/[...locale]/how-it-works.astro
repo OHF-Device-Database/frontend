@@ -1,13 +1,12 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import Layout from "../../layouts/Layout.astro";
 
-import { m } from "../paraglide/messages.js";
-import { generic, render } from "../utilities/presentation";
-import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/preset";
+import { m } from "../../paraglide/messages.js";
+import { localeStaticPaths } from "../../utilities/locale";
+import { generic, render } from "../../utilities/presentation";
+import { PresentationRenderPresetRoleIcon } from "../../utilities/presentation/preset";
 
-export const prerender = false;
-
-Astro.cache.set({ maxAge: 86400 });
+export const getStaticPaths = localeStaticPaths;
 
 const ext = render(
 	generic("open"),

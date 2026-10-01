@@ -1,11 +1,10 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import Layout from "../../layouts/Layout.astro";
 
-import { m } from "../paraglide/messages.js";
+import { m } from "../../paraglide/messages.js";
+import { localeStaticPaths } from "../../utilities/locale";
 
-export const prerender = false;
-
-Astro.cache.set({ maxAge: 86400 });
+export const getStaticPaths = localeStaticPaths;
 ---
 
 <Layout page="page" title={m.editorial_title()}>
