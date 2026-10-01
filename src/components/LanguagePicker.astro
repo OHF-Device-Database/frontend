@@ -1,0 +1,82 @@
+---
+import { m } from "../paraglide/messages.js";
+import { getLocale, localizeHref } from "../paraglide/runtime.js";
+import { generic, render } from "../utilities/presentation";
+import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/preset";
+import type { Locale } from "../paraglide/runtime.js";
+
+// handpicked while most locales have fewer translations, widen as coverage grows
+const LANGUAGES = ["de", "en", "es", "nl", "sv"] as const satisfies Locale[];
+
+const TRANSLATE_URL =
+	"https://github.com/OHF-Device-Database/frontend/tree/main/messages";
+
+const current = getLocale();
+const nameIn = (locale: Locale, displayLocale: Locale) => {
+	const name = new Intl.DisplayNames([displayLocale], { type: "language" }).of(
+		locale,
+	)!;
+	return name.charAt(0).toLocaleUpperCase(displayLocale) + name.slice(1);
+};
+
+const languages = LANGUAGES.map((locale) => ({
+	locale,
+	native: nameIn(locale, locale),
+	translated: nameIn(locale, current),
+	href: localizeHref(Astro.url.pathname, { locale }),
+})).toSorted((a, b) => a.native.localeCompare(b.native, current));
+
+const icon = PresentationRenderPresetRoleIcon.withSize(16);
+---
+
+<div class="langpicker">
+	<button
+		type="button"
+		class="langpicker-trigger"
+		popovertarget="langpicker-menu"
+	>
+		<Fragment set:html={render(generic("languages"), icon)} />
+		<span class="langpicker-long">{nameIn(current, current)}</span>
+		<span class="langpicker-short">{current.toUpperCase()}</span>
+		<Fragment set:html={render(generic("chevronDown"), icon)} />
+	</button>
+	<nav
+		id="langpicker-menu"
+		class="langpicker-menu"
+		popover
+		aria-label={m.nav_language_label()}
+	>
+		<ul>
+			{
+				languages.map(({ locale, native, translated, href }) => (
+					<li>
+						<a
+							href={href}
+							hreflang={locale}
+							aria-current={locale === current ? "true" : undefined}
+						>
+							<span class="langpicker-text">
+								<span lang={locale}>{native}</span>
+								{locale !== current && native !== translated && (
+									<small>{translated}</small>
+								)}
+							</span>
+							{locale === current && (
+								<Fragment set:html={render(generic("check"), icon)} />
+							)}
+						</a>
+					</li>
+				))
+			}
+			<li class="langpicker-translate">
+				<a href={TRANSLATE_URL} target="_blank" rel="noopener noreferrer">
+					<span class="langpicker-text">
+						<span>{m.nav_language_translate()}</span>
+						<small>{m.nav_language_translate_hint()}</small>
+					</span>
+					<Fragment set:html={render(generic("link"), icon)} />
+				</a>
+			</li>
+		</ul>
+	</nav>
+</div>

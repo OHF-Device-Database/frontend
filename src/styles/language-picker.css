@@ -1,0 +1,98 @@
+.langpicker-trigger {
+	anchor-name: --langpicker;
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-2);
+	padding: 6px 10px;
+	border: 1px solid var(--border-strong);
+	border-radius: var(--radius-4);
+	background: transparent;
+	color: var(--fg);
+	font: var(--fw-medium) var(--fs-14) / 1 var(--font-sans);
+	white-space: nowrap;
+	cursor: pointer;
+	transition: var(--transition-fast);
+}
+.langpicker-trigger:hover {
+	border-color: var(--fg);
+}
+.langpicker-trigger:focus-visible {
+	outline: 0;
+	box-shadow: var(--ring-focus);
+}
+.langpicker-short {
+	display: none;
+}
+
+.langpicker-menu {
+	position-anchor: --langpicker;
+	position-area: bottom span-left;
+	position-try-fallbacks: flip-inline;
+	inset: auto;
+	margin: var(--space-1) 0 0;
+	width: max-content;
+	min-width: 220px;
+	max-width: calc(100vw - 2 * var(--space-4));
+	max-height: min(420px, 70vh);
+	overflow-y: auto;
+	padding: var(--space-1);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-5);
+	background: var(--surface-overlay);
+	color: var(--fg);
+	box-shadow: var(--shadow-2);
+}
+@supports not (position-area: bottom) {
+	.langpicker-menu {
+		inset: var(--nav-h) var(--space-4) auto auto;
+	}
+}
+.langpicker-menu ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.langpicker-menu a {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--space-4);
+	padding: var(--space-2) var(--space-3);
+	border-radius: var(--radius-4);
+	color: inherit;
+	font-size: var(--fs-14);
+	text-decoration: none;
+}
+.langpicker-menu a:hover,
+.langpicker-menu a:focus-visible {
+	outline: 0;
+	background: var(--surface-tint-mid);
+}
+.langpicker-menu a[aria-current="true"] {
+	font-weight: var(--fw-semibold);
+}
+.langpicker-text {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+.langpicker-text small {
+	color: var(--fg-muted);
+	font-size: var(--fs-12);
+	font-weight: var(--fw-regular);
+}
+.langpicker-translate {
+	margin-top: var(--space-1);
+	padding-top: var(--space-1);
+	border-top: 1px solid var(--border);
+}
+
+@media (max-width: 899px) {
+	.langpicker-long {
+		display: none;
+	}
+	.langpicker-short {
+		display: inline;
+	}
+}
