@@ -66,8 +66,11 @@
 }
 .langpicker-menu a:hover,
 .langpicker-menu a:focus-visible {
-	outline: 0;
 	background: var(--surface-tint-mid);
+}
+.langpicker-menu a:focus-visible {
+	outline: 0;
+	box-shadow: var(--ring-focus);
 }
 .langpicker-menu a[aria-current="true"] {
 	font-weight: var(--fw-semibold);
