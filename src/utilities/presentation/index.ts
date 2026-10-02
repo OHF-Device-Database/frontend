@@ -14,8 +14,10 @@ import {
 	Droplets,
 	ExternalLink,
 	Funnel,
+	Languages,
 	LayoutGrid,
 	Lightbulb,
+	Link,
 	List,
 	Lock,
 	PawPrint,
@@ -160,6 +162,8 @@ const PRESENTATION_GENERIC = {
 	chevronL: renderable(ChevronLeft),
 	chevronR: renderable(ChevronRight),
 	chevronDown: renderable(ChevronDown),
+	languages: renderable(Languages),
+	link: renderable(Link),
 } as const;
 
 export const device = {
