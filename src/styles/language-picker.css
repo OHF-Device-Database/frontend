@@ -39,7 +39,7 @@
 	padding: var(--space-1);
 	border: 1px solid var(--border);
 	border-radius: var(--radius-5);
-	background: var(--surface-overlay);
+	background: var(--surface);
 	color: var(--fg);
 	box-shadow: var(--shadow-2);
 }
