@@ -1,4 +1,5 @@
 .appnav {
+	--logo-h: 32px;
 	position: sticky;
 	top: 0;
 	z-index: 20;
@@ -14,20 +15,22 @@
 	height: 100%;
 	display: grid;
 	grid-template-columns: minmax(180px, 260px) minmax(0, 1fr) minmax(0, 1fr);
-	align-items: center;
+	align-content: center;
+	align-items: end;
 	gap: var(--space-5);
 }
 .appnav-left {
 	display: flex;
-	justify-content: flex-start;
-	align-items: center;
-	gap: 0;
-	min-height: 32px;
+	flex-direction: column;
+	align-items: flex-start;
 }
 .appnav-right {
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
+	gap: var(--space-3);
+	/* Logo height, so the picker centers on the logo. */
+	min-height: var(--logo-h);
 }
 .appnav .searchbox-header {
 	justify-self: center;
@@ -53,36 +56,29 @@
 }
 .brand-logo {
 	display: block;
-	height: 32px;
+	height: var(--logo-h);
 	width: auto;
 	color: var(--fg);
 }
-.preview-badge {
-	display: none;
+
+.preview-label,
+.preview-label:visited,
+.preview-label:hover {
+	color: var(--fg-muted);
+}
+.preview-label {
+	display: inline-flex;
 	align-items: center;
-	padding: 7px 16px;
-	border: 1px solid var(--fg);
-	border-radius: var(--radius-pill);
-	background: var(--fg);
-	font-family: var(--font-sans);
-	font-size: var(--fs-14);
-	font-weight: var(--fw-semibold);
+	gap: var(--space-1);
+	font-size: var(--fs-12);
+	font-weight: var(--fw-bold);
 	line-height: 1;
+	text-transform: uppercase;
 	white-space: nowrap;
 	text-decoration: none;
-	transition: opacity 0.15s ease;
 }
-html[data-preview-banner="off"] .preview-badge {
-	display: inline-flex;
-}
-.preview-badge,
-.preview-badge:visited,
-.preview-badge:hover {
-	color: var(--fg-on-primary);
-}
-.preview-badge:hover {
-	opacity: 0.85;
-	text-decoration: none;
+.preview-label:hover {
+	text-decoration: underline;
 }
 .preview-banner {
 	background: var(--fg);
@@ -131,15 +127,19 @@ html[data-preview-banner="off"] .preview-banner {
 }
 @media (max-width: 899px) {
 	:root {
-		--nav-h: 104px;
+		/* Tallest case: label + logo + search */
+		--nav-h: 116px;
+	}
+	.appnav {
+		/* Size to content so the home page isn't left with empty space */
+		height: auto;
 	}
 	.appnav-inner {
 		grid-template-columns: 1fr auto;
 		grid-template-areas:
 			"logo badge"
 			"search search";
-		align-items: center;
-		gap: var(--space-3);
+		gap: 0 var(--space-3);
 		/* Only add vertical room — keep .container's left/right padding so the logo and
        search aren't flush against the screen edges. */
 		padding-top: var(--space-3);
@@ -153,6 +153,7 @@ html[data-preview-banner="off"] .preview-banner {
 	}
 	.appnav-inner > device-search {
 		grid-area: search;
+		margin-top: var(--space-3);
 	}
 	.appnav-search-empty {
 		display: none;

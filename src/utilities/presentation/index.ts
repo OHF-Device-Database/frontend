@@ -14,8 +14,10 @@ import {
 	Droplets,
 	ExternalLink,
 	Funnel,
+	Languages,
 	LayoutGrid,
 	Lightbulb,
+	Link,
 	List,
 	Lock,
 	PawPrint,
@@ -29,6 +31,7 @@ import {
 	Sprout,
 	Thermometer,
 	ToggleRight,
+	TriangleAlert,
 	Users,
 	Waves,
 	X,
@@ -160,6 +163,9 @@ const PRESENTATION_GENERIC = {
 	chevronL: renderable(ChevronLeft),
 	chevronR: renderable(ChevronRight),
 	chevronDown: renderable(ChevronDown),
+	languages: renderable(Languages),
+	link: renderable(Link),
+	warning: renderable(TriangleAlert),
 } as const;
 
 export const device = {

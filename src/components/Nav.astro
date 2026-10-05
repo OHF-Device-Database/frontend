@@ -1,4 +1,5 @@
 ---
+import LanguagePicker from "./LanguagePicker.astro";
 import SearchBox from "./SearchBox.astro";
 
 import { m } from "../paraglide/messages.js";
@@ -43,6 +44,20 @@ const showSearch = page !== "home";
 	<div class="container appnav-inner">
 		<div class="appnav-left">
 			<a
+				class="preview-label"
+				href="https://github.com/OHF-Device-Database"
+				target="_blank"
+				rel="noopener noreferrer"
+			>
+				<Fragment
+					set:html={render(
+						generic("warning"),
+						PresentationRenderPresetRoleIcon.withSize(12),
+					)}
+				/>
+				{m.nav_preview_badge()}
+			</a>
+			<a
 				href={localizeHref("/")}
 				class="brand"
 				aria-label={m.nav_brand_home()}
@@ -57,14 +72,7 @@ const showSearch = page !== "home";
 			)
 		}
 		<div class="appnav-right">
-			<a
-				class="preview-badge"
-				href="https://github.com/OHF-Device-Database"
-				target="_blank"
-				rel="noopener noreferrer"
-			>
-				<span>{m.nav_preview_badge()}</span>
-			</a>
+			<LanguagePicker />
 		</div>
 	</div>
 </header>
