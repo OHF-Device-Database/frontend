@@ -121,14 +121,19 @@ html[data-preview-banner="off"] .preview-banner {
 }
 @media (max-width: 899px) {
 	:root {
-		--nav-h: 104px;
+		/* Tallest case: label + logo + search */
+		--nav-h: 116px;
+	}
+	.appnav {
+		/* Size to content so the home page isn't left with empty space */
+		height: auto;
 	}
 	.appnav-inner {
 		grid-template-columns: 1fr auto;
 		grid-template-areas:
 			"logo badge"
 			"search search";
-		gap: var(--space-3);
+		gap: 0 var(--space-3);
 		/* Only add vertical room — keep .container's left/right padding so the logo and
        search aren't flush against the screen edges. */
 		padding-top: var(--space-3);
@@ -142,6 +147,7 @@ html[data-preview-banner="off"] .preview-banner {
 	}
 	.appnav-inner > device-search {
 		grid-area: search;
+		margin-top: var(--space-3);
 	}
 	.appnav-search-empty {
 		display: none;
