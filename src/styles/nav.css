@@ -62,8 +62,14 @@
 }
 
 .preview-label,
-.preview-label:visited {
-	color: var(--preview-label);
+.preview-label:visited,
+.preview-label:hover {
+	color: var(--fg-muted);
+}
+.preview-label {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-1);
 	font-size: var(--fs-12);
 	font-weight: var(--fw-bold);
 	line-height: 1;

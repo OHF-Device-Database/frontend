@@ -31,6 +31,7 @@ import {
 	Sprout,
 	Thermometer,
 	ToggleRight,
+	TriangleAlert,
 	Users,
 	Waves,
 	X,
@@ -164,6 +165,7 @@ const PRESENTATION_GENERIC = {
 	chevronDown: renderable(ChevronDown),
 	languages: renderable(Languages),
 	link: renderable(Link),
+	warning: renderable(TriangleAlert),
 } as const;
 
 export const device = {

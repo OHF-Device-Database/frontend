@@ -47,8 +47,16 @@ const showSearch = page !== "home";
 				class="preview-label"
 				href="https://github.com/OHF-Device-Database"
 				target="_blank"
-				rel="noopener noreferrer">{m.nav_preview_badge()}</a
+				rel="noopener noreferrer"
 			>
+				<Fragment
+					set:html={render(
+						generic("warning"),
+						PresentationRenderPresetRoleIcon.withSize(12),
+					)}
+				/>
+				{m.nav_preview_badge()}
+			</a>
 			<a
 				href={localizeHref("/")}
 				class="brand"
