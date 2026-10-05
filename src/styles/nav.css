@@ -1,4 +1,5 @@
 .appnav {
+	--logo-h: 32px;
 	position: sticky;
 	top: 0;
 	z-index: 20;
@@ -14,22 +15,22 @@
 	height: 100%;
 	display: grid;
 	grid-template-columns: minmax(180px, 260px) minmax(0, 1fr) minmax(0, 1fr);
-	align-items: center;
+	align-content: center;
+	align-items: end;
 	gap: var(--space-5);
 }
 .appnav-left {
 	display: flex;
-	justify-content: flex-start;
-	align-items: center;
-	gap: 0;
-	min-width: 0;
-	min-height: 32px;
+	flex-direction: column;
+	align-items: flex-start;
 }
 .appnav-right {
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
 	gap: var(--space-3);
+	/* Logo height, so the picker centers on the logo. */
+	min-height: var(--logo-h);
 }
 .appnav .searchbox-header {
 	justify-self: center;
@@ -39,7 +40,6 @@
 .brand {
 	display: inline-flex;
 	align-items: center;
-	min-width: 0;
 	gap: var(--space-3);
 	color: var(--fg);
 	font-family: var(--font-display);
@@ -56,39 +56,23 @@
 }
 .brand-logo {
 	display: block;
-	height: 32px;
+	height: var(--logo-h);
 	width: auto;
-	/* Shrinks on narrow phones so the nav-right items fit next to it. */
-	min-width: 0;
-	max-width: 100%;
 	color: var(--fg);
 }
-.preview-badge {
-	display: none;
-	align-items: center;
-	padding: 7px 16px;
-	border: 1px solid var(--fg);
-	border-radius: var(--radius-pill);
-	background: var(--fg);
-	font-family: var(--font-sans);
-	font-size: var(--fs-14);
-	font-weight: var(--fw-semibold);
+
+.preview-label {
+	color: var(--preview-label);
+	font-size: var(--fs-12);
+	font-weight: var(--fw-bold);
 	line-height: 1;
+	text-transform: uppercase;
 	white-space: nowrap;
 	text-decoration: none;
-	transition: opacity 0.15s ease;
 }
-html[data-preview-banner="off"] .preview-badge {
-	display: inline-flex;
-}
-.preview-badge,
-.preview-badge:visited,
-.preview-badge:hover {
-	color: var(--fg-on-primary);
-}
-.preview-badge:hover {
-	opacity: 0.85;
-	text-decoration: none;
+.preview-label:hover {
+	color: var(--preview-label);
+	text-decoration: underline;
 }
 .preview-banner {
 	background: var(--fg);
@@ -144,7 +128,6 @@ html[data-preview-banner="off"] .preview-banner {
 		grid-template-areas:
 			"logo badge"
 			"search search";
-		align-items: center;
 		gap: var(--space-3);
 		/* Only add vertical room — keep .container's left/right padding so the logo and
        search aren't flush against the screen edges. */

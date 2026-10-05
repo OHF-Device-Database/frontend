@@ -44,6 +44,12 @@ const showSearch = page !== "home";
 	<div class="container appnav-inner">
 		<div class="appnav-left">
 			<a
+				class="preview-label"
+				href="https://github.com/OHF-Device-Database"
+				target="_blank"
+				rel="noopener noreferrer">{m.nav_preview_badge()}</a
+			>
+			<a
 				href={localizeHref("/")}
 				class="brand"
 				aria-label={m.nav_brand_home()}
@@ -59,14 +65,6 @@ const showSearch = page !== "home";
 		}
 		<div class="appnav-right">
 			<LanguagePicker />
-			<a
-				class="preview-badge"
-				href="https://github.com/OHF-Device-Database"
-				target="_blank"
-				rel="noopener noreferrer"
-			>
-				<span>{m.nav_preview_badge()}</span>
-			</a>
 		</div>
 	</div>
 </header>
