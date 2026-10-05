@@ -61,7 +61,8 @@
 	color: var(--fg);
 }
 
-.preview-label {
+.preview-label,
+.preview-label:visited {
 	color: var(--preview-label);
 	font-size: var(--fs-12);
 	font-weight: var(--fw-bold);
@@ -71,7 +72,6 @@
 	text-decoration: none;
 }
 .preview-label:hover {
-	color: var(--preview-label);
 	text-decoration: underline;
 }
 .preview-banner {
