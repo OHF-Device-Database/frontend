@@ -2,6 +2,7 @@
 import byOhfDark from "../../assets/by-ohf-dark.svg";
 import byOhfLight from "../../assets/by-ohf-light.svg";
 
+import Message from "../../components/Message.astro";
 import Layout from "../../layouts/Layout.astro";
 
 import { m } from "../../paraglide/messages.js";
@@ -18,9 +19,15 @@ export const getStaticPaths = localeStaticPaths;
 			<p class="content-lede">{m.about_lede()}</p>
 			<p class="content-prose">{m.about_body()}</p>
 			<p class="content-prose">
-				{m.about_read_prefix()}
-				<a href={localizeHref("/how-it-works")}>{m.about_read_link()}</a>
-				{m.about_read_suffix()}
+				<Message message={m.about_read}>
+					<fragment slot="link">
+						{
+							(children: unknown[]) => (
+								<a href={localizeHref("/how-it-works")}>{children}</a>
+							)
+						}
+					</fragment>
+				</Message>
 			</p>
 
 			<a
