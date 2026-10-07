@@ -18,8 +18,8 @@ import { guard } from "../types/guard.js";
 import { QUICK_FILTERS, QuickFilterId } from "../types/quick-filter.js";
 import { Unknown } from "../types/unknown.js";
 import { defineElementOnce } from "../utilities/define-element.js";
+import { flatten } from "../utilities/flatten.js";
 import { isAbortError } from "../utilities/is-abort-error.js";
-import { renderMessage } from "../utilities/message.js";
 import {
 	device,
 	generic,
@@ -552,7 +552,7 @@ export class DeviceSearch extends LitElement {
 													${unsafeHTML(render(generic("arrow"), PresentationRenderPresetRoleIcon.withSize(16)))}
 
 													<span class="searchbox-more-text"
-														>${renderMessage(m.search_popover_browse_more_devices, { count: section.total - limits.device }, { count: (children) => html`<span class=${section.stale ? "redacted" : ""}>${children}</span>` })}</span
+														>${unsafeHTML(m.search_popover_browse_more_devices({ count: flatten(html`<span class=${section.stale ? "redacted" : ""}>${section.total - limits.device}</span>`) }))}</span
 													>
 												</button>`
 											: nothing
