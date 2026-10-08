@@ -589,7 +589,9 @@ export class DeviceSearch extends LitElement {
 					sections.every(
 						(s) => typeof s.items !== "undefined" && s.items.length === 0,
 					)
-						? html`<p>${m.search_popover_no_matches()}</p>`
+						? html`<p class="searchbox-popover-empty">
+								${m.search_popover_no_matches()}
+							</p>`
 						: this._sections.map((s) => this._renderSection(s))
 				}
 			</div>

@@ -93,6 +93,13 @@
 	flex-direction: column;
 }
 
+.searchbox-popover-empty {
+	margin: 0;
+	padding: var(--space-3) var(--space-5);
+	color: var(--fg-muted);
+	font-size: var(--fs-14);
+}
+
 .searchbox-popover-section {
 	display: flex;
 	flex-direction: column;
