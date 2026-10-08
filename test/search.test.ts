@@ -57,6 +57,16 @@ describe("rank", () => {
 		expect(names("x")[0]).toBe("Xiaomi");
 	});
 
+	it("prefers matches at the start of a word over count", () => {
+		const labels = [
+			{ label: "Networking", count: 138 },
+			{ label: "Kitchen and household", count: 3 },
+		];
+		expect(
+			rank(labels, "ki", ({ label }) => label).map(({ label }) => label),
+		).toEqual(["Kitchen and household", "Networking"]);
+	});
+
 	it("drops items matching no word", () => {
 		expect(names("zzzz")).toEqual([]);
 	});

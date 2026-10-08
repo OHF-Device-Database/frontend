@@ -15,7 +15,8 @@ const tokens = (term: string): string[] =>
 
 /**
  * fuzzy, word-order independent filtering. ranks by amount of matched term
- * words, then by match quality, then by count. an empty term keeps every item
+ * words, then by amount of term words starting a word, then by match quality,
+ * then by count. an empty term keeps every item
  */
 export const rank = <T extends { count?: number | undefined }>(
 	items: readonly T[],
@@ -24,6 +25,15 @@ export const rank = <T extends { count?: number | undefined }>(
 ): T[] => {
 	const byCount = (a: T, b: T) => (b.count ?? 0) - (a.count ?? 0);
 	const query = tokens(term);
+	// amount of term words starting a word of the label.
+	const starts = (item: T) => {
+		const words = label(item)
+			.toLowerCase()
+			.split(/[^\p{L}\p{N}]+/u);
+		return query.filter((token) =>
+			words.some((word) => word.startsWith(token.toLowerCase())),
+		).length;
+	};
 	if (query.length === 0) {
 		return items.toSorted(byCount);
 	}
@@ -31,11 +41,13 @@ export const rank = <T extends { count?: number | undefined }>(
 	return (
 		new Fuse(items, { ...OPTIONS, keys: [{ name: "label", getFn: label }] })
 			.search({ $or: query.map((token) => ({ label: token })) })
-			// ponytail: scores bucketed to tenths so that count decides between
+			.map((result) => ({ ...result, starts: starts(result.item) }))
+			// scores bucketed to tenths so that count decides between
 			// similarly good matches, a weighted blend if this ranks poorly
 			.toSorted(
 				(a, b) =>
 					(b.matches?.length ?? 0) - (a.matches?.length ?? 0) ||
+					b.starts - a.starts ||
 					Math.round((a.score ?? 0) * 10) - Math.round((b.score ?? 0) * 10) ||
 					byCount(a.item, b.item),
 			)
