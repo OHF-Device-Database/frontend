@@ -8,6 +8,7 @@ import { getLocale } from "../paraglide/runtime.js";
 import { defineElementOnce } from "../utilities/define-element.js";
 import * as presentation from "../utilities/presentation";
 import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/preset.js";
+import { highlight, rank } from "../utilities/search.js";
 
 export type FilterModalMode = "include" | "exclude";
 
@@ -17,7 +18,36 @@ export interface FilterModalOption {
 	count?: number | undefined;
 }
 
-type GroupingConfig = "alphabet" | "none";
+export type GroupingConfig = "alphabet" | "none";
+
+export const groupOptions = (
+	options: FilterModalOption[],
+	query: string,
+	groupBy: GroupingConfig,
+): (readonly [string, FilterModalOption[]])[] => {
+	const matched = rank(options, query, ({ label }) => label);
+	if (groupBy === "none") {
+		return [["", matched] as const];
+	}
+
+	const groups = new Map<string, FilterModalOption[]>();
+	const ungrouped: FilterModalOption[] = [];
+	for (const option of matched) {
+		const letter = option.label.at(0)?.normalize().trim().toUpperCase();
+		if (typeof letter === "undefined" || !/[A-Z]/.test(letter)) {
+			ungrouped.push(option);
+			continue;
+		}
+		const list = groups.get(letter) ?? [];
+		list.push(option);
+		groups.set(letter, list);
+	}
+
+	return [
+		...[...groups.entries()].sort(([a], [b]) => a.localeCompare(b)),
+		...(ungrouped.length > 0 ? [["#", ungrouped] as const] : []),
+	];
+};
 
 export class FilterModal extends LitElement {
 	@property() dim = "";
@@ -121,44 +151,6 @@ export class FilterModal extends LitElement {
 		this._draftSelected = next;
 	}
 
-	private _groups(): (readonly [string, FilterModalOption[]])[] {
-		const term = this._query.trim().toLowerCase();
-		const matched =
-			term.length > 0
-				? this.options.filter((option) =>
-						option.label.toLowerCase().includes(term),
-					)
-				: this.options;
-		if (!this.lettergroups) {
-			return [["", matched] as const];
-		}
-
-		if (this._groupBy === "none") {
-			const sorted = [...matched].sort(
-				(a, b) => (b.count ?? 0) - (a.count ?? 0),
-			);
-			return [["", sorted] as const];
-		}
-
-		const groups = new Map<string, FilterModalOption[]>();
-		const ungrouped: FilterModalOption[] = [];
-		for (const option of matched) {
-			const letter = option.label.at(0)?.normalize().trim().toUpperCase();
-			if (typeof letter === "undefined" || !/[A-Z]/.test(letter)) {
-				ungrouped.push(option);
-				continue;
-			}
-			const list = groups.get(letter) ?? [];
-			list.push(option);
-			groups.set(letter, list);
-		}
-
-		return [
-			...[...groups.entries()].sort(([a], [b]) => a.localeCompare(b)),
-			...(ungrouped.length > 0 ? [["#", ungrouped] as const] : []),
-		];
-	}
-
 	private _renderModeButton(mode: FilterModalMode, text: string) {
 		return html`
 			<button
@@ -176,7 +168,11 @@ export class FilterModal extends LitElement {
 		if (!this._open) {
 			return nothing;
 		}
-		const matchedGroups = this._groups();
+		const matchedGroups = groupOptions(
+			this.options,
+			this._query,
+			this.lettergroups ? this._groupBy : "none",
+		);
 		const matchedCount = matchedGroups.reduce(
 			(sum, [, options]) => sum + options.length,
 			0,
@@ -269,7 +265,7 @@ export class FilterModal extends LitElement {
 																	@change=${() => this._draftToggle(option.id)}
 																/>
 																<span class="filter-row-text"
-																	>${option.label}</span
+																	>${highlight(option.label, this._query)}</span
 																>
 																${
 																	typeof option.count !== "undefined"
