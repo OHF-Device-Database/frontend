@@ -100,15 +100,23 @@ export const extractCategories = <Id extends string>(
 	};
 };
 
-/** wraps the segments of `text` matched by any term word in `<mark>` */
+/**
+ * wraps one segment per term word in `<mark>`: its first occurrence when typed
+ * as is, else the longest segment of the typo tolerant match
+ */
 export const highlight = (
 	text: string,
 	term: string,
 ): (string | TemplateResult)[] => {
 	const ranges = tokens(term)
-		.flatMap((token) => {
+		.flatMap((token): (readonly [number, number])[] => {
+			const at = text.toLowerCase().indexOf(token.toLowerCase());
+			if (at !== -1) {
+				return [[at, at + token.length - 1]];
+			}
 			const { isMatch, indices } = Fuse.match(token, text, OPTIONS);
-			return isMatch ? (indices ?? []) : [];
+			const longest = indices?.toSorted(([a, b], [c, d]) => d - c - (b - a))[0];
+			return isMatch && typeof longest !== "undefined" ? [longest] : [];
 		})
 		.toSorted(([a], [b]) => a - b);
 

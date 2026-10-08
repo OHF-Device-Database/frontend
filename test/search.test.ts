@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { extractCategories, rank } from "../src/utilities/search";
+import { extractCategories, highlight, rank } from "../src/utilities/search";
 
 const manufacturers = [
 	{ name: "Samsung Electronics", count: 1510 },
@@ -111,5 +111,30 @@ describe("extractCategories", () => {
 			category: [],
 		});
 		expect(extract("tp-link")).toEqual({ term: "tp-link", category: [] });
+	});
+});
+
+describe("highlight", () => {
+	const marked = (text: string, term: string) =>
+		highlight(text, term)
+			.map((part) =>
+				typeof part === "string" ? part : `[${String(part.values[0])}]`,
+			)
+			.join("");
+
+	it("marks one segment per term word", () => {
+		expect(marked("Siemens", "e")).toBe("Si[e]mens");
+		expect(marked("ecobee", "e")).toBe("[e]cobee");
+		expect(marked("Kitchen and household", "ki")).toBe(
+			"[Ki]tchen and household",
+		);
+		expect(marked("Xiaomi Aqara", "aqara xiaomi")).toBe("[Xiaomi] [Aqara]");
+	});
+
+	it("marks the closest segment for typos and accents", () => {
+		expect(marked("Samsung Electronics", "samsnug")).toBe(
+			"[Samsung] Electronics",
+		);
+		expect(marked("BSH Hausgeräte", "hausgerate")).toBe("BSH [Hausgeräte]");
 	});
 });
