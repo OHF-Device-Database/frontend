@@ -35,7 +35,6 @@ const analyticsNoticeParts = m
 <footer class={"appfoot" + (flush ? " appfoot-flush" : "")}>
 	<div class="container appfoot-row">
 		<ul class="appfoot-links">
-			<li><a href={localizeHref("/browse")}>{m.footer_browse()}</a></li>
 			<li>
 				<a href={localizeHref("/how-it-works")}>{m.footer_how_it_works()}</a>
 			</li>
@@ -46,18 +45,18 @@ const analyticsNoticeParts = m
 			</li>
 			<li><a href={localizeHref("/about")}>{m.footer_about()}</a></li>
 			<li><a href={localizeHref("/surveys")}>{m.surveys_title()}</a></li>
-			<li>
-				<a href="https://www.openhomefoundation.org/">{m.footer_ohf()}</a>
-			</li>
 		</ul>
 		<span class="appfoot-legal-inline">
 			<span class="appfoot-ohf-logo" aria-hidden="true">
 				<span class="ohf-logo-light" set:html={ohfLogoLight} />
 				<span class="ohf-logo-dark" set:html={ohfLogoDark} />
 			</span>
-			{m.footer_copyright({ year: "2026" })} · <a
-				href={localizeHref("/imprint")}>{m.footer_imprint()}</a
-			>
+			<span>
+				<a
+					href="https://www.openhomefoundation.org/"
+					set:text={m.footer_copyright({ year: "2026" })}
+				/> · <a href={localizeHref("/imprint")}>{m.footer_imprint()}</a>
+			</span>
 		</span>
 	</div>
 	<div class="container appfoot-analytics">
