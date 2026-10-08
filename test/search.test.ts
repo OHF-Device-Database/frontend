@@ -53,6 +53,10 @@ describe("rank", () => {
 		expect(names("hausgerate")).toEqual(["BSH Hausgeräte"]);
 	});
 
+	it("finds single letters", () => {
+		expect(names("x")[0]).toBe("Xiaomi");
+	});
+
 	it("drops items matching no word", () => {
 		expect(names("zzzz")).toEqual([]);
 	});

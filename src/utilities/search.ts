@@ -7,8 +7,6 @@ const OPTIONS = {
 	ignoreLocation: true,
 	includeMatches: true,
 	includeScore: true,
-	// avoids single-character highlight fragments on fuzzy matches
-	minMatchCharLength: 2,
 	threshold: 0.3,
 } as const;
 
