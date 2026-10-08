@@ -167,6 +167,7 @@ export class DeviceSearch extends LitElement {
 			this._term,
 			DeviceCategoryTopLevelId.options.map((id) => ({
 				id,
+				// returned label is translated based on currently selected language
 				label: device.category(id).label,
 			})),
 		);
