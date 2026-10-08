@@ -13,11 +13,9 @@
 	"search_placeholder": "Buscar",
 	"search_devices_label": "Buscar dispositivos",
 	"search_clear": "Borrar",
-	"footer_browse": "Explorar",
 	"footer_how_it_works": "Cómo funciona",
 	"footer_editorial_stance": "Postura editorial",
 	"footer_about": "Acerca de",
-	"footer_ohf": "Open Home Foundation",
 	"footer_copyright": "© {year} Open Home Foundation",
 	"footer_imprint": "Aviso legal",
 	"browse_title": "Explorar",
@@ -77,9 +75,7 @@
 	"about_heading": "Acerca de Device Database",
 	"about_lede": "Device Database es un proyecto de la Open Home Foundation, la organización sin ánimo de lucro detrás de Home Assistant, ESPHome, Music Assistant y otros proyectos.",
 	"about_body": "Se construye y mantiene de forma abierta. Las especificaciones del fabricante dicen lo que un dispositivo debería hacer. Nosotros registramos lo que hace en realidad, a partir de datos anonimizados que comparte la comunidad y con neutralidad editorial.",
-	"about_read_prefix": "Lee",
-	"about_read_link": "cómo funciona",
-	"about_read_suffix": "para ver exactamente qué se comparte y cómo se protege.",
+	"about_read": "Lee {#link}cómo funciona{/link} para ver exactamente qué se comparte y cómo se protege.",
 	"about_ohf_logo_alt": "Logo Open Home Foundation",
 	"hiw_title": "Como funciona",
 	"hiw_eyebrow": "Acerca de",
@@ -161,5 +157,7 @@
 	"browse_sheet_save": "Guardar",
 	"browse_sheet_back": "Volver a los filtros",
 	"browse_sheet_close": "Cerrar filtros",
-	"browse_sheet_selected_count": "{count} seleccionados"
+	"browse_sheet_selected_count": "{count} seleccionados",
+	"search_popover_browse_more_devices": "Explorar {#count}{count}{/count} dispositivos más",
+	"footer_analytics": "Este sitio web utiliza {#analyticsLink}analíticas centradas en la privacidad{/analyticsLink} para ayudarnos a mejorarlo. Puedes ver todos los datos en nuestro {#dashboardLink}panel público{/dashboardLink}."
 }
