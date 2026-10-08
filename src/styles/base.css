@@ -47,6 +47,14 @@ a:visited {
 	color: var(--link);
 }
 
+mark {
+	background: var(--highlight-soft);
+	color: inherit;
+	font-weight: var(--fw-semibold);
+	border-radius: var(--radius-1);
+	padding: 0 1px;
+}
+
 button {
 	font-family: inherit;
 }

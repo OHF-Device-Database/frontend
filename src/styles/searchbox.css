@@ -174,13 +174,6 @@
 	font-size: var(--fs-12);
 	flex-shrink: 0;
 }
-.searchbox-popover-section-row mark {
-	background: var(--highlight-soft);
-	color: inherit;
-	font-weight: var(--fw-semibold);
-	border-radius: var(--radius-1);
-	padding: 0 1px;
-}
 .searchbox-more-text {
 	color: var(--link);
 	font-weight: var(--fw-medium);
