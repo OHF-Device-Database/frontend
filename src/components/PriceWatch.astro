@@ -1,0 +1,81 @@
+---
+import { m } from "../paraglide/messages.js";
+import { getLocale, localizeHref } from "../paraglide/runtime.js";
+import { generic, render } from "../utilities/presentation";
+import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/preset";
+import {
+	priceWatchCountries,
+	priceWatcherDomain,
+	priceWatchPrivacyUrl,
+	priceWatchSuggestUrl,
+} from "../utilities/price-watch";
+import type { PriceWatchLink } from "../islands/price-watch-links";
+
+interface Props {
+	term: string;
+}
+
+const { term } = Astro.props;
+
+const countries = priceWatchCountries(getLocale());
+
+// links are built here so the templates never ship to the client
+const links: Record<string, PriceWatchLink[]> = Object.fromEntries(
+	countries.map((country) => [
+		country.code,
+		country.watchers.map((watcher) => ({
+			name: watcher.name,
+			domain: priceWatcherDomain(watcher),
+			href: watcher.template(term).href,
+		})),
+	]),
+);
+---
+
+<section class="article-section price-watch">
+	<h2>{m.device_wtb_title()}</h2>
+	<p>{m.device_wtb_lead()}</p>
+
+	<!-- Wraps select so the price-watch-links island can detect the selected country -->
+	<price-watch-links links={JSON.stringify(links)}>
+		<label class="price-watch-label" for="price-watch-country">
+			{m.device_wtb_country()}
+		</label>
+		<div class="select">
+			<select id="price-watch-country">
+				<option value="" disabled selected>{m.device_wtb_choose()}</option>
+				{
+					countries.map((country) => (
+						<option value={country.code}>{country.name}</option>
+					))
+				}
+			</select>
+			<span
+				class="select-chevron"
+				aria-hidden="true"
+				set:html={render(
+					generic("chevronDown"),
+					PresentationRenderPresetRoleIcon,
+				)}
+			/>
+		</div>
+	</price-watch-links>
+
+	<p class="price-watch-note">
+		{m.device_wtb_location()}{" "}
+		<a href={priceWatchPrivacyUrl} target="_blank" rel="noopener"
+			>{m.device_wtb_privacy()}</a
+		>
+	</p>
+	<p class="price-watch-note">
+		{m.device_wtb_selection()}{" "}
+		<a href={priceWatchSuggestUrl} target="_blank" rel="noopener"
+			>{m.device_wtb_suggest()}</a
+		>
+	</p>
+	<p class="price-watch-note">
+		<a href={`${localizeHref("/how-it-works")}#price-comparison-sites`}
+			>{m.device_wtb_all_sites()}</a
+		>
+	</p>
+</section>

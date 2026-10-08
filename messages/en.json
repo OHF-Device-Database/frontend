@@ -186,5 +186,14 @@
 	"device_also_listed_as": "Also listed as",
 	"device_also_listed_note": "These entries appear to be the same product reported under a different name or integration.",
 	"device_main_listing": "Main listing",
-	"device_main_listing_note": "This entry appears to be another listing of the same product."
+	"device_main_listing_note": "This entry appears to be another listing of the same product.",
+	"device_wtb_title": "Where to buy",
+	"device_wtb_lead": "Looking to buy this? Independent price comparison sites for your country. These are price searches for this device, not endorsements.",
+	"device_wtb_country": "Country",
+	"device_wtb_choose": "Choose your country",
+	"device_wtb_selection": "Sites are chosen for independence and no paid ranking, and listed in alphabetical order.",
+	"device_wtb_suggest": "Missing a comparison site? Get in touch",
+	"device_wtb_location": "Your country is preselected from your device's time zone, read only in your browser. Your choice is remembered on this device.",
+	"device_wtb_privacy": "Privacy policy",
+	"device_wtb_all_sites": "All comparison sites we link to, by country"
 }
