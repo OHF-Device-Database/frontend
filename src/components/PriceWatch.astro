@@ -6,7 +6,6 @@ import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/pres
 import {
 	priceWatchCountries,
 	priceWatcherDomain,
-	priceWatchPrivacyUrl,
 	priceWatchSuggestUrl,
 } from "../utilities/price-watch";
 import type { PriceWatchLink } from "../islands/price-watch-links";
@@ -62,10 +61,7 @@ const links: Record<string, PriceWatchLink[]> = Object.fromEntries(
 	</price-watch-links>
 
 	<p class="price-watch-note">
-		{m.device_wtb_location()}{" "}
-		<a href={priceWatchPrivacyUrl} target="_blank" rel="noopener"
-			>{m.device_wtb_privacy()}</a
-		>
+		{m.device_wtb_location()}
 	</p>
 	<p class="price-watch-note">
 		{m.device_wtb_selection()}{" "}

@@ -232,9 +232,4 @@ export const priceWatchCountries = (locale: string) => {
 		.toSorted((a, b) => a.name.localeCompare(b.name, locale));
 };
 
-// TODO: replace with the google form once available
-export const priceWatchSuggestUrl = "#";
-
-// TODO: replace with the right privacy policy link
-export const priceWatchPrivacyUrl =
-	"https://www.openhomefoundation.org/privacy-policy/";
+export const priceWatchSuggestUrl = "https://forms.gle/ch2ohjc9F845tHA68";
