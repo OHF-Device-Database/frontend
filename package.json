@@ -30,20 +30,21 @@
 		]
 	},
 	"dependencies": {
-		"@astrojs/netlify": "^7.0.13",
+		"@astrojs/netlify": "^8.2.6",
 		"@eslint-community/eslint-plugin-eslint-comments": "^4.7.2",
-		"astro": "^6.4.4",
+		"astro": "^7.3.5",
 		"fuse.js": "^7.5.0",
 		"lit": "^3.3.2",
 		"lucide": "^1.17.0",
 		"undici": "^8.10.0"
 	},
 	"devDependencies": {
-		"@astrojs/check": "^0.9.9",
-		"@astrojs/node": "^10.1.4",
+		"@astrojs/check": "^0.9.10",
+		"@astrojs/node": "^11.1.6",
 		"@eslint/js": "^10.0.1",
 		"@ianvs/prettier-plugin-sort-imports": "^4.7.1",
 		"@inlang/paraglide-js": "^2.23.0",
+		"@types/node": "^24.19.1",
 		"eslint": "^10.8.0",
 		"eslint-plugin-astro": "^3.0.1",
 		"eslint-plugin-lit": "^2.3.1",
