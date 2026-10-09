@@ -13,11 +13,9 @@
 	"search_placeholder": "Durchsuchen",
 	"search_devices_label": "Geräte durchsuchen",
 	"search_clear": "Löschen",
-	"footer_browse": "Durchsuchen",
 	"footer_how_it_works": "So funktioniert es",
 	"footer_editorial_stance": "Redaktionelle Ausrichtung",
 	"footer_about": "Über",
-	"footer_ohf": "Open Home Foundation",
 	"footer_copyright": "© {year} Open Home Foundation",
 	"footer_imprint": "Impressum",
 	"browse_title": "Durchsuchen",
@@ -173,5 +171,14 @@
 	"device_also_listed_as": "Auch geführt als",
 	"device_also_listed_note": "Bei diesen Einträgen handelt es sich offenbar um dasselbe Produkt, das unter einem anderen Namen oder einer anderen Integration gemeldet wird.",
 	"device_main_listing": "Haupteintrag",
-	"device_main_listing_note": "Dieser Eintrag scheint ein weiterer Eintrag zum selben Produkt zu sein."
+	"device_main_listing_note": "Dieser Eintrag scheint ein weiterer Eintrag zum selben Produkt zu sein.",
+	"nav_language_label": "Sprache",
+	"nav_language_translate": "Übersetzen",
+	"nav_language_translate_hint": "Hilf uns, weitere Sprachen zu unterstützen",
+	"surveys_title": "Umfragen",
+	"surveys_heading": "Community-Umfragen",
+	"surveys_lede": "Sieh dir die Berichte zu den Community-Umfragen an.",
+	"surveys_editions_label": "Umfrageausgaben",
+	"surveys_report_title": "Umfragebericht {label}",
+	"surveys_open_report": "Vollständigen Bericht öffnen"
 }
