@@ -75,9 +75,7 @@
 	"about_heading": "Over de Device Database",
 	"about_lede": "De Device Database is een project van de Open Home Foundation, de non-profitorganisatie die Home Assistant, ESPHome, Music Assistant en aanverwante projecten beheert.",
 	"about_body": "Het wordt in het openbaar ontwikkeld en onderhouden. De specificaties van de fabrikant geven aan wat een apparaat zou moeten doen. Wij registreren wat het daadwerkelijk doet, op basis van geanonimiseerde gegevens die de community deelt, en met behoud van redactionele neutraliteit.",
-	"about_read_prefix": "Lees meer over",
-	"about_read_link": "hoe het werkt",
-	"about_read_suffix": "om precies te zien wat er wordt gedeeld en hoe dit wordt beveiligd.",
+	"about_read": "Lees meer over {#link}hoe het werkt{/link} om precies te zien wat er wordt gedeeld en hoe dit wordt beveiligd.",
 	"about_ohf_logo_alt": "Logo van de Open Home Foundation",
 	"hiw_title": "Hoe het werkt",
 	"hiw_eyebrow": "Over",
@@ -155,5 +153,7 @@
 	"browse_sheet_save": "Bewaren",
 	"browse_sheet_back": "Terug naar filters",
 	"browse_sheet_close": "Sluit filters",
-	"browse_sheet_selected_count": "{count} geselecteerd"
+	"browse_sheet_selected_count": "{count} geselecteerd",
+	"search_popover_browse_more_devices": "Blader door {#count}{count}{/count} andere apparaten",
+	"footer_analytics": "Deze website gebruikt {#analyticsLink}privacyvriendelijke analyse{/analyticsLink} om de site te verbeteren. U kunt alle gegevens bekijken in ons {#dashboardLink}openbare dashboard{/dashboardLink}."
 }
