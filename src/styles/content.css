@@ -95,6 +95,61 @@
 	margin: 0;
 }
 
+/* Price comparison sites, one country per row with its sites stacked. */
+.price-sites {
+	display: grid;
+	gap: var(--space-3);
+	margin: var(--space-6) 0 0;
+}
+.price-sites-row {
+	display: grid;
+	grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
+	gap: var(--space-2) var(--space-5);
+	align-items: baseline;
+	padding: var(--space-3) 0;
+	border-top: 1px solid var(--border);
+}
+.price-sites-row dt {
+	font-weight: var(--fw-medium);
+	color: var(--fg);
+}
+.price-sites-flag {
+	display: inline-block;
+	margin-right: var(--space-2);
+	vertical-align: -2px;
+	border-radius: 2px;
+	/* keeps white flags like japan visible */
+	box-shadow: 0 0 0 1px var(--border);
+}
+.price-sites-row dd {
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	font-size: var(--fs-14);
+}
+.price-sites-row dd a {
+	color: var(--fg);
+	text-decoration: none;
+	display: inline-flex;
+	align-items: baseline;
+	gap: 6px;
+}
+.price-sites-row dd a:hover {
+	text-decoration: underline;
+}
+.price-sites-domain {
+	font-family: var(--font-mono);
+	font-size: var(--fs-12);
+	color: var(--fg-muted);
+}
+@media (max-width: 600px) {
+	.price-sites-row {
+		grid-template-columns: 1fr;
+		gap: var(--space-2);
+	}
+}
+
 .content-ohf img {
 	width: 468px;
 	max-width: 100%;

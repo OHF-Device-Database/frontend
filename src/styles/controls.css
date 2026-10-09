@@ -47,6 +47,42 @@ input[type="search"] {
 	color: var(--fg);
 	outline: 0;
 }
+
+.select {
+	position: relative;
+	display: inline-flex;
+	max-width: 100%;
+}
+.select select {
+	appearance: none;
+	font: inherit;
+	font-size: var(--fs-14);
+	height: 36px;
+	max-width: 100%;
+	padding: 0 calc(var(--space-4) + 20px) 0 var(--space-4);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-3);
+	background: var(--surface);
+	color: var(--fg);
+	cursor: pointer;
+	outline: 0;
+	transition: var(--transition-fast);
+}
+.select select:hover {
+	border-color: var(--border-strong);
+}
+.select select:focus-visible {
+	box-shadow: var(--ring-focus);
+}
+.select-chevron {
+	position: absolute;
+	top: 50%;
+	right: var(--space-3);
+	display: inline-flex;
+	color: var(--fg-muted);
+	transform: translateY(-50%);
+	pointer-events: none;
+}
 input[type="checkbox"] {
 	accent-color: var(--primary);
 }

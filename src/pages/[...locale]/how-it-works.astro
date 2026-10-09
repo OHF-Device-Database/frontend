@@ -1,10 +1,17 @@
 ---
+import Message from "../../components/Message.astro";
 import Layout from "../../layouts/Layout.astro";
 
 import { m } from "../../paraglide/messages.js";
+import { getLocale } from "../../paraglide/runtime.js";
 import { localeStaticPaths } from "../../utilities/locale";
 import { generic, render } from "../../utilities/presentation";
 import { PresentationRenderPresetRoleIcon } from "../../utilities/presentation/preset";
+import {
+	priceWatchCountries,
+	priceWatcherDomain,
+	priceWatchSuggestUrl,
+} from "../../utilities/price-watch";
 
 export const getStaticPaths = localeStaticPaths;
 
@@ -12,6 +19,21 @@ const ext = render(
 	generic("open"),
 	PresentationRenderPresetRoleIcon.withSize(14),
 );
+
+const countries = priceWatchCountries(getLocale());
+
+const suggestLink = {
+	class: "content-link",
+	href: priceWatchSuggestUrl,
+	target: "_blank",
+	rel: "noopener",
+};
+
+const flags = import.meta.glob<string>("../../assets/flags/*.svg", {
+	eager: true,
+	query: "?url",
+	import: "default",
+});
 ---
 
 <Layout page="page" title={m.hiw_title()}>
@@ -94,6 +116,52 @@ const ext = render(
 					>
 					{m.hiw_contribute_discussion_suffix()}
 				</p>
+			</div>
+		</section>
+
+		<section class="content-section" id="price-comparison-sites">
+			<div class="container-narrow">
+				<h2>{m.hiw_wtb_title()}</h2>
+				<p class="content-prose">{m.hiw_wtb_body()}</p>
+				<p class="content-prose">
+					<Message message={m.hiw_wtb_suggest}>
+						<fragment slot="link">
+							{(children: unknown[]) => <a {...suggestLink}>{children}</a>}
+						</fragment>
+					</Message>
+				</p>
+				<dl class="price-sites">
+					{
+						countries.map((country) => (
+							<div class="price-sites-row">
+								<dt>
+									<img
+										class="price-sites-flag"
+										src={flags[`../../assets/flags/${country.code}.svg`]}
+										alt=""
+										width="20"
+										height="15"
+									/>
+									{country.name}
+								</dt>
+								<dd>
+									{country.watchers.map((watcher) => (
+										<a
+											href={watcher.url.href}
+											target="_blank"
+											rel="noopener noreferrer nofollow"
+										>
+											{watcher.name}
+											<span class="price-sites-domain">
+												{priceWatcherDomain(watcher)}
+											</span>
+										</a>
+									))}
+								</dd>
+							</div>
+						))
+					}
+				</dl>
 			</div>
 		</section>
 	</div>
