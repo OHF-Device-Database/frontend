@@ -20,6 +20,12 @@ const ext = render(
 );
 
 const countries = priceWatchCountries(getLocale());
+
+const flags = import.meta.glob<string>("../../assets/flags/*.svg", {
+	eager: true,
+	query: "?url",
+	import: "default",
+});
 ---
 
 <Layout page="page" title={m.hiw_title()}>
@@ -122,7 +128,16 @@ const countries = priceWatchCountries(getLocale());
 					{
 						countries.map((country) => (
 							<div class="price-sites-row">
-								<dt>{country.name}</dt>
+								<dt>
+									<img
+										class="price-sites-flag"
+										src={flags[`../../assets/flags/${country.code}.svg`]}
+										alt=""
+										width="20"
+										height="15"
+									/>
+									{country.name}
+								</dt>
 								<dd>
 									{country.watchers.map((watcher) => (
 										<a

@@ -113,6 +113,14 @@
 	font-weight: var(--fw-medium);
 	color: var(--fg);
 }
+.price-sites-flag {
+	display: inline-block;
+	margin-right: var(--space-2);
+	vertical-align: -2px;
+	border-radius: 2px;
+	/* keeps white flags like japan visible */
+	box-shadow: 0 0 0 1px var(--border);
+}
 .price-sites-row dd {
 	margin: 0;
 	display: flex;
