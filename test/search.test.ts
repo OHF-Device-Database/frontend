@@ -67,6 +67,18 @@ describe("rank", () => {
 		).toEqual(["Kitchen and household", "Networking"]);
 	});
 
+	it("prefers matches at the start of the label over later words", () => {
+		const labels = [
+			{ label: "TP-Link", count: 336 },
+			{ label: "AEON Labs", count: 47 },
+			{ label: "Lutron", count: 78 },
+			{ label: "Legrand", count: 29 },
+		];
+		expect(
+			rank(labels, "l", ({ label }) => label).map(({ label }) => label),
+		).toEqual(["Lutron", "Legrand", "TP-Link", "AEON Labs"]);
+	});
+
 	it("drops items matching no word", () => {
 		expect(names("zzzz")).toEqual([]);
 	});
@@ -139,6 +151,7 @@ describe("highlight", () => {
 			"[Ki]tchen and household",
 		);
 		expect(marked("Xiaomi Aqara", "aqara xiaomi")).toBe("[Xiaomi] [Aqara]");
+		expect(marked("Paulmann Licht", "l")).toBe("Paulmann [L]icht");
 	});
 
 	it("marks the closest segment for typos and accents", () => {

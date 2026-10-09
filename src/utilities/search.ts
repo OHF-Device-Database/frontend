@@ -13,10 +13,22 @@ const OPTIONS = {
 const tokens = (term: string): string[] =>
 	term.split(/\s+/).filter((token) => token.length > 0);
 
+// index of the first occurrence of `token` starting a word, else of any
+const indexOf = (text: string, token: string): number => {
+	const lower = text.toLowerCase();
+	const needle = token.toLowerCase();
+	let at = lower.indexOf(needle);
+	const first = at;
+	while (at > 0 && /[\p{L}\p{N}]/u.test(lower[at - 1] ?? "")) {
+		at = lower.indexOf(needle, at + 1);
+	}
+	return at === -1 ? first : at;
+};
+
 /**
  * fuzzy, word-order independent filtering. ranks by amount of matched term
- * words, then by amount of term words starting a word, then by match quality,
- * then by count. an empty term keeps every item
+ * words, then by where term words start (the label over a later word over
+ * none), then by match quality, then by count. an empty term keeps every item
  */
 export const rank = <T extends { count?: number | undefined }>(
 	items: readonly T[],
@@ -25,14 +37,23 @@ export const rank = <T extends { count?: number | undefined }>(
 ): T[] => {
 	const byCount = (a: T, b: T) => (b.count ?? 0) - (a.count ?? 0);
 	const query = tokens(term);
-	// amount of term words starting a word of the label.
+	// per term word: 2 when starting the label, 1 when starting a later word
 	const starts = (item: T) => {
-		const words = label(item)
+		const [first = "", ...rest] = label(item)
 			.toLowerCase()
-			.split(/[^\p{L}\p{N}]+/u);
-		return query.filter((token) =>
-			words.some((word) => word.startsWith(token.toLowerCase())),
-		).length;
+			.split(/[^\p{L}\p{N}]+/u)
+			.filter((word) => word.length > 0);
+		return query.reduce((sum, token) => {
+			const lower = token.toLowerCase();
+			return (
+				sum +
+				(first.startsWith(lower)
+					? 2
+					: rest.some((word) => word.startsWith(lower))
+						? 1
+						: 0)
+			);
+		}, 0);
 	};
 	if (query.length === 0) {
 		return items.toSorted(byCount);
@@ -114,7 +135,8 @@ export const extractCategories = <Id extends string>(
 
 /**
  * wraps one segment per term word in `<mark>`: its first occurrence when typed
- * as is, else the longest segment of the typo tolerant match
+ * as is (preferring one starting a word), else the longest segment of the typo
+ * tolerant match
  */
 export const highlight = (
 	text: string,
@@ -122,7 +144,7 @@ export const highlight = (
 ): (string | TemplateResult)[] => {
 	const ranges = tokens(term)
 		.flatMap((token): (readonly [number, number])[] => {
-			const at = text.toLowerCase().indexOf(token.toLowerCase());
+			const at = indexOf(text, token);
 			if (at !== -1) {
 				return [[at, at + token.length - 1]];
 			}
