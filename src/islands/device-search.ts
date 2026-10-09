@@ -8,7 +8,11 @@ import type { Ref } from "lit/directives/ref.js";
 import { getDevices } from "../io/device.js";
 import { m } from "../paraglide/messages.js";
 import { localizeHref } from "../paraglide/runtime.js";
-import { browseFiltersToSearchParams } from "../types/browse/index.js";
+import {
+	browseFiltersToHref,
+	browseFiltersToQuery,
+	browseFiltersToSearchParams,
+} from "../types/browse/index.js";
 import {
 	DeviceCategoryTopLevelId,
 	topLevelCategoryResolver,
@@ -27,7 +31,9 @@ import {
 	render,
 } from "../utilities/presentation/index.js";
 import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/preset.js";
+import { extractCategories, highlight, rank } from "../utilities/search.js";
 import type { IoDimensionCategory } from "../io/dimension.js";
+import type { BrowseFilters } from "../types/browse/index.js";
 import type { DevicePoly } from "../types/device/index.js";
 
 type SectionCategory = {
@@ -118,6 +124,7 @@ export class DeviceSearch extends LitElement {
 		this._input?.addEventListener("keydown", this._onInputKeyDown);
 
 		this._clearButton?.addEventListener("click", this._onClearButtonClick);
+		this._form?.addEventListener("submit", this._onFormSubmit);
 	}
 
 	override disconnectedCallback(): void {
@@ -128,6 +135,7 @@ export class DeviceSearch extends LitElement {
 		this._input?.removeEventListener("keydown", this._onInputKeyDown);
 
 		this._clearButton?.removeEventListener("click", this._onClearButtonClick);
+		this._form?.removeEventListener("submit", this._onFormSubmit);
 
 		this._resetFetched();
 	}
@@ -153,18 +161,25 @@ export class DeviceSearch extends LitElement {
 		return localizeHref(`/devices/${id}`);
 	}
 
-	private _urlTerm(term: string): string {
-		const params = browseFiltersToSearchParams({
-			category: new Set(),
+	// "hue lighting" becomes term "hue" in category "lighting"
+	private get _searchFilters(): BrowseFilters {
+		const { term, category } = extractCategories(
+			this._term,
+			DeviceCategoryTopLevelId.options.map((id) => ({
+				id,
+				// returned label is translated based on currently selected language
+				label: device.category(id).label,
+			})),
+		);
+
+		return {
+			term: term.length > 0 ? term : undefined,
+			category,
 			categoryMode: "include",
 			localOnly: false,
 			manufacturer: new Set(),
 			manufacturerMode: "include",
-			term,
-		});
-
-		const qs = params.toString();
-		return localizeHref(`/browse${qs ? "?" + qs : ""}`);
+		};
 	}
 
 	private _urlManufacturer(manufacturer: string): string {
@@ -300,6 +315,12 @@ export class DeviceSearch extends LitElement {
 		}
 	};
 
+	// without a selected row, carry the extracted category into the browse page
+	private _onFormSubmit = (event: SubmitEvent) => {
+		event.preventDefault();
+		void navigate(localizeHref(browseFiltersToHref(this._searchFilters)));
+	};
+
 	private _onClearButtonClick = () => {
 		if (this._input !== null) {
 			this._input.value = "";
@@ -319,13 +340,15 @@ export class DeviceSearch extends LitElement {
 	}
 
 	private async _fetchDevices() {
-		const term = this._term.trim();
 		this._fetchAbort?.abort();
 		const controller = new AbortController();
 		this._fetchAbort = controller;
 
 		try {
-			const { devices, total } = await getDevices({ term }, controller.signal);
+			const { devices, total } = await getDevices(
+				browseFiltersToQuery(this._searchFilters),
+				controller.signal,
+			);
 			this._fetchedDevices = {
 				devices: devices.map(devicePolyMap),
 				total,
@@ -362,24 +385,13 @@ export class DeviceSearch extends LitElement {
 
 		return {
 			kind: "category",
-			items:
-				typeof this.dimensions?.categories !== "undefined"
-					? Object.entries(this.dimensions?.categories)
-							?.flatMap(([id, category]) => {
-								if (!is(id)) {
-									return [];
-								}
-								const { label } = device.category(id);
-								if (
-									!label.toLocaleLowerCase().includes(term.toLocaleLowerCase())
-								) {
-									return [];
-								}
-
-								return [{ id, count: category.count }];
-							})
-							.toSorted((a, b) => b.count - a.count)
-					: [],
+			items: rank(
+				Object.entries(this.dimensions?.categories ?? {}).flatMap(
+					([id, { count }]) => (is(id) ? [{ id, count }] : []),
+				),
+				term,
+				({ id }) => device.category(id).label,
+			),
 		};
 	}
 
@@ -395,10 +407,11 @@ export class DeviceSearch extends LitElement {
 	private _sectionManufacturer(term: string): SectionManufacturer {
 		return {
 			kind: "manufacturer",
-			items:
-				this.dimensions?.manufacturers.filter(({ name }) =>
-					name.toLocaleLowerCase().includes(term.toLocaleLowerCase()),
-				) ?? [],
+			items: rank(
+				this.dimensions?.manufacturers ?? [],
+				term,
+				({ name }) => name,
+			),
 		};
 	}
 
@@ -464,9 +477,7 @@ export class DeviceSearch extends LitElement {
 								${unsafeHTML(render(category, PresentationRenderPresetRoleIcon.withSize(16)))}
 
 								<div class="searchbox-popover-section-row-main">
-									<div>
-										${DeviceSearch._highlight(category.label, this._term)}
-									</div>
+									<div>${highlight(category.label, this._term)}</div>
 								</div>
 								<span class="searchbox-popover-section-count">${c.count}</span>
 							</button>`;
@@ -489,7 +500,7 @@ export class DeviceSearch extends LitElement {
 								>
 									${unsafeHTML(render(generic("users"), PresentationRenderPresetRoleIcon.withSize(16)))}
 									<div class="searchbox-popover-section-row-main">
-										<div>${DeviceSearch._highlight(m.name, this._term)}</div>
+										<div>${highlight(m.name, this._term)}</div>
 									</div>
 									<span class="searchbox-popover-section-count"
 										>${m.count}</span
@@ -530,11 +541,9 @@ export class DeviceSearch extends LitElement {
 
 											<div class="searchbox-popover-section-row-main">
 												<span class="searchbox-popover-section-row-secondary"
-													>${DeviceSearch._highlight(d.manufacturer, this._term)}</span
+													>${highlight(d.manufacturer, this._term)}</span
 												>
-												<span>
-													${DeviceSearch._highlight(device.name(d), this._term)}
-												</span>
+												<span> ${highlight(device.name(d), this._term)} </span>
 											</div>
 											<span class="searchbox-popover-section-count"
 												>${d.count}</span
@@ -547,7 +556,7 @@ export class DeviceSearch extends LitElement {
 											? html`<button
 													class="searchbox-popover-section-row"
 													id=${`more-device`}
-													@click=${() => void navigate(this._urlTerm(this._term))}
+													@click=${() => void navigate(localizeHref(browseFiltersToHref(this._searchFilters)))}
 												>
 													${unsafeHTML(render(generic("arrow"), PresentationRenderPresetRoleIcon.withSize(16)))}
 
@@ -567,19 +576,6 @@ export class DeviceSearch extends LitElement {
 		return html`<div class="searchbox-popover-section">${rendered}</div>`;
 	}
 
-	private static _highlight(text: string, term: string) {
-		if (!term) {
-			return text;
-		}
-		const i = text.toLowerCase().indexOf(term.toLowerCase());
-		if (i < 0) {
-			return text;
-		}
-		return html`${text.slice(0, i)}<mark>${text.slice(i, i + term.length)}</mark>${text.slice(
-			i + term.length,
-		)}`;
-	}
-
 	protected override render() {
 		const sections = this._sections;
 		return html`<div
@@ -594,7 +590,9 @@ export class DeviceSearch extends LitElement {
 					sections.every(
 						(s) => typeof s.items !== "undefined" && s.items.length === 0,
 					)
-						? html`<p>${m.search_popover_no_matches()}</p>`
+						? html`<p class="searchbox-popover-empty">
+								${m.search_popover_no_matches()}
+							</p>`
 						: this._sections.map((s) => this._renderSection(s))
 				}
 			</div>

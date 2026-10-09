@@ -8,7 +8,13 @@ import { getLocale } from "../paraglide/runtime.js";
 import { defineElementOnce } from "../utilities/define-element.js";
 import * as presentation from "../utilities/presentation";
 import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/preset.js";
-import type { FilterModalMode, FilterModalOption } from "./filter-modal.js";
+import { highlight } from "../utilities/search.js";
+import { groupOptions } from "./filter-modal.js";
+import type {
+	FilterModalMode,
+	FilterModalOption,
+	GroupingConfig,
+} from "./filter-modal.js";
 
 type SheetDimension = "category" | "manufacturer";
 
@@ -28,8 +34,6 @@ interface DimensionConfig {
 	options: FilterModalOption[];
 	letterGroups: boolean;
 }
-
-type GroupingConfig = "alphabet" | "none";
 
 const icon = (name: Parameters<typeof presentation.generic>[0], size: number) =>
 	unsafeHTML(
@@ -318,46 +322,6 @@ export class FilterSheet extends LitElement {
 			: label;
 	}
 
-	private _groups(
-		config: DimensionConfig,
-	): (readonly [string, FilterModalOption[]])[] {
-		const term = this._query.trim().toLowerCase();
-		const matched =
-			term.length > 0
-				? config.options.filter((option) =>
-						option.label.toLowerCase().includes(term),
-					)
-				: config.options;
-		if (!config.letterGroups) {
-			return [["", matched] as const];
-		}
-
-		if (this._groupBy === "none") {
-			const sorted = [...matched].sort(
-				(a, b) => (b.count ?? 0) - (a.count ?? 0),
-			);
-			return [["", sorted] as const];
-		}
-
-		const groups = new Map<string, FilterModalOption[]>();
-		const ungrouped: FilterModalOption[] = [];
-		for (const option of matched) {
-			const letter = option.label.at(0)?.normalize().trim().toUpperCase();
-			if (typeof letter === "undefined" || !/[A-Z]/.test(letter)) {
-				ungrouped.push(option);
-				continue;
-			}
-			const list = groups.get(letter) ?? [];
-			list.push(option);
-			groups.set(letter, list);
-		}
-
-		return [
-			...[...groups.entries()].sort(([a], [b]) => a.localeCompare(b)),
-			...(ungrouped.length > 0 ? [["#", ungrouped] as const] : []),
-		];
-	}
-
 	private _renderRoot(filters: SheetFilters) {
 		return html`
 			<div class="sheet-body sheet-list">
@@ -399,7 +363,11 @@ export class FilterSheet extends LitElement {
 
 	private _renderDimension(filters: SheetFilters, config: DimensionConfig) {
 		const selected = filters[config.dim];
-		const groups = this._groups(config);
+		const groups = groupOptions(
+			config.options,
+			this._query,
+			config.letterGroups ? this._groupBy : "none",
+		);
 		const matchedCount = groups.reduce(
 			(sum, [, options]) => sum + options.length,
 			0,
@@ -430,7 +398,7 @@ export class FilterSheet extends LitElement {
 															${on ? icon("check", 16) : nothing}
 														</span>
 														<span class="filter-tap-row-text"
-															>${option.label}</span
+															>${highlight(option.label, this._query)}</span
 														>
 														${
 															typeof option.count !== "undefined"
