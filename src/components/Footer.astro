@@ -2,6 +2,8 @@
 import ohfLogoDark from "../assets/ohf-logo-dark.svg?raw";
 import ohfLogoLight from "../assets/ohf-logo-light.svg?raw";
 
+import Message from "./Message.astro";
+
 import { m } from "../paraglide/messages.js";
 import { localizeHref } from "../paraglide/runtime.js";
 
@@ -11,25 +13,14 @@ interface Props {
 
 const { flush = false } = Astro.props;
 
-const ANALYTICS_BLOG_URL =
-	"https://www.openhomefoundation.org/blog/making-our-web-analytics-open-source-with-plausible/";
-const ANALYTICS_DASHBOARD_URL =
-	"https://plausible.openhomefoundation.org/device-database-preview.openhomefoundation.org";
-
-const ANALYTICS_TOKEN = "\u0000";
-const DASHBOARD_TOKEN = "\u0001";
-
-// One sentence with two links in it, so translators get a whole sentence rather
-// than fragments they would have to keep in the right order. The links are
-// substituted as tokens and split back out below, so each text part is rendered
-// as text and no message file can inject markup.
-const analyticsNoticeParts = m
-	.footer_analytics({
-		analyticsLink: ANALYTICS_TOKEN,
-		dashboardLink: DASHBOARD_TOKEN,
-	})
-	// eslint-disable-next-line no-control-regex -- deliberate sentinels; control characters cannot occur in translated prose, so they are unambiguous delimiters
-	.split(/([\u0000\u0001])/);
+const analyticsLink = {
+	href: "https://www.openhomefoundation.org/blog/making-our-web-analytics-open-source-with-plausible/",
+	rel: "noopener",
+};
+const dashboardLink = {
+	href: "https://plausible.openhomefoundation.org/device-database-preview.openhomefoundation.org",
+	rel: "noopener",
+};
 ---
 
 <footer class={"appfoot" + (flush ? " appfoot-flush" : "")}>
@@ -61,28 +52,14 @@ const analyticsNoticeParts = m
 	</div>
 	<div class="container appfoot-analytics">
 		<p>
-			{
-				analyticsNoticeParts.map((part) =>
-					part === ANALYTICS_TOKEN ? (
-						// set:text rather than a child expression: Prettier breaks a child
-						// onto its own line and Astro emits that as a real space, which
-						// would underline one space past the link text.
-						<a
-							href={ANALYTICS_BLOG_URL}
-							rel="noopener"
-							set:text={m.footer_analytics_link()}
-						/>
-					) : part === DASHBOARD_TOKEN ? (
-						<a
-							href={ANALYTICS_DASHBOARD_URL}
-							rel="noopener"
-							set:text={m.footer_analytics_dashboard()}
-						/>
-					) : (
-						part
-					),
-				)
-			}
+			<Message message={m.footer_analytics}>
+				<fragment slot="analyticsLink">
+					{(children: unknown[]) => <a {...analyticsLink}>{children}</a>}
+				</fragment>
+				<fragment slot="dashboardLink">
+					{(children: unknown[]) => <a {...dashboardLink}>{children}</a>}
+				</fragment>
+			</Message>
 		</p>
 	</div>
 </footer>
