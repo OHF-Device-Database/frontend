@@ -1,4 +1,6 @@
 ---
+import Message from "./Message.astro";
+
 import { m } from "../paraglide/messages.js";
 import { getLocale, localizeHref } from "../paraglide/runtime.js";
 import { generic, render } from "../utilities/presentation";
@@ -15,6 +17,12 @@ interface Props {
 }
 
 const { term } = Astro.props;
+
+const suggestLink = {
+	href: priceWatchSuggestUrl,
+	target: "_blank",
+	rel: "noopener",
+};
 
 const countries = priceWatchCountries(getLocale());
 
@@ -64,10 +72,11 @@ const links: Record<string, PriceWatchLink[]> = Object.fromEntries(
 		{m.device_wtb_location()}
 	</p>
 	<p class="price-watch-note">
-		{m.device_wtb_selection()}{" "}
-		<a href={priceWatchSuggestUrl} target="_blank" rel="noopener"
-			>{m.device_wtb_suggest()}</a
-		>
+		<Message message={m.device_wtb_selection}>
+			<fragment slot="link">
+				{(children: unknown[]) => <a {...suggestLink}>{children}</a>}
+			</fragment>
+		</Message>
 	</p>
 	<p class="price-watch-note">
 		<a href={`${localizeHref("/how-it-works")}#price-comparison-sites`}

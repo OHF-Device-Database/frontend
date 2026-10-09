@@ -1,4 +1,5 @@
 ---
+import Message from "../../components/Message.astro";
 import Layout from "../../layouts/Layout.astro";
 
 import { m } from "../../paraglide/messages.js";
@@ -20,6 +21,13 @@ const ext = render(
 );
 
 const countries = priceWatchCountries(getLocale());
+
+const suggestLink = {
+	class: "content-link",
+	href: priceWatchSuggestUrl,
+	target: "_blank",
+	rel: "noopener",
+};
 
 const flags = import.meta.glob<string>("../../assets/flags/*.svg", {
 	eager: true,
@@ -116,13 +124,11 @@ const flags = import.meta.glob<string>("../../assets/flags/*.svg", {
 				<h2>{m.hiw_wtb_title()}</h2>
 				<p class="content-prose">{m.hiw_wtb_body()}</p>
 				<p class="content-prose">
-					{m.hiw_wtb_suggest_prefix()}
-					<a
-						class="content-link"
-						href={priceWatchSuggestUrl}
-						target="_blank"
-						rel="noopener">{m.hiw_wtb_suggest_link()}</a
-					>{m.hiw_wtb_suggest_suffix()}
+					<Message message={m.hiw_wtb_suggest}>
+						<fragment slot="link">
+							{(children: unknown[]) => <a {...suggestLink}>{children}</a>}
+						</fragment>
+					</Message>
 				</p>
 				<dl class="price-sites">
 					{
