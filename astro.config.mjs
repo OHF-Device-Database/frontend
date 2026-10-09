@@ -57,6 +57,9 @@ const prefixedLocales = [
 export default defineConfig({
 	// `localizeHref()` emits links without a trailing slash; `/about/` redirects to `/about`.
 	trailingSlash: "never",
+	// Astro 7 defaults to "jsx" whitespace rules, which drop the space between
+	// text and a link on the next line. Keep the old behavior.
+	compressHTML: true,
 	build: {
 		// External stylesheets persist correctly across ClientRouter navigations.
 		inlineStylesheets: "never",
