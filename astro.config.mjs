@@ -7,7 +7,18 @@ import { defineConfig, envField, memoryCache } from "astro/config";
 // Switch the deploy target with DEPLOY_TARGET. Defaults to "netlify" so the
 // existing Netlify build is unaffected; the Docker image sets "node".
 const isNodeTarget = process.env.DEPLOY_TARGET === "node";
-const adapter = isNodeTarget ? node({ mode: "standalone" }) : netlify();
+const adapter = isNodeTarget
+	? node({ mode: "standalone" })
+	: netlify({
+			// Dev only. The adapter emulates Netlify in `astro dev`, edge functions
+			// need Deno which we don't have and don't use (middleware runs as a
+			// normal function), so skip it.
+			devFeatures: {
+				edgeFunctions: false,
+				images: true,
+				environmentVariables: false,
+			},
+		});
 
 const prefixedLocales = [
 	"ar",
