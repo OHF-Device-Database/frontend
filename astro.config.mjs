@@ -113,9 +113,7 @@ export default defineConfig({
 		// must bundle every dependency into the server output.
 		ssr: isNodeTarget ? { noExternal: true } : {},
 	},
-	experimental: {
-		cache: {
-			provider: memoryCache(),
-		},
+	cache: {
+		provider: memoryCache(),
 	},
 });
