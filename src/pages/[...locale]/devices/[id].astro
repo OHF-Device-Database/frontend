@@ -1,6 +1,7 @@
 ---
 import haLogo from "../../../assets/ha-logo.svg?raw";
 
+import PriceWatch from "../../../components/PriceWatch.astro";
 import Layout from "../../../layouts/Layout.astro";
 
 import { getDevice, getDeviceCount } from "../../../io/device";
@@ -16,6 +17,7 @@ import {
 	PresentationRenderPresetRoleGlyph,
 	PresentationRenderPresetRoleIcon,
 } from "../../../utilities/presentation/preset";
+import { priceWatchSearchTerm } from "../../../utilities/price-watch";
 import type { IoDevicePoly } from "../../../io/device";
 import type { DeviceCategoryTopLevelId } from "../../../types/category";
 
@@ -375,6 +377,8 @@ const view =
 								</details>
 							</div>
 						</section>
+
+						<PriceWatch term={priceWatchSearchTerm(view.device)} />
 					</main>
 
 					<aside>

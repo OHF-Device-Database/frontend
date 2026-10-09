@@ -110,6 +110,9 @@
 	"hiw_contribute_roadmap_suffix": ". We're starting light: the immediate focus is making the device data collected so far accessible and useful to everyone through the Preview edition of this website.",
 	"hiw_contribute_discussion_link": "Join the community discussion",
 	"hiw_contribute_discussion_suffix": "and help shape the future of the Device Database.",
+	"hiw_wtb_title": "Where to buy links",
+	"hiw_wtb_body": "Device pages include a \"Where to buy\" section that links to independent price comparison sites for your country. Sites are chosen for independence, spec-level product pages and no paid ranking, and are listed in alphabetical order. Links are plain searches for the device name. Listing a site is not an endorsement of its shops or prices.",
+	"hiw_wtb_suggest": "Know an independent comparison site for a country that is missing, or think one here no longer meets the bar? {#link}Get in touch{/link}.",
 	"editorial_title": "Editorial stance",
 	"editorial_lede": "There are no good or bad devices. Only different capabilities, compatibilities, and trade-offs.",
 	"editorial_intro": "This is a living resource. As community contributions grow and real-world usage evolves, so does what the database knows. We build in the open, share our methodology, and invite scrutiny. Trustworthiness is earned, not claimed.",
@@ -182,5 +185,12 @@
 	"device_also_listed_as": "Also listed as",
 	"device_also_listed_note": "These entries appear to be the same product reported under a different name or integration.",
 	"device_main_listing": "Main listing",
-	"device_main_listing_note": "This entry appears to be another listing of the same product."
+	"device_main_listing_note": "This entry appears to be another listing of the same product.",
+	"device_wtb_title": "Where to buy",
+	"device_wtb_lead": "Looking to buy this? Independent price comparison sites for your country. These are price searches for this device, not endorsements.",
+	"device_wtb_country": "Country",
+	"device_wtb_choose": "Choose your country",
+	"device_wtb_selection": "Sites are chosen for independence and no paid ranking, and listed in alphabetical order. {#link}Missing a comparison site? Get in touch{/link}",
+	"device_wtb_location": "Your country is preselected from your device's time zone, read only in your browser. Your choice is remembered on this device.",
+	"device_wtb_all_sites": "All comparison sites we link to, by country"
 }

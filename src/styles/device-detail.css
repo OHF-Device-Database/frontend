@@ -153,6 +153,66 @@
 .ha-docs-link span {
 	margin-top: var(--space-1);
 }
+price-watch-links {
+	display: block;
+}
+.price-watch-label {
+	display: block;
+	margin-bottom: var(--space-2);
+	font-size: var(--fs-14);
+	color: var(--fg-muted);
+}
+.article-section p.price-watch-note {
+	margin-top: var(--space-3);
+	font-size: var(--fs-14);
+	color: var(--fg-muted);
+}
+.price-watch-note a {
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	text-decoration-color: var(--border-strong);
+}
+.price-watch-note a:hover {
+	text-decoration-color: currentColor;
+}
+.price-watch-list {
+	list-style: none;
+	margin: var(--space-5) 0 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	max-width: 62ch;
+}
+.price-watch-link {
+	display: flex;
+	align-items: center;
+	gap: var(--space-3);
+	padding: var(--space-3) 0;
+	border-top: 1px solid var(--border-subtle);
+	color: var(--fg);
+	text-decoration: none;
+}
+.price-watch-list li:last-child .price-watch-link {
+	border-bottom: 1px solid var(--border-subtle);
+}
+.price-watch-link:hover .price-watch-link-name {
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+.price-watch-link-name {
+	font-weight: var(--fw-medium);
+}
+.price-watch-link-domain {
+	flex: 1;
+	min-width: 0;
+	font-size: var(--fs-13);
+	color: var(--fg-muted);
+}
+.price-watch-link-icon {
+	display: inline-flex;
+	color: var(--fg-muted);
+	flex-shrink: 0;
+}
 .detail-connectivity {
 	display: flex;
 	align-items: center;
