@@ -6,6 +6,7 @@ import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import type { Ref } from "lit/directives/ref.js";
 
 import { getDevices } from "../io/device.js";
+import { getDimensions } from "../io/dimension.js";
 import { m } from "../paraglide/messages.js";
 import { localizeHref } from "../paraglide/runtime.js";
 import {
@@ -89,6 +90,7 @@ export class DeviceSearch extends LitElement {
 
 	private _fetchTimer?: ReturnType<typeof setTimeout>;
 	private _fetchAbort?: AbortController;
+	private _dimensionsAbort?: AbortController;
 
 	// server-rendered elements that are enhanced
 	private _form: HTMLFormElement | null = null;
@@ -125,6 +127,11 @@ export class DeviceSearch extends LitElement {
 
 		this._clearButton?.addEventListener("click", this._onClearButtonClick);
 		this._form?.addEventListener("submit", this._onFormSubmit);
+
+		// prerendered pages can't reach the api at build time and ship without dimensions
+		if (this.dimensions === null) {
+			void this._fetchDimensions();
+		}
 	}
 
 	override disconnectedCallback(): void {
@@ -137,6 +144,7 @@ export class DeviceSearch extends LitElement {
 		this._clearButton?.removeEventListener("click", this._onClearButtonClick);
 		this._form?.removeEventListener("submit", this._onFormSubmit);
 
+		this._dimensionsAbort?.abort();
 		this._resetFetched();
 	}
 
@@ -360,6 +368,21 @@ export class DeviceSearch extends LitElement {
 			}
 
 			this._fetchedDevicesStale = true;
+		}
+	}
+
+	private async _fetchDimensions() {
+		this._dimensionsAbort?.abort();
+		const controller = new AbortController();
+		this._dimensionsAbort = controller;
+
+		try {
+			const { dimensions } = await getDimensions({}, controller.signal);
+			this.dimensions = dimensions;
+		} catch (e) {
+			if (!isAbortError(e)) {
+				console.error(e);
+			}
 		}
 	}
 
