@@ -2,9 +2,15 @@
 import Layout from "../../layouts/Layout.astro";
 
 import { m } from "../../paraglide/messages.js";
+import { getLocale } from "../../paraglide/runtime.js";
 import { localeStaticPaths } from "../../utilities/locale";
 import { generic, render } from "../../utilities/presentation";
 import { PresentationRenderPresetRoleIcon } from "../../utilities/presentation/preset";
+import {
+	priceWatchCountries,
+	priceWatcherDomain,
+	priceWatchSuggestUrl,
+} from "../../utilities/price-watch";
 
 export const getStaticPaths = localeStaticPaths;
 
@@ -12,6 +18,8 @@ const ext = render(
 	generic("open"),
 	PresentationRenderPresetRoleIcon.withSize(14),
 );
+
+const countries = priceWatchCountries(getLocale());
 ---
 
 <Layout page="page" title={m.hiw_title()}>
@@ -94,6 +102,45 @@ const ext = render(
 					>
 					{m.hiw_contribute_discussion_suffix()}
 				</p>
+			</div>
+		</section>
+
+		<section class="content-section" id="price-comparison-sites">
+			<div class="container-narrow">
+				<h2>{m.hiw_wtb_title()}</h2>
+				<p class="content-prose">{m.hiw_wtb_body()}</p>
+				<p class="content-prose">
+					{m.hiw_wtb_suggest_prefix()}
+					<a
+						class="content-link"
+						href={priceWatchSuggestUrl}
+						target="_blank"
+						rel="noopener">{m.hiw_wtb_suggest_link()}</a
+					>{m.hiw_wtb_suggest_suffix()}
+				</p>
+				<dl class="price-sites">
+					{
+						countries.map((country) => (
+							<div class="price-sites-row">
+								<dt>{country.name}</dt>
+								<dd>
+									{country.watchers.map((watcher) => (
+										<a
+											href={watcher.url.href}
+											target="_blank"
+											rel="noopener noreferrer nofollow"
+										>
+											{watcher.name}
+											<span class="price-sites-domain">
+												{priceWatcherDomain(watcher)}
+											</span>
+										</a>
+									))}
+								</dd>
+							</div>
+						))
+					}
+				</dl>
 			</div>
 		</section>
 	</div>
