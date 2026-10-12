@@ -15,7 +15,7 @@ export type DeviceConnectivityId = z.infer<typeof DeviceConnectivityId>;
 export const DeviceCategoryId = IoDeviceCategoryId;
 export type DeviceCategoryId = z.infer<typeof DeviceCategoryId>;
 
-const DeviceIntegration = IoDeviceIntegration;
+export const DeviceIntegration = IoDeviceIntegration;
 export type DeviceIntegration = z.infer<typeof DeviceIntegration>;
 
 export const DeviceVersionHardware = IoDeviceVersionHardware;

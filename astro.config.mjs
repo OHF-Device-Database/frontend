@@ -4,10 +4,9 @@ import node from "@astrojs/node";
 import { paraglideVitePlugin } from "@inlang/paraglide-js";
 import { defineConfig, envField, memoryCache } from "astro/config";
 
-// Switch the deploy target with DEPLOY_TARGET. Defaults to "netlify" so the
-// existing Netlify build is unaffected; the Docker image sets "node".
-const isNodeTarget = process.env.DEPLOY_TARGET === "node";
-const adapter = isNodeTarget ? node({ mode: "standalone" }) : netlify();
+// Netlify sets NETLIFY=true in its builds. Everywhere else (dev, Docker) we
+// run the standalone Node server.
+const adapter = process.env.NETLIFY ? netlify() : node({ mode: "standalone" });
 
 const prefixedLocales = [
 	"ar",
@@ -46,6 +45,9 @@ const prefixedLocales = [
 export default defineConfig({
 	// `localizeHref()` emits links without a trailing slash; `/about/` redirects to `/about`.
 	trailingSlash: "never",
+	// Astro 7 defaults to "jsx" whitespace rules, which drop the space between
+	// text and a link on the next line. Keep the old behavior.
+	compressHTML: true,
 	build: {
 		// External stylesheets persist correctly across ClientRouter navigations.
 		inlineStylesheets: "never",
@@ -109,13 +111,8 @@ export default defineConfig({
 				],
 			}),
 		],
-		// The Docker image ships dist/ without node_modules, so the node build
-		// must bundle every dependency into the server output.
-		ssr: isNodeTarget ? { noExternal: true } : {},
 	},
-	experimental: {
-		cache: {
-			provider: memoryCache(),
-		},
+	cache: {
+		provider: memoryCache(),
 	},
 });
