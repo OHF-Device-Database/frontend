@@ -1,11 +1,10 @@
 # syntax=docker/dockerfile:1
 
-# Build the Astro app with the standalone Node adapter.
-# --platform=$BUILDPLATFORM: dist/ is architecture-independent (pure JS — the
-# node build bundles every dependency, no native modules), so run the build
-# once natively instead of once per target platform under QEMU emulation.
+# Build the Astro app with the standalone Node adapter (used everywhere except
+# on Netlify).
+# --platform=$BUILDPLATFORM: dist/ is architecture-independent (pure JS), so
+# run the build once natively instead of once per target platform under QEMU.
 FROM --platform=$BUILDPLATFORM node:24-alpine AS build
-ENV DEPLOY_TARGET=node
 WORKDIR /app
 
 # All app config (NOINDEX, API_AUTHORITY) is runtime-only (astro:env secrets):
@@ -19,13 +18,19 @@ RUN corepack enable
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 RUN pnpm install --frozen-lockfile
 
-# Build the standalone server output into dist/. The node target bundles all
-# dependencies into dist/ (vite.ssr.noExternal in astro.config.mjs), so the
-# runtime image needs no node_modules.
+# Build the standalone server output into dist/.
 COPY . .
 RUN pnpm build
 
-# Runtime image: just Node + the self-contained server bundle.
+# Production dependencies the server imports at runtime. Runs on the target
+# platform so packages with native binaries get the right ones.
+FROM node:24-alpine AS deps
+WORKDIR /app
+RUN corepack enable
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+RUN pnpm install --frozen-lockfile --prod --ignore-scripts
+
+# Runtime image: Node, the server output and its production dependencies.
 FROM node:24-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
@@ -36,6 +41,7 @@ ENV PORT=4321
 # tini reaps zombies and forwards signals so `docker stop` shuts down cleanly.
 RUN apk add --no-cache tini
 
+COPY --from=deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/package.json ./package.json
 

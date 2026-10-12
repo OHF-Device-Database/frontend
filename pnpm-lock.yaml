@@ -8,21 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@astrojs/netlify':
-        specifier: ^8.2.6
-        version: 8.2.8(@types/node@24.19.1)(astro@7.3.7(@netlify/blobs@11.1.4)(@types/node@24.19.1)(jiti@2.7.0)(yaml@2.9.1))(jiti@2.7.0)(rollup@4.64.2)(yaml@2.9.1)
-      '@eslint-community/eslint-plugin-eslint-comments':
-        specifier: ^4.7.2
-        version: 4.8.1(eslint@10.12.0(jiti@2.7.0))
-      astro:
-        specifier: ^7.3.5
-        version: 7.3.7(@netlify/blobs@11.1.4)(@types/node@24.19.1)(jiti@2.7.0)(yaml@2.9.1)
-      fuse.js:
-        specifier: ^7.5.0
-        version: 7.5.0
-      lit:
-        specifier: ^3.3.2
-        version: 3.3.3
       lucide:
         specifier: ^1.17.0
         version: 1.53.0
@@ -33,9 +18,15 @@ importers:
       '@astrojs/check':
         specifier: ^0.9.10
         version: 0.9.10(@emnapi/runtime@1.11.3)(prettier-plugin-astro@0.14.1)(prettier@3.9.9)(typescript@6.0.3)
+      '@astrojs/netlify':
+        specifier: ^8.2.6
+        version: 8.2.8(@types/node@24.19.1)(astro@7.3.7(@netlify/blobs@11.1.4)(@types/node@24.19.1)(jiti@2.7.0)(yaml@2.9.1))(jiti@2.7.0)(rollup@4.64.2)(yaml@2.9.1)
       '@astrojs/node':
         specifier: ^11.1.6
         version: 11.1.7(astro@7.3.7(@netlify/blobs@11.1.4)(@types/node@24.19.1)(jiti@2.7.0)(yaml@2.9.1))
+      '@eslint-community/eslint-plugin-eslint-comments':
+        specifier: ^4.7.2
+        version: 4.8.1(eslint@10.12.0(jiti@2.7.0))
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.12.0(jiti@2.7.0))
@@ -48,6 +39,9 @@ importers:
       '@types/node':
         specifier: ^24.19.1
         version: 24.19.1
+      astro:
+        specifier: ^7.3.5
+        version: 7.3.7(@netlify/blobs@11.1.4)(@types/node@24.19.1)(jiti@2.7.0)(yaml@2.9.1)
       eslint:
         specifier: ^10.8.0
         version: 10.12.0(jiti@2.7.0)
@@ -60,12 +54,18 @@ importers:
       eslint-plugin-unicorn:
         specifier: ^72.0.0
         version: 72.0.0(eslint@10.12.0(jiti@2.7.0))
+      fuse.js:
+        specifier: ^7.5.0
+        version: 7.5.0
       husky:
         specifier: ^9.1.7
         version: 9.1.7
       lint-staged:
         specifier: ^17.2.0
         version: 17.6.0
+      lit:
+        specifier: ^3.3.2
+        version: 3.3.3
       prettier:
         specifier: ^3.9.6
         version: 3.9.9
@@ -78,6 +78,9 @@ importers:
       typescript-eslint:
         specifier: ^8.65.0
         version: 8.71.1(eslint@10.12.0(jiti@2.7.0))(typescript@6.0.3)
+      vite:
+        specifier: ^8.3.4
+        version: 8.3.4(@types/node@24.19.1)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)
       vitest:
         specifier: ^3
         version: 3.2.7(@types/node@24.19.1)(jiti@2.7.0)(lightningcss@1.33.0)(yaml@2.9.1)

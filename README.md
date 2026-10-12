@@ -77,7 +77,7 @@ Set `API_AUTHORITY` (and `NOINDEX=false` for production) in the Netlify site's *
 
 ## 🐳 Deploying as a Docker image
 
-The app can also run as a self-contained Node server via the [`@astrojs/node`](https://docs.astro.build/en/guides/integrations-guide/node/) adapter. The adapter is selected at build time by `DEPLOY_TARGET`: it defaults to `netlify`, and the `Dockerfile` sets `DEPLOY_TARGET=node` to produce a standalone server.
+The app can also run as a self-contained Node server via the [`@astrojs/node`](https://docs.astro.build/en/guides/integrations-guide/node/) adapter. This is the default adapter, used for `astro dev`, local builds and the Docker image. Netlify builds switch to the Netlify adapter automatically through the `NETLIFY` environment variable Netlify sets.
 
 ```bash
 docker build -t device-database-frontend .
@@ -91,7 +91,7 @@ docker run -p 4321:4321 \
 
 **Runtime config.** All app config is runtime-only: the server reads `API_AUTHORITY`, `CSR_API_AUTHORITY` and `NOINDEX` from the environment (`-e`), so a single image serves every environment — nothing is baked in at build time. `NOINDEX` defaults to `true` (no indexing) when unset; a flip takes effect on container restart (plus CDN cache TTL). Two consequences of prerendering: the client-side API authority is served by the `/config.js` endpoint rather than inlined into the HTML, and prerendered pages carry no `robots` meta tag or `X-Robots-Tag` header (they would freeze the build-time value) — `robots.txt`, which is server-rendered, remains the crawl gate for preview deploys.
 
-The server listens on `HOST=0.0.0.0` and `PORT=4321` (both overridable via env vars). The runtime image ships only the bundled server output — the node build bundles all dependencies into `dist/` (`vite.ssr.noExternal`), so there is no `node_modules` in the final image. One consequence: Astro's sharp-backed `/_image` endpoint is unavailable in the container (the project doesn't use `astro:assets`, so nothing depends on it — revisit if that changes).
+The server listens on `HOST=0.0.0.0` and `PORT=4321` (both overridable via env vars). The runtime image ships the server output in `dist/` plus a production-only `node_modules`. Astro and the adapter are bundled into `dist/`, so only packages the server imports at runtime belong in `dependencies`; everything else (including `astro` and build tooling) lives in `devDependencies` to keep the image small. Astro's sharp-backed `/_image` endpoint is unavailable in the container (the project doesn't use `astro:assets`, so nothing depends on it — revisit if that changes).
 
 Images are published only when a GitHub Release is published (semver tags; prereleases skip `:latest`): `.github/workflows/deploy.yml` pushes an environment-agnostic image (`NOINDEX` and `API_AUTHORITY` are provided at runtime where the container is deployed; set `NOINDEX=false` for production) to GitHub Container Registry (`ghcr.io/<owner>/<repo>`). Pull requests build the image without pushing, as a validation check.
 

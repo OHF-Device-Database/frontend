@@ -4,21 +4,9 @@ import node from "@astrojs/node";
 import { paraglideVitePlugin } from "@inlang/paraglide-js";
 import { defineConfig, envField, memoryCache } from "astro/config";
 
-// Switch the deploy target with DEPLOY_TARGET. Defaults to "netlify" so the
-// existing Netlify build is unaffected; the Docker image sets "node".
-const isNodeTarget = process.env.DEPLOY_TARGET === "node";
-const adapter = isNodeTarget
-	? node({ mode: "standalone" })
-	: netlify({
-			// Dev only. The adapter emulates Netlify in `astro dev`, edge functions
-			// need Deno which we don't have and don't use (middleware runs as a
-			// normal function), so skip it.
-			devFeatures: {
-				edgeFunctions: false,
-				images: true,
-				environmentVariables: false,
-			},
-		});
+// Netlify sets NETLIFY=true in its builds. Everywhere else (dev, Docker) we
+// run the standalone Node server.
+const adapter = process.env.NETLIFY ? netlify() : node({ mode: "standalone" });
 
 const prefixedLocales = [
 	"ar",
@@ -123,9 +111,6 @@ export default defineConfig({
 				],
 			}),
 		],
-		// The Docker image ships dist/ without node_modules, so the node build
-		// must bundle every dependency into the server output.
-		ssr: isNodeTarget ? { noExternal: true } : {},
 	},
 	cache: {
 		provider: memoryCache(),
