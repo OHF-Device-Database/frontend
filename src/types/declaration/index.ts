@@ -27,6 +27,10 @@ export type DeclarationTextPattern = z.infer<typeof IoDeclarationTextPattern>;
 export type DeclarationToggle = z.infer<typeof IoDeclarationToggle>;
 
 export type DeclarationPicker = z.infer<typeof IoDeclarationPicker>;
+export type DeclarationPickerStatic = Extract<
+	DeclarationPicker,
+	{ resource: "none" }
+>;
 export type DeclarationPickerOption = z.infer<typeof IoDeclarationPickerOption>;
 export const DeclarationPickerResource = IoDeclarationPickerResource;
 export type DeclarationPickerResource = z.infer<

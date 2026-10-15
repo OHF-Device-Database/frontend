@@ -19,6 +19,7 @@ const PRESET_VALUES: Record<string, string> = {
 	name: "Hue White A19",
 	ean: "4006381333931",
 	"light.dimming": "true",
+	"local-operation": "cloud-ish",
 };
 
 type FieldSnapshot = {

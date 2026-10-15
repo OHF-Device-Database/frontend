@@ -10,6 +10,7 @@ import * as presentation from "../utilities/presentation";
 import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/preset.js";
 import { validateOption, validateText } from "../validation";
 import { issueMessage } from "./edit-field/issue.js";
+import { pickerValues, renderStaticPicker } from "./edit-field/picker.js";
 import { renderText } from "./edit-field/text.js";
 import { renderToggle, TOGGLE_VALUES } from "./edit-field/toggle.js";
 import type { Declaration } from "../types/declaration";
@@ -42,6 +43,9 @@ const validate = (
 		case "toggle":
 			return validateOption(value, TOGGLE_VALUES);
 		case "picker":
+			return declaration.resource === "none"
+				? validateOption(value, pickerValues(declaration))
+				: [];
 		case "photos":
 			return [];
 	}
@@ -198,6 +202,12 @@ export class EditField extends LitElement {
 		this._descriptionOpen = !this._descriptionOpen;
 	};
 
+	private _renderUnsupported(type: Declaration["type"]) {
+		return html`<p class="edit-field-unsupported">
+			${m.edit_field_unsupported({ type })}
+		</p>`;
+	}
+
 	private _renderControl(ctx: EditFieldRenderContext<Declaration>) {
 		const { declaration } = ctx;
 		switch (declaration.type) {
@@ -206,10 +216,11 @@ export class EditField extends LitElement {
 			case "toggle":
 				return renderToggle({ ...ctx, declaration });
 			case "picker":
+				return declaration.resource === "none"
+					? renderStaticPicker({ ...ctx, declaration })
+					: this._renderUnsupported(declaration.type);
 			case "photos":
-				return html`<p class="edit-field-unsupported">
-					${m.edit_field_unsupported({ type: declaration.type })}
-				</p>`;
+				return this._renderUnsupported(declaration.type);
 		}
 	}
 

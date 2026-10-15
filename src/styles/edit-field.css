@@ -165,3 +165,60 @@ edit-field:state(user-invalid) .edit-field-control {
 edit-field:state(user-invalid) .edit-field-toggle {
 	border-color: var(--error);
 }
+
+/* picker with static options */
+.edit-field-options {
+	display: grid;
+	gap: var(--space-2);
+}
+.edit-field-options label {
+	display: flex;
+	align-items: center;
+	gap: var(--space-3);
+	padding: var(--space-3);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-3);
+	background: var(--surface);
+	cursor: pointer;
+	transition: var(--transition-fast);
+}
+.edit-field-options label:hover {
+	border-color: var(--border-strong);
+}
+.edit-field-options label:has(:checked) {
+	border-color: var(--fg);
+	background: var(--surface-tint-soft);
+}
+.edit-field-options label:has(:disabled) {
+	color: var(--fg-disabled);
+	cursor: default;
+}
+.edit-field-options input {
+	flex: none;
+	margin: 0;
+	accent-color: var(--primary);
+}
+.edit-field-options input:focus-visible {
+	outline: 2px solid var(--primary);
+	outline-offset: 2px;
+}
+.edit-field-option-icon {
+	display: inline-flex;
+	color: var(--fg-muted);
+}
+.edit-field-option-text {
+	display: grid;
+	gap: 2px;
+}
+.edit-field-option-title {
+	font-size: var(--fs-14);
+	font-weight: var(--fw-medium);
+}
+.edit-field-option-subtitle {
+	font-size: var(--fs-13);
+	line-height: var(--lh-snug);
+	color: var(--fg-muted);
+}
+edit-field:state(user-invalid) .edit-field-options label {
+	border-color: var(--error);
+}
