@@ -195,6 +195,10 @@ export class EditField extends LitElement {
 		if (changed.has("defaultValue") && !this._dirty) {
 			this._current = this.defaultValue;
 		}
+		if (this.declaration?.type !== "photos" && this._photos.length > 0) {
+			releasePhotos(this._photos);
+			this._photos = [];
+		}
 		if (typeof this.declaration === "undefined") {
 			this._issues = [];
 			return;
@@ -207,6 +211,7 @@ export class EditField extends LitElement {
 			this._photos.length !== this.declaration.pattern.slots.length
 		) {
 			const slots = emptyPhotos(this.declaration);
+			releasePhotos(this._photos.slice(slots.length));
 			this._photos = slots.map((empty, index) => this._photos[index] ?? empty);
 		}
 		this._issues = validate(
