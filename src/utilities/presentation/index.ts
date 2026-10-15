@@ -1,6 +1,7 @@
 import {
 	ArrowLeft,
 	ArrowRight,
+	Barcode,
 	Blinds,
 	Bot,
 	Car,
@@ -9,6 +10,7 @@ import {
 	ChevronLeft,
 	ChevronRight,
 	CircleQuestionMark,
+	Cloud,
 	CloudSun,
 	Droplet,
 	Droplets,
@@ -29,6 +31,7 @@ import {
 	Search,
 	Speaker,
 	Sprout,
+	Sun,
 	Thermometer,
 	ToggleRight,
 	TriangleAlert,
@@ -166,6 +169,8 @@ const PRESENTATION_GENERIC = {
 	languages: renderable(Languages),
 	link: renderable(Link),
 	warning: renderable(TriangleAlert),
+	help: renderable(CircleQuestionMark),
+	barcode: renderable(Barcode),
 } as const;
 
 export const device = {
@@ -213,6 +218,16 @@ export const quickFilter = (self: QuickFilterId) => {
 
 export const generic = (self: keyof typeof PRESENTATION_GENERIC) =>
 	PRESENTATION_GENERIC[self];
+
+// icon names declarations can refer to, e.g. on picker options
+const PRESENTATION_DECLARATION_ICON = new Map<string, PresentationRenderable>([
+	["sun", renderable(Sun)],
+	["sun-behind-cloud", renderable(CloudSun)],
+	["cloud", renderable(Cloud)],
+]);
+
+export const declarationIcon = (name: string): PresentationRenderable =>
+	PRESENTATION_DECLARATION_ICON.get(name) ?? renderable(CircleQuestionMark);
 
 export const render = (
 	renderable: PresentationRenderable,
