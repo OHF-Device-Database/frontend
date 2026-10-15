@@ -54,7 +54,10 @@ export const renderPhotos = (
 	};
 
 	const set = (index: number, photo: PhotoSlotValue) => {
-		releasePhotos([photos[index] ?? null]);
+		const previous = photos[index] ?? null;
+		if (previous !== null && previous.preview !== photo?.preview) {
+			releasePhotos([previous]);
+		}
 		onPhotos(photos.map((current, at) => (at === index ? photo : current)));
 		ctx.onCommit();
 	};
