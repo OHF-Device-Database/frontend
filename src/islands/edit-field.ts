@@ -3,6 +3,8 @@ import { property, state } from "lit/decorators.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import type { PropertyValues } from "lit";
 
+import "../styles/edit-field.css";
+
 import { m } from "../paraglide/messages.js";
 import { defineElementOnce } from "../utilities/define-element.js";
 import { localized } from "../utilities/localized.js";
