@@ -200,7 +200,7 @@
 	"edit_field_combobox_loading": "Loading…",
 	"edit_field_combobox_error": "Couldn't load options, try typing again",
 	"edit_field_combobox_empty": "No matches",
-	"edit_field_combobox_count": "{count} matches",
+	"edit_field_combobox_count": "Matches: {count}",
 	"edit_field_combobox_more": "Showing {shown} of {total}, type to narrow down",
 	"edit_field_photo_slot": "Photo {number}",
 	"edit_field_photo_any": "Any category",
