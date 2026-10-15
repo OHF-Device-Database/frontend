@@ -31,6 +31,10 @@ export type DeclarationPickerStatic = Extract<
 	DeclarationPicker,
 	{ resource: "none" }
 >;
+export type DeclarationPickerDynamic = Exclude<
+	DeclarationPicker,
+	{ resource: "none" }
+>;
 export type DeclarationPickerOption = z.infer<typeof IoDeclarationPickerOption>;
 export const DeclarationPickerResource = IoDeclarationPickerResource;
 export type DeclarationPickerResource = z.infer<

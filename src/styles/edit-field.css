@@ -63,7 +63,7 @@ edit-field {
 	color: var(--fg-subtle);
 }
 
-/* text */
+/* text input, the combobox reuses it */
 .edit-field-control {
 	display: flex;
 	align-items: center;
@@ -221,4 +221,73 @@ edit-field:state(user-invalid) .edit-field-toggle {
 }
 edit-field:state(user-invalid) .edit-field-options label {
 	border-color: var(--error);
+}
+
+/* picker with options from the server */
+.edit-field-clear {
+	display: inline-flex;
+	padding: 2px;
+	border: 0;
+	border-radius: var(--radius-pill);
+	background: transparent;
+	color: var(--fg-muted);
+	cursor: pointer;
+}
+.edit-field-clear:hover {
+	color: var(--fg);
+}
+.edit-field-clear:focus-visible {
+	outline: 0;
+	box-shadow: var(--ring-focus);
+}
+.edit-field-popover {
+	margin-top: var(--space-1);
+	position-area: bottom;
+	width: anchor-size(width);
+	max-height: 320px;
+	overflow-y: auto;
+	padding: var(--space-1) 0 0;
+	border: 1px solid var(--border-strong);
+	border-radius: var(--radius-4);
+	background: var(--surface);
+	box-shadow: var(--shadow-3);
+	color: var(--fg);
+}
+.edit-field-popover ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.edit-field-popover [role="option"] {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: var(--space-3);
+	padding: var(--space-2) var(--space-3);
+	font-size: var(--fs-14);
+	cursor: pointer;
+}
+.edit-field-popover [role="option"]:hover {
+	background: var(--surface-tint-soft);
+}
+.edit-field-popover [role="option"][aria-selected="true"] {
+	background: var(--surface-tint-mid);
+}
+.edit-field-popover [role="option"].is-current {
+	font-weight: var(--fw-semibold);
+}
+.edit-field-option-detail {
+	flex: none;
+	font-size: var(--fs-12);
+	color: var(--fg-subtle);
+}
+.edit-field-popover-status {
+	position: sticky;
+	bottom: 0;
+	margin: var(--space-1) 0 0;
+	padding: var(--space-2) var(--space-3);
+	border-top: 1px solid var(--border-subtle);
+	background: var(--surface);
+	font-size: var(--fs-12);
+	color: var(--fg-muted);
 }

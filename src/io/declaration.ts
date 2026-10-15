@@ -1,6 +1,8 @@
 import { z } from "astro/zod";
 
+import { getDimensions } from "./dimension";
 import mock from "./mock/declarations.json";
+import type { IoDimensionCategory } from "./dimension";
 
 /** translations keyed by locale, `en` is always present */
 export const IoDeclarationLocalized = z
@@ -164,3 +166,33 @@ export const IoDeclarations = z
 // mocked until the endpoint is available
 export const getDeclarations = () =>
 	Promise.resolve({ declarations: IoDeclarations.parse(mock) });
+
+export type IoResourceOption = { id: string; name: string; count: number };
+
+const flattenCategories = (
+	categories: Record<string, IoDimensionCategory>,
+): IoResourceOption[] =>
+	Object.entries(categories).flatMap(([id, { name, count, children }]) => [
+		{ id, name, count },
+		...flattenCategories(children),
+	]);
+
+// every option at once, served from the dimensions until dedicated endpoints
+// exist (paginated like `/api/unstable/derived/devices`, filtered by `?term`)
+export const getResourceOptions = async (
+	resource: z.infer<typeof IoDeclarationPickerResource>,
+	signal?: AbortSignal,
+): Promise<IoResourceOption[]> => {
+	const { dimensions } = await getDimensions({}, signal);
+
+	switch (resource) {
+		case "brand":
+			return dimensions.manufacturers.map(({ name, count }) => ({
+				id: name,
+				name,
+				count,
+			}));
+		case "category":
+			return flattenCategories(dimensions.categories);
+	}
+};

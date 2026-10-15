@@ -10,7 +10,11 @@ import * as presentation from "../utilities/presentation";
 import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/preset.js";
 import { validateOption, validateText } from "../validation";
 import { issueMessage } from "./edit-field/issue.js";
-import { pickerValues, renderStaticPicker } from "./edit-field/picker.js";
+import {
+	pickerValues,
+	renderDynamicPicker,
+	renderStaticPicker,
+} from "./edit-field/picker.js";
 import { renderText } from "./edit-field/text.js";
 import { renderToggle, TOGGLE_VALUES } from "./edit-field/toggle.js";
 import type { Declaration } from "../types/declaration";
@@ -218,7 +222,7 @@ export class EditField extends LitElement {
 			case "picker":
 				return declaration.resource === "none"
 					? renderStaticPicker({ ...ctx, declaration })
-					: this._renderUnsupported(declaration.type);
+					: renderDynamicPicker({ ...ctx, declaration });
 			case "photos":
 				return this._renderUnsupported(declaration.type);
 		}

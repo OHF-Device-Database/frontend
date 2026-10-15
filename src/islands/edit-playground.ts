@@ -20,6 +20,8 @@ const PRESET_VALUES: Record<string, string> = {
 	ean: "4006381333931",
 	"light.dimming": "true",
 	"local-operation": "cloud-ish",
+	brand: "Philips",
+	category: "lighting",
 };
 
 type FieldSnapshot = {
