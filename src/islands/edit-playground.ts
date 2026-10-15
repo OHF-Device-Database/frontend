@@ -2,13 +2,11 @@ import { z } from "astro/zod";
 import { html, LitElement, nothing } from "lit";
 import { state } from "lit/decorators.js";
 import { keyed } from "lit/directives/keyed.js";
-import { unsafeHTML } from "lit/directives/unsafe-html.js";
 
 import { getDeclarations } from "../io/declaration";
 import { Declaration } from "../types/declaration";
 import { defineElementOnce } from "../utilities/define-element.js";
-import * as presentation from "../utilities/presentation";
-import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/preset.js";
+import { icon } from "../utilities/presentation/icon.js";
 import type { EditField } from "./edit-field.js";
 
 import "./edit-field.js";
@@ -173,12 +171,7 @@ export class EditPlayground extends LitElement {
 						)}
 					</select>
 					<span class="select-chevron" aria-hidden="true">
-						${unsafeHTML(
-							presentation.render(
-								presentation.generic("chevronDown"),
-								PresentationRenderPresetRoleIcon,
-							),
-						)}
+						${icon("chevronDown", 20)}
 					</span>
 				</div>
 			</label>

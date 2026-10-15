@@ -3,14 +3,12 @@ import { property, state } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { live } from "lit/directives/live.js";
 import { createRef, ref } from "lit/directives/ref.js";
-import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import type { PropertyValues } from "lit";
 
 import { m } from "../../paraglide/messages.js";
 import { defineElementOnce } from "../../utilities/define-element.js";
 import { isAbortError } from "../../utilities/is-abort-error.js";
-import * as presentation from "../../utilities/presentation";
-import { PresentationRenderPresetRoleIcon } from "../../utilities/presentation/preset.js";
+import { icon } from "../../utilities/presentation/icon.js";
 import { highlight } from "../../utilities/search.js";
 
 export type ComboboxOption = {
@@ -26,14 +24,6 @@ export type ComboboxSource = {
 };
 
 const FETCH_DELAY_MS = 200;
-
-const icon = (name: Parameters<typeof presentation.generic>[0]) =>
-	unsafeHTML(
-		presentation.render(
-			presentation.generic(name),
-			PresentationRenderPresetRoleIcon.withSize(16),
-		),
-	);
 
 /**
  * editable combobox with a listbox popup, following the WAI-ARIA pattern

@@ -1,17 +1,13 @@
 import { html, nothing } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { live } from "lit/directives/live.js";
-import { unsafeHTML } from "lit/directives/unsafe-html.js";
 
-import * as presentation from "../../utilities/presentation";
-import { PresentationRenderPresetRoleIcon } from "../../utilities/presentation/preset.js";
+import { icon } from "../../utilities/presentation/icon.js";
 import type { DeclarationText } from "../../types/declaration";
 import type { EditFieldRenderContext } from "./context";
 
 // presentation is keyed by declaration id, it is not part of the declaration
-const PREFIX_ICON: Partial<
-	Record<string, Parameters<typeof presentation.generic>[0]>
-> = {
+const PREFIX_ICON: Partial<Record<string, Parameters<typeof icon>[0]>> = {
 	ean: "barcode",
 };
 
@@ -19,7 +15,7 @@ export const renderText = (ctx: EditFieldRenderContext<DeclarationText>) => {
 	const { declaration, value, ids, describedBy, invalid, disabled } = ctx;
 	const { pattern } = declaration;
 	const max = pattern.length?.max;
-	const icon = PREFIX_ICON[declaration.id];
+	const prefix = PREFIX_ICON[declaration.id];
 	const numeric = pattern.kind === "ean";
 
 	const onInput = (e: Event) => {
@@ -57,15 +53,8 @@ export const renderText = (ctx: EditFieldRenderContext<DeclarationText>) => {
 	return html`
 		<div class="edit-field-control">
 			${
-				typeof icon !== "undefined"
-					? html`<span class="edit-field-prefix">
-							${unsafeHTML(
-								presentation.render(
-									presentation.generic(icon),
-									PresentationRenderPresetRoleIcon.withSize(16),
-								),
-							)}
-						</span>`
+				typeof prefix !== "undefined"
+					? html`<span class="edit-field-prefix">${icon(prefix)}</span>`
 					: nothing
 			}
 			${control}

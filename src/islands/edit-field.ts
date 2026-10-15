@@ -1,6 +1,5 @@
 import { html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators.js";
-import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import type { PropertyValues } from "lit";
 
 import "../styles/edit-field.css";
@@ -8,8 +7,7 @@ import "../styles/edit-field.css";
 import { m } from "../paraglide/messages.js";
 import { defineElementOnce } from "../utilities/define-element.js";
 import { localized } from "../utilities/localized.js";
-import * as presentation from "../utilities/presentation";
-import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/preset.js";
+import { icon } from "../utilities/presentation/icon.js";
 import {
 	unsetAllowed,
 	validateOption,
@@ -89,14 +87,6 @@ const validate = (
 			);
 	}
 };
-
-const icon = (name: Parameters<typeof presentation.generic>[0]) =>
-	unsafeHTML(
-		presentation.render(
-			presentation.generic(name),
-			PresentationRenderPresetRoleIcon.withSize(16),
-		),
-	);
 
 /**
  * form-associated control rendered from a declaration

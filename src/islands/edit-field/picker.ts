@@ -1,12 +1,11 @@
 import { html, nothing } from "lit";
-import { unsafeHTML } from "lit/directives/unsafe-html.js";
 
 import { getResourceOptions } from "../../io/declaration";
 import { m } from "../../paraglide/messages.js";
 import { getLocale } from "../../paraglide/runtime.js";
 import { localized } from "../../utilities/localized.js";
 import * as presentation from "../../utilities/presentation";
-import { PresentationRenderPresetRoleIcon } from "../../utilities/presentation/preset.js";
+import { icon } from "../../utilities/presentation/icon.js";
 import { rank } from "../../utilities/search.js";
 import { unsetAllowed } from "../../validation";
 import { renderRadioGroup } from "./radio-group";
@@ -45,12 +44,7 @@ export const renderStaticPicker = (
 				${
 					typeof option.icon !== "undefined"
 						? html`<span class="edit-field-option-icon">
-								${unsafeHTML(
-									presentation.render(
-										presentation.declarationIcon(option.icon),
-										PresentationRenderPresetRoleIcon.withSize(20),
-									),
-								)}
+								${icon(presentation.declarationIcon(option.icon), 20)}
 							</span>`
 						: nothing
 				}

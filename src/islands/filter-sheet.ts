@@ -1,13 +1,11 @@
 import { navigate } from "astro:transitions/client";
 import { html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators.js";
-import { unsafeHTML } from "lit/directives/unsafe-html.js";
 
 import { m } from "../paraglide/messages.js";
 import { getLocale } from "../paraglide/runtime.js";
 import { defineElementOnce } from "../utilities/define-element.js";
-import * as presentation from "../utilities/presentation";
-import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/preset.js";
+import { icon } from "../utilities/presentation/icon.js";
 import { highlight } from "../utilities/search.js";
 import { groupOptions } from "./filter-modal.js";
 import type {
@@ -34,14 +32,6 @@ interface DimensionConfig {
 	options: FilterModalOption[];
 	letterGroups: boolean;
 }
-
-const icon = (name: Parameters<typeof presentation.generic>[0], size: number) =>
-	unsafeHTML(
-		presentation.render(
-			presentation.generic(name),
-			PresentationRenderPresetRoleIcon.withSize(size),
-		),
-	);
 
 export class FilterSheet extends LitElement {
 	@property({ type: Array }) categoryoptions: FilterModalOption[] = [];
