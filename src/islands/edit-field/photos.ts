@@ -4,6 +4,7 @@ import { ifDefined } from "lit/directives/if-defined.js";
 import { m } from "../../paraglide/messages.js";
 import { getLocale } from "../../paraglide/runtime.js";
 import { localized } from "../../utilities/localized.js";
+import { notifyChange } from "./events";
 import type { DeclarationPhotos } from "../../types/declaration";
 import type { EditFieldRenderContext } from "./context";
 
@@ -157,10 +158,7 @@ export const renderPhotos = (
 											?disabled=${disabled}
 											@click=${(e: Event) => {
 												set(index, null);
-												// not a native edit, so fire what a native control would
-												e.currentTarget?.dispatchEvent(
-													new Event("change", { bubbles: true }),
-												);
+												notifyChange(e.currentTarget);
 											}}
 										>
 											${m.edit_field_photo_remove_short()}

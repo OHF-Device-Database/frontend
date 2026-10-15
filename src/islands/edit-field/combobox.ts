@@ -10,6 +10,7 @@ import { defineElementOnce } from "../../utilities/define-element.js";
 import { isAbortError } from "../../utilities/is-abort-error.js";
 import { icon } from "../../utilities/presentation/icon.js";
 import { highlight } from "../../utilities/search.js";
+import { notifyChange } from "./events";
 
 export type ComboboxOption = {
 	value: string;
@@ -173,9 +174,7 @@ export class EditFieldCombobox extends LitElement {
 		this.dispatchEvent(
 			new CustomEvent<string>("combobox-pick", { detail: value }),
 		);
-		// a pick doesn't come from typing, so fire what a native control would
-		this.dispatchEvent(new Event("input", { bubbles: true }));
-		this.dispatchEvent(new Event("change", { bubbles: true }));
+		notifyChange(this);
 	}
 
 	private async _fetch(): Promise<void> {
