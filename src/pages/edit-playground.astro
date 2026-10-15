@@ -1,0 +1,114 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+// temporary page to try edit field declarations, not linked and not indexed
+---
+
+<Layout title="Edit playground">
+	<meta slot="head" name="robots" content="noindex, nofollow" />
+	<div class="container edit-playground-page">
+		<h1>Edit playground</h1>
+		<p class="edit-playground-lede">
+			Pick a preset or edit the declaration to debug one field at a time.
+			Submitting shows the form data instead of sending it.
+		</p>
+		<edit-playground></edit-playground>
+	</div>
+</Layout>
+
+<script>
+	import "../islands/edit-playground";
+</script>
+
+<!-- global because scoped styles don't reach markup rendered by the island -->
+<style is:global>
+	.edit-playground-page {
+		padding-top: var(--space-6);
+		padding-bottom: var(--space-8);
+	}
+	.edit-playground-page h1 {
+		margin-bottom: var(--space-2);
+	}
+	.edit-playground-lede {
+		margin: 0 0 var(--space-6);
+		color: var(--fg-muted);
+	}
+
+	edit-playground {
+		display: grid;
+		gap: var(--space-6);
+		align-items: start;
+	}
+	@media (min-width: 1024px) {
+		edit-playground {
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		}
+	}
+
+	.edit-playground-sources,
+	.edit-playground-preview,
+	.edit-playground-form {
+		display: grid;
+		gap: var(--space-5);
+	}
+	.edit-playground-sources {
+		gap: var(--space-3);
+	}
+
+	.edit-playground-source {
+		display: grid;
+		gap: var(--space-2);
+		font-size: var(--fs-14);
+		font-weight: var(--fw-semibold);
+	}
+	.edit-playground-source textarea {
+		min-height: 360px;
+		padding: var(--space-3);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-3);
+		background: var(--surface-sunken);
+		color: var(--fg);
+		font-family: var(--font-mono);
+		font-size: var(--fs-12);
+		font-weight: var(--fw-regular);
+		line-height: var(--lh-snug);
+		resize: vertical;
+		outline: 0;
+	}
+	.edit-playground-source input,
+	.edit-playground-source select {
+		font-weight: var(--fw-regular);
+	}
+	.edit-playground-source textarea:focus-visible {
+		box-shadow: var(--ring-focus);
+	}
+	.edit-playground-source textarea[aria-invalid="true"] {
+		border-color: var(--error);
+	}
+
+	.edit-playground-error,
+	.edit-playground-output pre {
+		margin: 0;
+		padding: var(--space-3);
+		border-radius: var(--radius-3);
+		font-family: var(--font-mono);
+		font-size: var(--fs-12);
+		white-space: pre-wrap;
+	}
+	.edit-playground-error {
+		background: var(--error-soft);
+		color: var(--error-strong);
+	}
+	.edit-playground-output h2 {
+		margin: 0 0 var(--space-2);
+		font-size: var(--fs-16);
+	}
+	.edit-playground-output pre {
+		background: var(--surface-sunken);
+	}
+
+	.edit-playground-actions {
+		display: flex;
+		gap: var(--space-2);
+	}
+</style>
