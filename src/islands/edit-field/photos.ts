@@ -53,13 +53,16 @@ export const renderPhotos = (
 		return typeof category !== "undefined" ? localized(category.label) : id;
 	};
 
-	const set = (index: number, photo: PhotoSlotValue) => {
+	/** `commit` shows issues, skipped while a category still has to be chosen */
+	const set = (index: number, photo: PhotoSlotValue, commit = true) => {
 		const previous = photos[index] ?? null;
 		if (previous !== null && previous.preview !== photo?.preview) {
 			releasePhotos([previous]);
 		}
 		onPhotos(photos.map((current, at) => (at === index ? photo : current)));
-		ctx.onCommit();
+		if (commit) {
+			ctx.onCommit();
+		}
 	};
 
 	return html`
@@ -82,12 +85,14 @@ export const renderPhotos = (
 				const onFile = (e: Event) => {
 					const file = (e.currentTarget as HTMLInputElement).files?.[0];
 					if (typeof file !== "undefined") {
-						set(index, {
-							file,
-							// a single allowed category needs no choice
-							category: categories.length === 1 ? (categories[0] ?? "") : "",
-							preview: URL.createObjectURL(file),
-						});
+						// a single allowed category needs no choice
+						const category =
+							categories.length === 1 ? (categories[0] ?? "") : "";
+						set(
+							index,
+							{ file, category, preview: URL.createObjectURL(file) },
+							category !== "",
+						);
 					}
 				};
 
