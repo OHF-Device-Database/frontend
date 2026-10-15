@@ -1,6 +1,7 @@
 import {
 	ArrowLeft,
 	ArrowRight,
+	Barcode,
 	Blinds,
 	Bot,
 	Car,
@@ -167,6 +168,7 @@ const PRESENTATION_GENERIC = {
 	link: renderable(Link),
 	warning: renderable(TriangleAlert),
 	help: renderable(CircleQuestionMark),
+	barcode: renderable(Barcode),
 } as const;
 
 export const device = {

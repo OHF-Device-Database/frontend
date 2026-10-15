@@ -10,6 +10,7 @@ import * as presentation from "../utilities/presentation";
 import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/preset.js";
 import { validateText } from "../validation";
 import { issueMessage } from "./edit-field/issue.js";
+import { renderText } from "./edit-field/text.js";
 import type { Declaration } from "../types/declaration";
 import type { ValidationIssue } from "../validation";
 import type {
@@ -194,6 +195,7 @@ export class EditField extends LitElement {
 		const { declaration } = ctx;
 		switch (declaration.type) {
 			case "text":
+				return renderText({ ...ctx, declaration });
 			case "toggle":
 			case "picker":
 			case "photos":

@@ -62,3 +62,60 @@ edit-field {
 	border-radius: var(--radius-3);
 	color: var(--fg-subtle);
 }
+
+/* text */
+.edit-field-control {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+	min-height: 36px;
+	padding: 0 var(--space-3);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-3);
+	background: var(--surface);
+	transition: var(--transition-fast);
+}
+.edit-field-control:hover {
+	border-color: var(--border-strong);
+}
+.edit-field-control:focus-within {
+	box-shadow: var(--ring-focus);
+}
+.edit-field-control:has(textarea) {
+	align-items: flex-start;
+}
+.edit-field-control input[type="text"],
+.edit-field-control textarea {
+	flex: 1;
+	min-width: 0;
+	height: auto;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	color: var(--fg);
+	font: inherit;
+	font-size: var(--fs-14);
+	outline: 0;
+}
+.edit-field-control textarea {
+	padding: var(--space-2) 0;
+	resize: vertical;
+}
+.edit-field-control:has(:disabled) {
+	background: var(--surface-sunken);
+	color: var(--fg-disabled);
+}
+.edit-field-prefix {
+	display: inline-flex;
+	color: var(--fg-muted);
+}
+.edit-field-counter {
+	font-family: var(--font-mono);
+	font-size: var(--fs-12);
+	font-variant-numeric: tabular-nums;
+	color: var(--fg-subtle);
+}
+edit-field:state(user-invalid) .edit-field-control {
+	border-color: var(--error);
+}
