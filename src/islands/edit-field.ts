@@ -8,8 +8,14 @@ import { defineElementOnce } from "../utilities/define-element.js";
 import { localized } from "../utilities/localized.js";
 import * as presentation from "../utilities/presentation";
 import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/preset.js";
-import { validateOption, validateText } from "../validation";
+import { validateOption, validatePhotos, validateText } from "../validation";
 import { issueMessage } from "./edit-field/issue.js";
+import {
+	emptyPhotos,
+	photosFormData,
+	releasePhotos,
+	renderPhotos,
+} from "./edit-field/photos.js";
 import {
 	pickerValues,
 	renderDynamicPicker,
@@ -23,6 +29,7 @@ import type {
 	EditFieldIds,
 	EditFieldRenderContext,
 } from "./edit-field/context.js";
+import type { PhotoSlotValue } from "./edit-field/photos.js";
 
 // light DOM, so ids have to be unique across the document
 let instances = 0;
@@ -40,6 +47,7 @@ const editFieldIds = (): EditFieldIds => {
 const validate = (
 	declaration: Declaration,
 	value: string,
+	photos: PhotoSlotValue[],
 ): ValidationIssue[] => {
 	switch (declaration.type) {
 		case "text":
@@ -51,7 +59,13 @@ const validate = (
 				? validateOption(value, pickerValues(declaration))
 				: [];
 		case "photos":
-			return [];
+			return validatePhotos(
+				photos.map(
+					(photo) =>
+						photo && { type: photo.file.type, category: photo.category },
+				),
+				declaration.pattern.slots,
+			);
 	}
 };
 
@@ -77,6 +91,8 @@ export class EditField extends LitElement {
 	@property({ reflect: true }) name = "";
 
 	@state() private _current = "";
+	/** photos are files, so they're kept apart from the string value */
+	@state() private _photos: PhotoSlotValue[] = [];
 	@state() private _disabled = false;
 	/** like `:user-invalid`, issues show once the user committed an edit or submitted */
 	@state() private _committed = false;
@@ -103,8 +119,15 @@ export class EditField extends LitElement {
 		this._current = value;
 	}
 
+	get photos(): readonly PhotoSlotValue[] {
+		return this._photos;
+	}
+
+	// existing photos aren't loaded yet, so any added one is a change
 	get changed(): boolean {
-		return this._current !== this.defaultValue;
+		return this.declaration?.type === "photos"
+			? this._photos.some((photo) => photo !== null)
+			: this._current !== this.defaultValue;
 	}
 
 	get form(): HTMLFormElement | null {
@@ -130,6 +153,9 @@ export class EditField extends LitElement {
 		this._dirty = false;
 		this._committed = false;
 		this._current = this.defaultValue;
+		releasePhotos(this._photos);
+		this._photos =
+			this.declaration?.type === "photos" ? emptyPhotos(this.declaration) : [];
 	}
 
 	formStateRestoreCallback(state: unknown): void {
@@ -157,12 +183,23 @@ export class EditField extends LitElement {
 		if (this.name === "") {
 			this.name = this.declaration.id;
 		}
-		this._issues = validate(this.declaration, this._current);
+		if (
+			this.declaration.type === "photos" &&
+			this._photos.length !== this.declaration.pattern.slots.length
+		) {
+			const slots = emptyPhotos(this.declaration);
+			this._photos = slots.map((empty, index) => this._photos[index] ?? empty);
+		}
+		this._issues = validate(this.declaration, this._current, this._photos);
 	}
 
 	protected override updated(): void {
 		const internals = this._internals;
-		internals.setFormValue(this._current, this._current);
+		if (this.declaration?.type === "photos") {
+			internals.setFormValue(photosFormData(this.name, this._photos));
+		} else {
+			internals.setFormValue(this._current, this._current);
+		}
 
 		const [issue] = this._issues;
 		if (typeof issue === "undefined") {
@@ -198,6 +235,11 @@ export class EditField extends LitElement {
 		this.value = value;
 	};
 
+	private _onPhotos = (photos: PhotoSlotValue[]): void => {
+		this._dirty = true;
+		this._photos = photos;
+	};
+
 	private _onCommit = (): void => {
 		this._committed = true;
 	};
@@ -205,12 +247,6 @@ export class EditField extends LitElement {
 	private _toggleDescription = (): void => {
 		this._descriptionOpen = !this._descriptionOpen;
 	};
-
-	private _renderUnsupported(type: Declaration["type"]) {
-		return html`<p class="edit-field-unsupported">
-			${m.edit_field_unsupported({ type })}
-		</p>`;
-	}
 
 	private _renderControl(ctx: EditFieldRenderContext<Declaration>) {
 		const { declaration } = ctx;
@@ -224,7 +260,11 @@ export class EditField extends LitElement {
 					? renderStaticPicker({ ...ctx, declaration })
 					: renderDynamicPicker({ ...ctx, declaration });
 			case "photos":
-				return this._renderUnsupported(declaration.type);
+				return renderPhotos(
+					{ ...ctx, declaration },
+					this._photos,
+					this._onPhotos,
+				);
 		}
 	}
 

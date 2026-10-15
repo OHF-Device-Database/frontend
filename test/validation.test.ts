@@ -1,7 +1,14 @@
 import { describe, test } from "vitest";
 
-import { validateOption, validateText } from "../src/validation";
-import type { ValidationTextPattern } from "../src/validation";
+import {
+	validateOption,
+	validatePhotos,
+	validateText,
+} from "../src/validation";
+import type {
+	ValidationPhotoSlot,
+	ValidationTextPattern,
+} from "../src/validation";
 
 // same patterns as the mock declarations
 const NAME: ValidationTextPattern = {
@@ -111,6 +118,50 @@ describe("validateOption", () => {
 	test("rejects unknown", (t) => {
 		t.expect(validateOption("hybrid", ids)).toEqual([
 			{ code: "unknown-option" },
+		]);
+	});
+});
+
+describe("validatePhotos", () => {
+	const SLOTS: ValidationPhotoSlot[] = [
+		{ constrained: true, categories: ["packshot", "hero-shot"] },
+		{ constrained: false },
+	];
+
+	test("accepts empty slots and allowed categories", (t) => {
+		t.expect(validatePhotos([null, null], SLOTS)).toEqual([]);
+		t.expect(
+			validatePhotos(
+				[
+					{ type: "image/jpeg", category: "hero-shot" },
+					{ type: "image/png", category: "unboxing" },
+				],
+				SLOTS,
+			),
+		).toEqual([]);
+	});
+
+	test("rejects files that aren't images", (t) => {
+		t.expect(
+			validatePhotos(
+				[{ type: "application/pdf", category: "packshot" }],
+				SLOTS,
+			),
+		).toEqual([{ code: "photo-type", slot: 0 }]);
+	});
+
+	test("rejects missing or disallowed categories", (t) => {
+		t.expect(
+			validatePhotos(
+				[
+					{ type: "image/jpeg", category: "unboxing" },
+					{ type: "image/jpeg", category: "" },
+				],
+				SLOTS,
+			),
+		).toEqual([
+			{ code: "photo-category", slot: 0 },
+			{ code: "photo-category", slot: 1 },
 		]);
 	});
 });

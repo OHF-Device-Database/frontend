@@ -34,8 +34,7 @@ edit-field {
 
 .edit-field-description,
 .edit-field-hint,
-.edit-field-error,
-.edit-field-unsupported {
+.edit-field-error {
 	margin: 0;
 	font-size: var(--fs-13);
 	line-height: var(--lh-snug);
@@ -54,13 +53,6 @@ edit-field {
 	align-items: center;
 	gap: var(--space-1);
 	color: var(--error);
-}
-
-.edit-field-unsupported {
-	padding: var(--space-2) var(--space-3);
-	border: 1px dashed var(--border-strong);
-	border-radius: var(--radius-3);
-	color: var(--fg-subtle);
 }
 
 /* text input, the combobox reuses it */
@@ -290,4 +282,44 @@ edit-field:state(user-invalid) .edit-field-options label {
 	background: var(--surface);
 	font-size: var(--fs-12);
 	color: var(--fg-muted);
+}
+
+/* photos */
+.edit-field-photos {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+	gap: var(--space-4);
+}
+.edit-field-photo {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	align-content: start;
+	justify-items: start;
+	gap: var(--space-2);
+	font-size: var(--fs-13);
+}
+.edit-field-photo-title {
+	margin: 0;
+	font-weight: var(--fw-medium);
+}
+.edit-field-photo-title span {
+	display: block;
+	font-weight: var(--fw-regular);
+	color: var(--fg-muted);
+}
+.edit-field-photo input,
+.edit-field-photo select {
+	max-width: 100%;
+	font: inherit;
+}
+.edit-field-photo img {
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	object-fit: cover;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-3);
+	background: var(--surface-sunken);
+}
+edit-field:state(user-invalid) .edit-field-photo img {
+	border-color: var(--error);
 }
