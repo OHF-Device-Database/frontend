@@ -8,9 +8,10 @@ import { defineElementOnce } from "../utilities/define-element.js";
 import { localized } from "../utilities/localized.js";
 import * as presentation from "../utilities/presentation";
 import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/preset.js";
-import { validateText } from "../validation";
+import { validateOption, validateText } from "../validation";
 import { issueMessage } from "./edit-field/issue.js";
 import { renderText } from "./edit-field/text.js";
+import { renderToggle, TOGGLE_VALUES } from "./edit-field/toggle.js";
 import type { Declaration } from "../types/declaration";
 import type { ValidationIssue } from "../validation";
 import type {
@@ -23,6 +24,7 @@ let instances = 0;
 const editFieldIds = (): EditFieldIds => {
 	const prefix = `edit-field-${instances++}`;
 	return {
+		label: `${prefix}-label`,
 		control: `${prefix}-control`,
 		hint: `${prefix}-hint`,
 		description: `${prefix}-description`,
@@ -38,6 +40,7 @@ const validate = (
 		case "text":
 			return validateText(value, declaration.pattern);
 		case "toggle":
+			return validateOption(value, TOGGLE_VALUES);
 		case "picker":
 		case "photos":
 			return [];
@@ -157,8 +160,12 @@ export class EditField extends LitElement {
 		if (typeof issue === "undefined") {
 			internals.setValidity({});
 		} else {
-			const anchor =
-				this.querySelector<HTMLElement>(`#${this._ids.control}`) ?? undefined;
+			// grouped controls (e.g. radios) anchor on their first input
+			const control = this.querySelector<HTMLElement>(`#${this._ids.control}`);
+			const anchor = control?.matches("input, textarea, select")
+				? control
+				: (control?.querySelector<HTMLElement>("input, textarea, select") ??
+					undefined);
 			internals.setValidity({ customError: true }, issueMessage(issue), anchor);
 		}
 
@@ -197,6 +204,7 @@ export class EditField extends LitElement {
 			case "text":
 				return renderText({ ...ctx, declaration });
 			case "toggle":
+				return renderToggle({ ...ctx, declaration });
 			case "picker":
 			case "photos":
 				return html`<p class="edit-field-unsupported">
@@ -225,7 +233,9 @@ export class EditField extends LitElement {
 
 		return html`
 			<div class="edit-field-head">
-				<label class="edit-field-label" for=${ids.control}>${label}</label>
+				<label class="edit-field-label" id=${ids.label} for=${ids.control}>
+					${label}
+				</label>
 				${
 					typeof declaration.description !== "undefined"
 						? html`<button
@@ -262,6 +272,7 @@ export class EditField extends LitElement {
 			${this._renderControl({
 				declaration,
 				value: this._current,
+				defaultValue: this.defaultValue,
 				ids,
 				describedBy,
 				invalid: showIssue,

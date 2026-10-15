@@ -66,6 +66,8 @@ export const IoDeclarationText = z.object({
 export const IoDeclarationToggle = z.object({
 	...IoDeclarationBase,
 	type: z.literal("toggle"),
+	/** whether a set value can be changed back to not set, defaults to true */
+	allowUnset: z.optional(z.boolean()),
 });
 
 export const IoDeclarationPickerOption = z.object({

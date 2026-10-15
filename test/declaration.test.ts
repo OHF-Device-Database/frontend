@@ -119,6 +119,22 @@ describe("Declaration", () => {
 			"unknown category <unboxing>",
 		);
 	});
+
+	test("toggle accepts optional allowUnset", (t) => {
+		const toggle = {
+			id: "light.dimming",
+			type: "toggle",
+			label: { en: "Dimmable" },
+		};
+
+		t.expect(Declaration.safeParse(toggle).success).toBe(true);
+		t.expect(
+			Declaration.safeParse({ ...toggle, allowUnset: false }).success,
+		).toBe(true);
+		t.expect(
+			Declaration.safeParse({ ...toggle, allowUnset: "no" }).success,
+		).toBe(false);
+	});
 });
 
 describe("IoDeclarations", () => {

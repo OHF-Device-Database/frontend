@@ -1,6 +1,7 @@
 import type { Declaration } from "../../types/declaration";
 
 export type EditFieldIds = {
+	label: string;
 	control: string;
 	hint: string;
 	description: string;
@@ -11,6 +12,8 @@ export type EditFieldIds = {
 export type EditFieldRenderContext<D extends Declaration> = {
 	declaration: D;
 	value: string;
+	/** value from the server, before any edit */
+	defaultValue: string;
 	ids: EditFieldIds;
 	describedBy: string | undefined;
 	invalid: boolean;

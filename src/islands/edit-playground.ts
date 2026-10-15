@@ -18,6 +18,7 @@ import "./edit-field.js";
 const PRESET_VALUES: Record<string, string> = {
 	name: "Hue White A19",
 	ean: "4006381333931",
+	"light.dimming": "true",
 };
 
 type FieldSnapshot = {

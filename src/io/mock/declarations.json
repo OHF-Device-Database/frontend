@@ -26,6 +26,7 @@
 	{
 		"id": "light.dimming",
 		"type": "toggle",
+		"allowUnset": false,
 		"label": { "en": "Dimmable" },
 		"hint": { "en": "Capable of brightness adjustments" },
 		"description": {
