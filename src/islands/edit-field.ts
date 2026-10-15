@@ -195,7 +195,9 @@ export class EditField extends LitElement {
 			this._issues = [];
 			return;
 		}
-		if (this.name === "") {
+		// follows the declaration id, unless a name was set explicitly
+		const previous = changed.get("declaration");
+		if (this.name === "" || this.name === previous?.id) {
 			this.name = this.declaration.id;
 		}
 		if (
