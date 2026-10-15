@@ -192,5 +192,14 @@
 	"device_wtb_choose": "Choose your country",
 	"device_wtb_selection": "Sites are chosen for independence and no paid ranking, and listed in alphabetical order. {#link}Missing a comparison site? Get in touch{/link}",
 	"device_wtb_location": "Your country is preselected from your device's time zone, read only in your browser. Your choice is remembered on this device.",
-	"device_wtb_all_sites": "All comparison sites we link to, by country"
+	"device_wtb_all_sites": "All comparison sites we link to, by country",
+	"edit_field_about": "About {label}",
+	"edit_field_unsupported": "Editing {type} fields is not supported yet",
+	"edit_field_issue_multiline": "Must be a single line",
+	"edit_field_issue_invalid_character": "{character} at position {position} is not allowed",
+	"edit_field_issue_too_short": "Must be at least {min} characters, currently {length}",
+	"edit_field_issue_too_long": "Must be at most {max} characters, currently {length}",
+	"edit_field_issue_ean_length": "Must be 8 or 13 digits, currently {length}",
+	"edit_field_issue_ean_checksum": "The last digit doesn't match the others, check for typos",
+	"edit_field_issue_unknown_option": "Choose one of the available options"
 }

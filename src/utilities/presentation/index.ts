@@ -166,6 +166,7 @@ const PRESENTATION_GENERIC = {
 	languages: renderable(Languages),
 	link: renderable(Link),
 	warning: renderable(TriangleAlert),
+	help: renderable(CircleQuestionMark),
 } as const;
 
 export const device = {
