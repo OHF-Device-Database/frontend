@@ -8,7 +8,13 @@ import { defineElementOnce } from "../utilities/define-element.js";
 import { localized } from "../utilities/localized.js";
 import * as presentation from "../utilities/presentation";
 import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/preset.js";
-import { validateOption, validatePhotos, validateText } from "../validation";
+import {
+	unsetAllowed,
+	validateOption,
+	validatePhotos,
+	validateText,
+	validateUnset,
+} from "../validation";
 import { issueMessage } from "./edit-field/issue.js";
 import {
 	emptyPhotos,
@@ -47,17 +53,30 @@ const editFieldIds = (): EditFieldIds => {
 const validate = (
 	declaration: Declaration,
 	value: string,
+	defaultValue: string,
 	photos: PhotoSlotValue[],
 ): ValidationIssue[] => {
 	switch (declaration.type) {
 		case "text":
 			return validateText(value, declaration.pattern);
 		case "toggle":
-			return validateOption(value, TOGGLE_VALUES);
+			return [
+				...validateUnset(
+					value,
+					unsetAllowed(declaration.allowUnset, defaultValue),
+				),
+				...validateOption(value, TOGGLE_VALUES),
+			];
 		case "picker":
-			return declaration.resource === "none"
-				? validateOption(value, pickerValues(declaration))
-				: [];
+			return [
+				...validateUnset(
+					value,
+					unsetAllowed(declaration.allowUnset, defaultValue),
+				),
+				...(declaration.resource === "none"
+					? validateOption(value, pickerValues(declaration))
+					: []),
+			];
 		case "photos":
 			return validatePhotos(
 				photos.map(
@@ -190,7 +209,12 @@ export class EditField extends LitElement {
 			const slots = emptyPhotos(this.declaration);
 			this._photos = slots.map((empty, index) => this._photos[index] ?? empty);
 		}
-		this._issues = validate(this.declaration, this._current, this._photos);
+		this._issues = validate(
+			this.declaration,
+			this._current,
+			this.defaultValue,
+			this._photos,
+		);
 	}
 
 	protected override updated(): void {

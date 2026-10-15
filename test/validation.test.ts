@@ -1,9 +1,11 @@
 import { describe, test } from "vitest";
 
 import {
+	unsetAllowed,
 	validateOption,
 	validatePhotos,
 	validateText,
+	validateUnset,
 } from "../src/validation";
 import type {
 	ValidationPhotoSlot,
@@ -163,5 +165,16 @@ describe("validatePhotos", () => {
 			{ code: "photo-category", slot: 0 },
 			{ code: "photo-category", slot: 1 },
 		]);
+	});
+});
+
+describe("validateUnset", () => {
+	test("allows clearing unless the declaration forbids it", (t) => {
+		t.expect(validateUnset("", unsetAllowed(undefined, "true"))).toEqual([]);
+		t.expect(validateUnset("", unsetAllowed(false, ""))).toEqual([]);
+		t.expect(validateUnset("", unsetAllowed(false, "true"))).toEqual([
+			{ code: "unset" },
+		]);
+		t.expect(validateUnset("false", unsetAllowed(false, "true"))).toEqual([]);
 	});
 });

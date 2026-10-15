@@ -30,6 +30,7 @@ export type ValidationIssue =
 	| { code: "ean-length"; length: number }
 	| { code: "ean-checksum" }
 	| { code: "unknown-option" }
+	| { code: "unset" }
 	| { code: "photo-type"; slot: number }
 	| { code: "photo-category"; slot: number };
 

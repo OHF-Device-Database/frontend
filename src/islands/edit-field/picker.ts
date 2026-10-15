@@ -8,7 +8,8 @@ import { localized } from "../../utilities/localized.js";
 import * as presentation from "../../utilities/presentation";
 import { PresentationRenderPresetRoleIcon } from "../../utilities/presentation/preset.js";
 import { rank } from "../../utilities/search.js";
-import { renderRadioGroup, unsetAllowed } from "./radio-group";
+import { unsetAllowed } from "../../validation";
+import { renderRadioGroup } from "./radio-group";
 import type { IoResourceOption } from "../../io/declaration";
 import type {
 	DeclarationPickerDynamic,

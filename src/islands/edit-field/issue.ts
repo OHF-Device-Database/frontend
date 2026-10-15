@@ -32,6 +32,8 @@ export const issueMessage = (issue: ValidationIssue): string => {
 			return m.edit_field_issue_ean_checksum();
 		case "unknown-option":
 			return m.edit_field_issue_unknown_option();
+		case "unset":
+			return m.edit_field_issue_unset();
 		case "photo-type":
 			return m.edit_field_issue_photo_type({ number: issue.slot + 1 });
 		case "photo-category":

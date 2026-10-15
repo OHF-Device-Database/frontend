@@ -14,12 +14,6 @@ export type RadioOption = {
 	describedBy?: string | undefined;
 };
 
-/** without `allowUnset`, "not set" only shows when the device has no value yet */
-export const unsetAllowed = (
-	allowUnset: boolean | undefined,
-	defaultValue: string,
-): boolean => allowUnset !== false || defaultValue === "";
-
 export const renderRadioGroup = (
 	ctx: EditFieldRenderContext<Declaration>,
 	className: string,

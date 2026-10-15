@@ -1,5 +1,6 @@
 import { m } from "../../paraglide/messages.js";
-import { renderRadioGroup, unsetAllowed } from "./radio-group";
+import { unsetAllowed } from "../../validation";
+import { renderRadioGroup } from "./radio-group";
 import type { DeclarationToggle } from "../../types/declaration";
 import type { EditFieldRenderContext } from "./context";
 
