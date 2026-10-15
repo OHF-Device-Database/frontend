@@ -155,6 +155,16 @@ export class EditFieldCombobox extends LitElement {
 		void this._fetch();
 	};
 
+	private _onInput = (e: Event): void => {
+		this._term = (e.currentTarget as HTMLInputElement).value;
+		this._typed = true;
+		// opens without fetching, the delayed fetch below covers it
+		this._open = true;
+		this._active = -1;
+		clearTimeout(this._timer);
+		this._timer = setTimeout(() => void this._fetch(), FETCH_DELAY_MS);
+	};
+
 	/** closes without picking, typed text goes back to the value */
 	private _dismiss(): void {
 		clearTimeout(this._timer);
@@ -208,14 +218,6 @@ export class EditFieldCombobox extends LitElement {
 			}
 		}
 	}
-
-	private _onInput = (e: Event): void => {
-		this._term = (e.currentTarget as HTMLInputElement).value;
-		this._typed = true;
-		this._openPopup();
-		clearTimeout(this._timer);
-		this._timer = setTimeout(() => void this._fetch(), FETCH_DELAY_MS);
-	};
 
 	private _onKeyDown = (e: KeyboardEvent): void => {
 		const count = this._options.length;
