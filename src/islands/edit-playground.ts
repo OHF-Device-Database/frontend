@@ -6,8 +6,6 @@ import { live } from "lit/directives/live.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import type { PropertyValues } from "lit";
 
-import "../styles/edit-field-view.css";
-
 import { getDeclarations, getResourceOptions } from "../io/declaration";
 import { Declaration } from "../types/declaration";
 import { defineElementOnce } from "../utilities/define-element.js";

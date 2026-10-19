@@ -3,8 +3,6 @@ import { property, state } from "lit/decorators.js";
 import { repeat } from "lit/directives/repeat.js";
 import type { PropertyValues } from "lit";
 
-import "../styles/edit-form.css";
-
 import { m } from "../paraglide/messages.js";
 import { defineElementOnce } from "../utilities/define-element.js";
 import { localized } from "../utilities/localized.js";
