@@ -36,6 +36,7 @@ import {
 	Thermometer,
 	ToggleRight,
 	TriangleAlert,
+	Undo2,
 	Users,
 	Waves,
 	X,
@@ -173,6 +174,7 @@ const PRESENTATION_GENERIC = {
 	help: renderable(CircleQuestionMark),
 	barcode: renderable(Barcode),
 	imagePlus: renderable(ImagePlus),
+	undo: renderable(Undo2),
 } as const;
 
 export const device = {
