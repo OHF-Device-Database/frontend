@@ -75,6 +75,26 @@ describe("renderEditFieldView", () => {
 		t.expect(view(picker, "gone")).toContain(">gone</dd>");
 	});
 
+	test("lists photos with their category", (t) => {
+		const photos: Declaration = {
+			id: "photos",
+			type: "photos",
+			label: { en: "Photos" },
+			categories: { packshot: { label: { en: "Packshot" } } },
+			pattern: { slots: [{ constrained: false }] },
+		};
+		t.expect(view(photos, "")).toContain("Not set");
+		const html = toHtml(
+			renderEditFieldView({
+				declaration: photos,
+				value: "",
+				photos: [{ src: "a.png", alt: 'say "hi"', category: "packshot" }],
+			}),
+		);
+		t.expect(html).toContain('<img src="a.png" alt="say &quot;hi&quot;" />');
+		t.expect(html).toContain("<figcaption>Packshot</figcaption>");
+	});
+
 	test("prefers the resolved label of a resource value", (t) => {
 		const category: Declaration = {
 			id: "category",

@@ -47,3 +47,28 @@
 	line-height: var(--lh-snug);
 	color: var(--fg-muted);
 }
+.edit-field-view-photos {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+	gap: var(--space-3);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.edit-field-view-photos figure {
+	display: grid;
+	gap: var(--space-1);
+	margin: 0;
+}
+.edit-field-view-photos img {
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	object-fit: scale-down;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-3);
+	background: var(--surface-sunken);
+}
+.edit-field-view-photos figcaption {
+	font-size: var(--fs-12);
+	color: var(--fg-muted);
+}

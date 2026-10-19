@@ -3,7 +3,7 @@ import { localized } from "./localized";
 import { markup, trusted } from "./markup";
 import * as presentation from "./presentation";
 import { iconSvg } from "./presentation/svg";
-import type { Declaration } from "../types/declaration";
+import type { Declaration, DeclarationPhotos } from "../types/declaration";
 import type { Markup } from "./markup";
 
 export type EditFieldViewInput = {
@@ -12,18 +12,55 @@ export type EditFieldViewInput = {
 	value: string;
 	/** display name of a resource value, e.g. a category name instead of its id */
 	resourceLabel?: string | undefined;
+	/** photos of a photos field, they aren't part of the device data yet */
+	photos?: readonly EditFieldViewPhoto[] | undefined;
+};
+
+export type EditFieldViewPhoto = {
+	src: string;
+	alt: string;
+	/** category id out of the declaration */
+	category: string;
 };
 
 const unset = () =>
 	markup`<span class="edit-field-view-unset">${m.edit_field_unset()}</span>`;
 
+const renderPhotos = (
+	declaration: DeclarationPhotos,
+	photos: readonly EditFieldViewPhoto[],
+): Markup => {
+	if (photos.length === 0) {
+		return unset();
+	}
+
+	return markup`<ul class="edit-field-view-photos">
+		${photos.map((photo) => {
+			const category = declaration.categories[photo.category];
+			return markup`<li>
+				<figure>
+					<img src="${photo.src}" alt="${photo.alt}" />
+					${
+						typeof category !== "undefined"
+							? markup`<figcaption>${localized(category.label)}</figcaption>`
+							: false
+					}
+				</figure>
+			</li>`;
+		})}
+	</ul>`;
+};
+
 const renderValue = ({
 	declaration,
 	value,
 	resourceLabel,
+	photos = [],
 }: EditFieldViewInput): Markup => {
-	// existing photos aren't part of the device data yet
-	if (value === "" || declaration.type === "photos") {
+	if (declaration.type === "photos") {
+		return renderPhotos(declaration, photos);
+	}
+	if (value === "") {
 		return unset();
 	}
 
