@@ -47,12 +47,16 @@ import Layout from "../layouts/Layout.astro";
 	}
 
 	.edit-playground-sources,
-	.edit-playground-preview {
+	.edit-playground-preview,
+	.edit-playground-edit {
 		display: grid;
 		gap: var(--space-5);
 	}
 	.edit-playground-sources {
 		gap: var(--space-3);
+	}
+	.edit-playground-edit[hidden] {
+		display: none;
 	}
 
 	.edit-playground-pickers {

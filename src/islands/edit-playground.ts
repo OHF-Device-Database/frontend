@@ -14,6 +14,8 @@ import { defineElementOnce } from "../utilities/define-element.js";
 import { renderEditFieldView } from "../utilities/edit-field-view.js";
 import { toHtml } from "../utilities/markup.js";
 import { icon } from "../utilities/presentation/icon.js";
+import { notifyChange } from "./edit-field/events.js";
+import type { EditFieldViewPhoto } from "../utilities/edit-field-view.js";
 import type { EditField } from "./edit-field.js";
 
 import "./edit-form.js";
@@ -112,6 +114,8 @@ export class EditPlayground extends LitElement {
 	@state() private _error: string | undefined;
 	@state() private _initialValue = "";
 	@state() private _mode: "view" | "edit" = "edit";
+	/** submitted photos, kept as if the device had them */
+	@state() private _savedPhotos: EditFieldViewPhoto[] = [];
 	/** name of a brand or category value, for the view */
 	@state() private _resourceLabel: string | undefined;
 	@state() private _snapshot: FieldSnapshot | undefined;
@@ -182,7 +186,17 @@ export class EditPlayground extends LitElement {
 		this._error = undefined;
 		this._initialValue = EXAMPLE_VALUES[declaration.id] ?? "";
 		this._submitted = undefined;
+		this._setSavedPhotos([]);
 		this._refresh();
+	}
+
+	private _setSavedPhotos(photos: EditFieldViewPhoto[]): void {
+		for (const photo of this._savedPhotos) {
+			if (!photos.includes(photo)) {
+				URL.revokeObjectURL(photo.src);
+			}
+		}
+		this._savedPhotos = photos;
 	}
 
 	// reads the field once it rendered the latest change
@@ -236,11 +250,43 @@ export class EditPlayground extends LitElement {
 		this._refresh();
 	};
 
+	// stands in for the server accepting the proposal: what was submitted
+	// becomes the device data, so the view shows it and edits start from it
 	private _onSubmit = (e: CustomEvent<FormData>): void => {
-		this._submitted = [...e.detail.entries()].map(([key, value]) => [
+		const data = e.detail;
+		this._submitted = [...data.entries()].map(([key, value]) => [
 			key,
 			typeof value === "string" ? value : value.name,
 		]);
+
+		const declaration = this._declaration;
+		if (declaration?.type === "photos") {
+			const added = [...data.entries()].flatMap(([key, file]) => {
+				if (!(file instanceof File)) {
+					return [];
+				}
+				const category = data.get(`${key}.category`);
+				return [
+					{
+						src: URL.createObjectURL(file),
+						alt: file.name,
+						category: typeof category === "string" ? category : "",
+					},
+				];
+			});
+			this._setSavedPhotos([...this._savedPhotos, ...added]);
+			// saved, so they're no longer pending in the form
+			const field = this.querySelector("edit-field");
+			if (field !== null) {
+				field.revert();
+				notifyChange(field);
+			}
+		} else if (typeof declaration !== "undefined") {
+			const value = data.get(declaration.id);
+			if (typeof value === "string") {
+				this._initialValue = value;
+			}
+		}
 		this._refresh();
 	};
 
@@ -287,14 +333,19 @@ export class EditPlayground extends LitElement {
 						declaration,
 						value: this._initialValue,
 						resourceLabel: this._resourceLabel,
+						photos: this._savedPhotos,
 					}),
 				),
 			)}
 		</dl>`;
 	}
 
+	// hidden instead of removed in view mode, so edits survive switching
 	private _renderEdit(declaration: Declaration) {
-		return html`
+		return html`<div
+			class="edit-playground-edit"
+			?hidden=${this._mode !== "edit"}
+		>
 			${keyed(
 				this._exampleId,
 				html`<edit-form
@@ -320,7 +371,7 @@ export class EditPlayground extends LitElement {
 						</section>`
 					: nothing
 			}
-		`;
+		</div>`;
 	}
 
 	private _renderSelect(
@@ -413,9 +464,10 @@ export class EditPlayground extends LitElement {
 				${
 					typeof this._declaration === "undefined"
 						? nothing
-						: this._mode === "view"
-							? this._renderView(this._declaration)
-							: this._renderEdit(this._declaration)
+						: html`
+								${this._mode === "view" ? this._renderView(this._declaration) : nothing}
+								${this._renderEdit(this._declaration)}
+							`
 				}
 			</div>
 		`;
