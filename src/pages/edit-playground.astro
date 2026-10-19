@@ -10,7 +10,8 @@ import Layout from "../layouts/Layout.astro";
 		<h1>Edit playground</h1>
 		<p class="edit-playground-lede">
 			Pick an editor and an example, or edit the declaration, to debug one field
-			at a time. Submitting shows the form data instead of sending it.
+			at a time. View shows the initial value as the device page would, edit
+			submits only changed fields and shows the form data instead of sending it.
 		</p>
 		<edit-playground></edit-playground>
 	</div>
@@ -46,8 +47,7 @@ import Layout from "../layouts/Layout.astro";
 	}
 
 	.edit-playground-sources,
-	.edit-playground-preview,
-	.edit-playground-form {
+	.edit-playground-preview {
 		display: grid;
 		gap: var(--space-5);
 	}
@@ -115,10 +115,5 @@ import Layout from "../layouts/Layout.astro";
 	}
 	.edit-playground-output pre {
 		background: var(--surface-sunken);
-	}
-
-	.edit-playground-actions {
-		display: flex;
-		gap: var(--space-2);
 	}
 </style>

@@ -3,14 +3,20 @@ import { html, LitElement, nothing } from "lit";
 import { state } from "lit/decorators.js";
 import { keyed } from "lit/directives/keyed.js";
 import { live } from "lit/directives/live.js";
+import { unsafeHTML } from "lit/directives/unsafe-html.js";
+import type { PropertyValues } from "lit";
 
-import { getDeclarations } from "../io/declaration";
+import "../styles/edit-field-view.css";
+
+import { getDeclarations, getResourceOptions } from "../io/declaration";
 import { Declaration } from "../types/declaration";
 import { defineElementOnce } from "../utilities/define-element.js";
+import { renderEditFieldView } from "../utilities/edit-field-view.js";
+import { toHtml } from "../utilities/markup.js";
 import { icon } from "../utilities/presentation/icon.js";
 import type { EditField } from "./edit-field.js";
 
-import "./edit-field.js";
+import "./edit-form.js";
 
 // temporary page to debug one declaration at a time, intentionally english only
 
@@ -105,6 +111,9 @@ export class EditPlayground extends LitElement {
 	@state() private _declaration: Declaration | undefined;
 	@state() private _error: string | undefined;
 	@state() private _initialValue = "";
+	@state() private _mode: "view" | "edit" = "edit";
+	/** name of a brand or category value, for the view */
+	@state() private _resourceLabel: string | undefined;
 	@state() private _snapshot: FieldSnapshot | undefined;
 	@state() private _submitted: [string, string][] | undefined;
 
@@ -125,6 +134,31 @@ export class EditPlayground extends LitElement {
 	override disconnectedCallback(): void {
 		super.disconnectedCallback();
 		this.removeEventListener("invalid", this._refresh, true);
+	}
+
+	// untyped, the map holds private state keys
+	protected override willUpdate(changed: PropertyValues): void {
+		if (changed.has("_declaration") || changed.has("_initialValue")) {
+			void this._resolveResourceLabel();
+		}
+	}
+
+	private async _resolveResourceLabel(): Promise<void> {
+		const declaration = this._declaration;
+		const value = this._initialValue;
+		this._resourceLabel = undefined;
+		if (
+			declaration?.type !== "picker" ||
+			declaration.resource === "none" ||
+			value === ""
+		) {
+			return;
+		}
+		const options = await getResourceOptions(declaration.resource);
+		// skip if another declaration or value came in meanwhile
+		if (this._declaration === declaration && this._initialValue === value) {
+			this._resourceLabel = options.find(({ id }) => id === value)?.name;
+		}
 	}
 
 	private _examplesOf(editor: Editor): Declaration[] {
@@ -197,17 +231,13 @@ export class EditPlayground extends LitElement {
 		this._refresh();
 	};
 
-	// `novalidate` skips the native bubbles, fields show their own errors
-	private _onSubmit = (e: SubmitEvent): void => {
-		e.preventDefault();
-		const form = e.currentTarget as HTMLFormElement;
-		if (!form.checkValidity()) {
-			form.querySelector<HTMLElement>(":invalid")?.focus();
-			this._submitted = undefined;
-			this._refresh();
-			return;
-		}
-		this._submitted = [...new FormData(form).entries()].map(([key, value]) => [
+	private _onMode = (e: Event): void => {
+		this._mode = (e.currentTarget as HTMLInputElement).value as "view" | "edit";
+		this._refresh();
+	};
+
+	private _onSubmit = (e: CustomEvent<FormData>): void => {
+		this._submitted = [...e.detail.entries()].map(([key, value]) => [
 			key,
 			typeof value === "string" ? value : value.name,
 		]);
@@ -216,9 +246,82 @@ export class EditPlayground extends LitElement {
 
 	private _onReset = (): void => {
 		this._submitted = undefined;
-		// `reset` fires before the controls reset
+		// `reset` fires before the fields reset
 		void Promise.resolve().then(this._refresh);
 	};
+
+	private _renderMode() {
+		// same look as the toggle field
+		return html`
+			<div class="edit-playground-source">
+				<span id="edit-playground-mode">Mode</span>
+				<div
+					class="edit-field-toggle"
+					role="radiogroup"
+					aria-labelledby="edit-playground-mode"
+				>
+					${(["view", "edit"] as const).map(
+						(mode) => html`
+							<label>
+								<input
+									type="radio"
+									name="edit-playground-mode"
+									value=${mode}
+									.checked=${live(this._mode === mode)}
+									@change=${this._onMode}
+								/>
+								${mode === "view" ? "View" : "Edit"}
+							</label>
+						`,
+					)}
+				</div>
+			</div>
+		`;
+	}
+
+	private _renderView(declaration: Declaration) {
+		return html`<dl class="edit-field-views">
+			${unsafeHTML(
+				toHtml(
+					renderEditFieldView({
+						declaration,
+						value: this._initialValue,
+						resourceLabel: this._resourceLabel,
+					}),
+				),
+			)}
+		</dl>`;
+	}
+
+	private _renderEdit(declaration: Declaration) {
+		return html`
+			${keyed(
+				this._exampleId,
+				html`<edit-form
+					.declarations=${[declaration]}
+					.values=${{ [declaration.id]: this._initialValue }}
+					@input=${this._refresh}
+					@change=${this._refresh}
+					@reset=${this._onReset}
+					@edit-form-submit=${this._onSubmit}
+				></edit-form>`,
+			)}
+
+			<section class="edit-playground-output">
+				<h2>State</h2>
+				<pre>${JSON.stringify(this._snapshot ?? null, null, 2)}</pre>
+			</section>
+
+			${
+				typeof this._submitted !== "undefined"
+					? html`<section class="edit-playground-output">
+							<h2>Submitted form data</h2>
+							<pre>${JSON.stringify(this._submitted, null, 2)}</pre>
+						</section>`
+					: nothing
+			}
+		`;
+	}
 
 	private _renderSelect(
 		label: string,
@@ -306,43 +409,13 @@ export class EditPlayground extends LitElement {
 			</div>
 
 			<div class="edit-playground-preview">
-				<form
-					class="edit-playground-form"
-					novalidate
-					@input=${this._refresh}
-					@change=${this._refresh}
-					@submit=${this._onSubmit}
-					@reset=${this._onReset}
-				>
-					${
-						typeof this._declaration !== "undefined"
-							? keyed(
-									this._exampleId,
-									html`<edit-field
-										.declaration=${this._declaration}
-										value=${this._initialValue}
-									></edit-field>`,
-								)
-							: nothing
-					}
-					<div class="edit-playground-actions">
-						<button type="submit" class="btn btn-primary">Submit</button>
-						<button type="reset" class="btn btn-secondary">Reset</button>
-					</div>
-				</form>
-
-				<section class="edit-playground-output">
-					<h2>State</h2>
-					<pre>${JSON.stringify(this._snapshot ?? null, null, 2)}</pre>
-				</section>
-
+				${this._renderMode()}
 				${
-					typeof this._submitted !== "undefined"
-						? html`<section class="edit-playground-output">
-								<h2>Submitted form data</h2>
-								<pre>${JSON.stringify(this._submitted, null, 2)}</pre>
-							</section>`
-						: nothing
+					typeof this._declaration === "undefined"
+						? nothing
+						: this._mode === "view"
+							? this._renderView(this._declaration)
+							: this._renderEdit(this._declaration)
 				}
 			</div>
 		`;
