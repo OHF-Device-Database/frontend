@@ -383,13 +383,13 @@ export class EditField extends LitElement {
 				onInput: this._onInput,
 				onCommit: this._onCommit,
 			})}
-			${
-				showIssue && typeof issue !== "undefined"
-					? html`<p class="edit-field-error" id=${ids.error}>
-							${icon("warning")} ${issueMessage(issue)}
-						</p>`
-					: nothing
-			}
+			<p class="edit-field-error" id=${ids.error}>
+				${
+					showIssue && typeof issue !== "undefined"
+						? html`${icon("warning")} ${issueMessage(issue)}`
+						: nothing
+				}
+			</p>
 		`;
 	}
 }

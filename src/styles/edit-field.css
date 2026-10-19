@@ -52,6 +52,7 @@ edit-field {
 	display: flex;
 	align-items: center;
 	gap: var(--space-1);
+	min-height: calc(var(--fs-13) * var(--lh-snug));
 	color: var(--error);
 }
 
