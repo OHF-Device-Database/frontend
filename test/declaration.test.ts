@@ -122,8 +122,38 @@ describe("Declaration", () => {
 });
 
 describe("IoDeclarations", () => {
-	test("rejects duplicate ids", (t) => {
-		t.expect(IoDeclarations.safeParse([NAME, NAME]).success).toBe(false);
+	const quiet = () => vi.spyOn(console, "warn").mockImplementation(() => {});
+
+	test("skips unsupported declarations and keeps the rest", (t) => {
+		const warn = quiet();
+		const declarations = IoDeclarations.parse([
+			{ ...NAME, id: "rating", type: "rating" },
+			NAME,
+			{
+				id: "duplicate-of",
+				type: "picker",
+				label: { en: "Duplicate of" },
+				resource: "device",
+			},
+		]);
+		t.expect(declarations.map(({ id }) => id)).toEqual(["name"]);
+		t.expect(warn).toHaveBeenCalledTimes(2);
+		warn.mockRestore();
+	});
+
+	test("keeps the first of repeated ids", (t) => {
+		const warn = quiet();
+		const declarations = IoDeclarations.parse([
+			NAME,
+			{ ...NAME, label: { en: "Other" } },
+		]);
+		t.expect(declarations.map(({ label }) => label.en)).toEqual(["Name"]);
+		t.expect(warn).toHaveBeenCalledOnce();
+		warn.mockRestore();
+	});
+
+	test("still requires a list", (t) => {
+		t.expect(IoDeclarations.safeParse({}).success).toBe(false);
 	});
 });
 

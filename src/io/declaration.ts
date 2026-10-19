@@ -147,13 +147,31 @@ export const IoDeclaration = z.discriminatedUnion("type", [
 ]);
 export type IoDeclaration = z.infer<typeof IoDeclaration>;
 
-export const IoDeclarations = z
-	.array(IoDeclaration)
-	.refine(
-		(declarations) =>
-			new Set(declarations.map(({ id }) => id)).size === declarations.length,
-		{ message: "duplicate declaration id" },
-	);
+/**
+ * the declarations this client can render: unsupported or invalid ones
+ * (e.g. a newer `type`) and repeated ids are skipped with a warning, so the
+ * server can add declarations before the client supports them
+ */
+export const IoDeclarations = z.array(z.unknown()).transform((entries) => {
+	const ids = new Set<string>();
+
+	return entries.flatMap((entry, index) => {
+		const result = IoDeclaration.safeParse(entry);
+		if (!result.success) {
+			console.warn(
+				`skipping declaration at ${index}\n${z.prettifyError(result.error)}`,
+			);
+			return [];
+		}
+		if (ids.has(result.data.id)) {
+			console.warn(`skipping repeated declaration <${result.data.id}>`);
+			return [];
+		}
+		ids.add(result.data.id);
+
+		return [result.data];
+	});
+});
 
 // mocked until the endpoint is available
 export const getDeclarations = () =>
