@@ -40,8 +40,6 @@ export class EditFieldCombobox extends LitElement {
 	@property({ attribute: false }) describedBy: string | undefined;
 	@property({ attribute: false }) invalid = false;
 	@property({ attribute: false }) disabled = false;
-	/** shows a clear button when set */
-	@property({ attribute: false }) clearLabel: string | undefined;
 
 	@state() private _open = false;
 	@state() private _term = "";
@@ -56,7 +54,6 @@ export class EditFieldCombobox extends LitElement {
 	private _timer: ReturnType<typeof setTimeout> | undefined;
 	private readonly _anchor = createRef<HTMLDivElement>();
 	private readonly _popover = createRef<HTMLDivElement>();
-	private readonly _input = createRef<HTMLInputElement>();
 	private readonly _labels = new Map<string, string>();
 
 	protected override createRenderRoot(): HTMLElement {
@@ -165,14 +162,12 @@ export class EditFieldCombobox extends LitElement {
 		this._term = this._valueLabel;
 	}
 
-	/** `undefined` clears */
-	private _pick(option: ComboboxOption | undefined): void {
-		const value = option?.value ?? "";
-		this._labels.set(value, option?.label ?? "");
+	private _pick(option: ComboboxOption): void {
+		this._labels.set(option.value, option.label);
 		this._dismiss();
-		this._showLabel(option?.label ?? "");
+		this._showLabel(option.label);
 		this.dispatchEvent(
-			new CustomEvent<string>("combobox-pick", { detail: value }),
+			new CustomEvent<string>("combobox-pick", { detail: option.value }),
 		);
 		notifyChange(this);
 	}
@@ -258,11 +253,6 @@ export class EditFieldCombobox extends LitElement {
 		}
 	};
 
-	private _onClear = (): void => {
-		this._pick(undefined);
-		this._input.value?.focus();
-	};
-
 	private _statusText(): string {
 		if (this._status === "loading") {
 			return m.edit_field_combobox_loading();
@@ -306,24 +296,10 @@ export class EditFieldCombobox extends LitElement {
 					spellcheck="false"
 					.value=${live(this._term)}
 					?disabled=${this.disabled}
-					${ref(this._input)}
 					@input=${this._onInput}
 					@keydown=${this._onKeyDown}
 					@click=${this._openPopup}
 				/>
-				${
-					typeof this.clearLabel !== "undefined" && this.value !== ""
-						? html`<button
-								type="button"
-								class="edit-field-clear"
-								aria-label=${this.clearLabel}
-								?disabled=${this.disabled}
-								@click=${this._onClear}
-							>
-								${icon("x")}
-							</button>`
-						: nothing
-				}
 			</div>
 			<div
 				class="edit-field-popover"

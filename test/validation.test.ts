@@ -1,7 +1,6 @@
 import { describe, test } from "vitest";
 
 import {
-	unsetAllowed,
 	validateOption,
 	validatePhotos,
 	validateText,
@@ -169,12 +168,10 @@ describe("validatePhotos", () => {
 });
 
 describe("validateUnset", () => {
-	test("allows clearing unless the declaration forbids it", (t) => {
-		t.expect(validateUnset("", unsetAllowed(undefined, "true"))).toEqual([]);
-		t.expect(validateUnset("", unsetAllowed(false, ""))).toEqual([]);
-		t.expect(validateUnset("", unsetAllowed(false, "true"))).toEqual([
-			{ code: "unset" },
-		]);
-		t.expect(validateUnset("false", unsetAllowed(false, "true"))).toEqual([]);
+	test("keeps an empty value empty but never removes a set one", (t) => {
+		t.expect(validateUnset("", "")).toEqual([]);
+		t.expect(validateUnset("true", "")).toEqual([]);
+		t.expect(validateUnset("false", "true")).toEqual([]);
+		t.expect(validateUnset("", "true")).toEqual([{ code: "unset" }]);
 	});
 });

@@ -7,7 +7,6 @@ import { localized } from "../../utilities/localized.js";
 import * as presentation from "../../utilities/presentation";
 import { icon } from "../../utilities/presentation/icon.js";
 import { rank } from "../../utilities/search.js";
-import { unsetAllowed } from "../../validation";
 import { renderRadioGroup } from "./radio-group";
 import type { IoResourceOption } from "../../io/declaration";
 import type {
@@ -21,7 +20,7 @@ import type { RadioOption } from "./radio-group";
 
 import "./combobox.js";
 
-/** submitted values, empty means not set */
+/** empty means not set, it's never submitted since it can't be picked */
 export const pickerValues = (declaration: DeclarationPickerStatic) =>
 	new Set(["", ...declaration.options.map(({ id }) => id)]);
 
@@ -63,15 +62,6 @@ export const renderStaticPicker = (
 			`,
 		};
 	});
-
-	if (unsetAllowed(declaration.allowUnset, ctx.defaultValue)) {
-		options.push({
-			value: "",
-			content: html`<span class="edit-field-option-text">
-				<span class="edit-field-option-title">${m.edit_field_unset()}</span>
-			</span>`,
-		});
-	}
 
 	return renderRadioGroup(ctx, "edit-field-options", options);
 };
@@ -139,11 +129,6 @@ export const renderDynamicPicker = (
 		.describedBy=${ctx.describedBy}
 		.invalid=${ctx.invalid}
 		.disabled=${ctx.disabled}
-		.clearLabel=${
-			unsetAllowed(declaration.allowUnset, ctx.defaultValue)
-				? m.edit_field_clear({ label: localized(declaration.label) })
-				: undefined
-		}
 		@combobox-pick=${onPick}
 	></edit-field-combobox>`;
 };

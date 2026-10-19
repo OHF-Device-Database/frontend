@@ -65,14 +65,8 @@ export const IoDeclarationText = z.object({
 	pattern: IoDeclarationTextPattern,
 });
 
-const IoDeclarationAllowUnset = {
-	/** whether a set value can be changed back to not set, defaults to true */
-	allowUnset: z.optional(z.boolean()),
-};
-
 export const IoDeclarationToggle = z.object({
 	...IoDeclarationBase,
-	...IoDeclarationAllowUnset,
 	type: z.literal("toggle"),
 });
 
@@ -89,7 +83,6 @@ export const IoDeclarationPickerResource = z.enum(["brand", "category"]);
 export const IoDeclarationPicker = z.discriminatedUnion("resource", [
 	z.object({
 		...IoDeclarationBase,
-		...IoDeclarationAllowUnset,
 		type: z.literal("picker"),
 		resource: z.literal("none"),
 		options: z
@@ -103,7 +96,6 @@ export const IoDeclarationPicker = z.discriminatedUnion("resource", [
 	}),
 	z.object({
 		...IoDeclarationBase,
-		...IoDeclarationAllowUnset,
 		type: z.literal("picker"),
 		resource: IoDeclarationPickerResource,
 	}),

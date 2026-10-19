@@ -9,7 +9,6 @@ import { defineElementOnce } from "../utilities/define-element.js";
 import { localized } from "../utilities/localized.js";
 import { icon } from "../utilities/presentation/icon.js";
 import {
-	unsetAllowed,
 	validateOption,
 	validatePhotos,
 	validateText,
@@ -58,21 +57,18 @@ const validate = (
 ): ValidationIssue[] => {
 	switch (declaration.type) {
 		case "text":
-			return validateText(value, declaration.pattern);
+			return [
+				...validateUnset(value, defaultValue),
+				...validateText(value, declaration.pattern),
+			];
 		case "toggle":
 			return [
-				...validateUnset(
-					value,
-					unsetAllowed(declaration.allowUnset, defaultValue),
-				),
+				...validateUnset(value, defaultValue),
 				...validateOption(value, TOGGLE_VALUES),
 			];
 		case "picker":
 			return [
-				...validateUnset(
-					value,
-					unsetAllowed(declaration.allowUnset, defaultValue),
-				),
+				...validateUnset(value, defaultValue),
 				...(declaration.resource === "none"
 					? validateOption(value, pickerValues(declaration))
 					: []),
@@ -160,13 +156,18 @@ export class EditField extends LitElement {
 		return this._internals.reportValidity();
 	}
 
-	formResetCallback(): void {
+	/** back to the value from the server, like a form reset of this field alone */
+	revert(): void {
 		this._dirty = false;
 		this._committed = false;
 		this._current = this.defaultValue;
 		releasePhotos(this._photos);
 		this._photos =
 			this.declaration?.type === "photos" ? emptyPhotos(this.declaration) : [];
+	}
+
+	formResetCallback(): void {
+		this.revert();
 	}
 
 	formStateRestoreCallback(state: unknown): void {
@@ -208,17 +209,23 @@ export class EditField extends LitElement {
 			releasePhotos(this._photos.slice(slots.length));
 			this._photos = slots.map((empty, index) => this._photos[index] ?? empty);
 		}
-		this._issues = validate(
-			this.declaration,
-			this._current,
-			this.defaultValue,
-			this._photos,
-		);
+		// unchanged fields aren't submitted, so a stored value never blocks a proposal
+		this._issues = this.changed
+			? validate(
+					this.declaration,
+					this._current,
+					this.defaultValue,
+					this._photos,
+				)
+			: [];
 	}
 
 	protected override updated(): void {
+		// only changed fields are part of a proposal
 		const internals = this._internals;
-		if (this.declaration?.type === "photos") {
+		if (!this.changed) {
+			internals.setFormValue(null);
+		} else if (this.declaration?.type === "photos") {
 			internals.setFormValue(photosFormData(this.name, this._photos));
 		} else {
 			internals.setFormValue(this._current, this._current);

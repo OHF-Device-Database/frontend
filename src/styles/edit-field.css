@@ -216,22 +216,6 @@ edit-field:state(user-invalid) .edit-field-options label {
 }
 
 /* picker with options from the server */
-.edit-field-clear {
-	display: inline-flex;
-	padding: 2px;
-	border: 0;
-	border-radius: var(--radius-pill);
-	background: transparent;
-	color: var(--fg-muted);
-	cursor: pointer;
-}
-.edit-field-clear:hover {
-	color: var(--fg);
-}
-.edit-field-clear:focus-visible {
-	outline: 0;
-	box-shadow: var(--ring-focus);
-}
 .edit-field-popover {
 	margin-top: var(--space-1);
 	position-area: bottom;

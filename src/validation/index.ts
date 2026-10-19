@@ -1,9 +1,10 @@
 // returns structured issues instead of messages, consumers localize them
 
 export { validateEan } from "./ean";
-export { unsetAllowed, validateOption, validateUnset } from "./option";
+export { validateOption } from "./option";
 export { validatePhotos } from "./photos";
 export { validateText } from "./text";
+export { validateUnset } from "./unset";
 export type {
 	ValidationIssue,
 	ValidationIssueCode,

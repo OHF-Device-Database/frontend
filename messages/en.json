@@ -195,7 +195,6 @@
 	"device_wtb_all_sites": "All comparison sites we link to, by country",
 	"edit_field_about": "About {label}",
 	"edit_field_unset": "Not set",
-	"edit_field_clear": "Clear {label}",
 	"edit_field_option_devices": "{count} devices",
 	"edit_field_combobox_loading": "Loading…",
 	"edit_field_combobox_error": "Couldn't load options, try typing again",
@@ -217,7 +216,7 @@
 	"edit_field_issue_ean_length": "Must be 8 or 13 digits, currently {length}",
 	"edit_field_issue_ean_checksum": "The last digit doesn't match the others, check for typos",
 	"edit_field_issue_unknown_option": "Choose one of the available options",
-	"edit_field_issue_unset": "This value can't be cleared",
+	"edit_field_issue_unset": "A value that was set can't be removed",
 	"edit_field_issue_photo_type": "Photo {number} is not an image",
 	"edit_field_issue_photo_category": "Choose a category for photo {number}"
 }
