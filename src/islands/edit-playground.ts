@@ -140,11 +140,17 @@ export class EditPlayground extends LitElement {
 		this._refresh();
 	};
 
+	// `novalidate` skips the native bubbles, fields show their own errors
 	private _onSubmit = (e: SubmitEvent): void => {
 		e.preventDefault();
-		this._submitted = [
-			...new FormData(e.currentTarget as HTMLFormElement).entries(),
-		].map(([key, value]) => [
+		const form = e.currentTarget as HTMLFormElement;
+		if (!form.checkValidity()) {
+			form.querySelector<HTMLElement>(":invalid")?.focus();
+			this._submitted = undefined;
+			this._refresh();
+			return;
+		}
+		this._submitted = [...new FormData(form).entries()].map(([key, value]) => [
 			key,
 			typeof value === "string" ? value : value.name,
 		]);
@@ -210,6 +216,7 @@ export class EditPlayground extends LitElement {
 			<div class="edit-playground-preview">
 				<form
 					class="edit-playground-form"
+					novalidate
 					@input=${this._refresh}
 					@change=${this._refresh}
 					@submit=${this._onSubmit}

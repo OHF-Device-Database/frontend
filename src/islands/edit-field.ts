@@ -228,18 +228,35 @@ export class EditField extends LitElement {
 		if (typeof issue === "undefined") {
 			internals.setValidity({});
 		} else {
-			// grouped controls (e.g. radios) anchor on their first input
-			const control = this.querySelector<HTMLElement>(`#${this._ids.control}`);
-			const anchor = control?.matches("input, textarea, select")
-				? control
-				: (control?.querySelector<HTMLElement>("input, textarea, select") ??
-					undefined);
-			internals.setValidity({ customError: true }, issueMessage(issue), anchor);
+			internals.setValidity(
+				{ customError: true },
+				issueMessage(issue),
+				this._anchor,
+			);
 		}
 
 		// styling hooks, `edit-field:state(changed)` / `edit-field:state(user-invalid)`
 		this._toggleState("changed", this.changed);
 		this._toggleState("user-invalid", this._showIssue);
+	}
+
+	/** grouped controls (e.g. radios) anchor on their first input */
+	private get _anchor(): HTMLElement | undefined {
+		const control = this.querySelector<HTMLElement>(`#${this._ids.control}`);
+		return control?.matches("input, textarea, select")
+			? control
+			: (control?.querySelector<HTMLElement>("input, textarea, select") ??
+					undefined);
+	}
+
+	/** the host isn't focusable, so focus goes to the control */
+	override focus(options?: FocusOptions): void {
+		const anchor = this._anchor;
+		if (typeof anchor !== "undefined") {
+			anchor.focus(options);
+		} else {
+			super.focus(options);
+		}
 	}
 
 	private get _showIssue(): boolean {
