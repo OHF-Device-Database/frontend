@@ -292,8 +292,8 @@ export class EditPlayground extends LitElement {
 
 	private _onReset = (): void => {
 		this._submitted = undefined;
-		// `reset` fires before the fields reset
-		void Promise.resolve().then(this._refresh);
+		// after a real click a microtask still runs before the fields reset
+		setTimeout(this._refresh);
 	};
 
 	private _renderMode() {

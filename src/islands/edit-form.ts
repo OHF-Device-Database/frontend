@@ -87,8 +87,8 @@ export class EditForm extends LitElement {
 	};
 
 	private _onReset = (): void => {
-		// `reset` fires before the fields reset
-		void Promise.resolve().then(this._sync);
+		// after a real click a microtask still runs before the fields reset
+		setTimeout(this._sync);
 	};
 
 	override render() {
