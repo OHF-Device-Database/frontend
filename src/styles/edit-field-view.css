@@ -1,0 +1,49 @@
+/* read only fields, rendered on the server, see utilities/edit-field-view.ts */
+.edit-field-views {
+	display: grid;
+	gap: var(--space-4);
+	margin: 0;
+}
+.edit-field-view {
+	display: grid;
+	gap: var(--space-1);
+}
+.edit-field-view-label {
+	font-size: var(--fs-13);
+	color: var(--fg-muted);
+}
+.edit-field-view-value {
+	margin: 0;
+	font-size: var(--fs-14);
+	color: var(--fg);
+	overflow-wrap: anywhere;
+}
+.edit-field-view-text {
+	white-space: pre-line;
+}
+.edit-field-view-text.is-code {
+	font-family: var(--font-mono);
+	font-variant-numeric: tabular-nums;
+}
+.edit-field-view-unset {
+	color: var(--fg-subtle);
+	font-style: italic;
+}
+.edit-field-view-option {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+}
+.edit-field-view-option-icon {
+	display: inline-flex;
+	color: var(--fg-muted);
+}
+.edit-field-view-option-text {
+	display: grid;
+	gap: 2px;
+}
+.edit-field-view-option-subtitle {
+	font-size: var(--fs-13);
+	line-height: var(--lh-snug);
+	color: var(--fg-muted);
+}
