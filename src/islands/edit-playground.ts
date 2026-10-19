@@ -2,6 +2,7 @@ import { z } from "astro/zod";
 import { html, LitElement, nothing } from "lit";
 import { state } from "lit/decorators.js";
 import { keyed } from "lit/directives/keyed.js";
+import { live } from "lit/directives/live.js";
 
 import { getDeclarations } from "../io/declaration";
 import { Declaration } from "../types/declaration";
@@ -13,7 +14,47 @@ import "./edit-field.js";
 
 // temporary page to debug one declaration at a time, intentionally english only
 
-const PRESET_VALUES: Record<string, string> = {
+type Editor = "text" | "toggle" | "options" | "resource" | "photos";
+
+const EDITORS: Record<Editor, string> = {
+	text: "Text",
+	toggle: "Toggle",
+	options: "Picker with fixed options",
+	resource: "Picker with server data",
+	photos: "Photos",
+};
+
+const editorOf = (declaration: Declaration): Editor => {
+	if (declaration.type !== "picker") {
+		return declaration.type;
+	}
+
+	return declaration.resource === "none" ? "options" : "resource";
+};
+
+// variants the mocked declarations don't cover
+const EXTRA_EXAMPLES: Declaration[] = [
+	{
+		id: "notes",
+		type: "text",
+		label: { en: "Notes" },
+		hint: { en: "Anything else worth knowing about the device" },
+		pattern: {
+			multiline: true,
+			length: { max: 500 },
+			kind: "letter",
+			regex: "[\\p{L}\\p{M}\\p{N}\\p{P}\\p{Zs}\\p{Sc}\\p{Sm}]",
+		},
+	},
+	{
+		id: "battery-powered",
+		type: "toggle",
+		label: { en: "Battery powered" },
+		hint: { en: "Runs on batteries" },
+	},
+];
+
+const EXAMPLE_VALUES: Record<string, string> = {
 	name: "Hue White A19",
 	ean: "4006381333931",
 	"light.dimming": "true",
@@ -57,8 +98,9 @@ const parseDeclaration = (
 };
 
 export class EditPlayground extends LitElement {
-	@state() private _presets: Declaration[] = [];
-	@state() private _presetId = "";
+	@state() private _examples: Declaration[] = [];
+	@state() private _editor: Editor = "text";
+	@state() private _exampleId = "";
 	@state() private _source = "";
 	@state() private _declaration: Declaration | undefined;
 	@state() private _error: string | undefined;
@@ -75,11 +117,8 @@ export class EditPlayground extends LitElement {
 		// `invalid` doesn't bubble, capture it to reflect submit attempts
 		this.addEventListener("invalid", this._refresh, true);
 		void getDeclarations().then(({ declarations }) => {
-			this._presets = declarations;
-			const [first] = declarations;
-			if (typeof first !== "undefined") {
-				this._loadPreset(first);
-			}
+			this._examples = [...declarations, ...EXTRA_EXAMPLES];
+			this._loadEditor(this._editor);
 		});
 	}
 
@@ -88,12 +127,26 @@ export class EditPlayground extends LitElement {
 		this.removeEventListener("invalid", this._refresh, true);
 	}
 
-	private _loadPreset(declaration: Declaration): void {
-		this._presetId = declaration.id;
+	private _examplesOf(editor: Editor): Declaration[] {
+		return this._examples.filter(
+			(declaration) => editorOf(declaration) === editor,
+		);
+	}
+
+	private _loadEditor(editor: Editor): void {
+		this._editor = editor;
+		const [first] = this._examplesOf(editor);
+		if (typeof first !== "undefined") {
+			this._loadExample(first);
+		}
+	}
+
+	private _loadExample(declaration: Declaration): void {
+		this._exampleId = declaration.id;
 		this._source = JSON.stringify(declaration, null, 2);
 		this._declaration = declaration;
 		this._error = undefined;
-		this._initialValue = PRESET_VALUES[declaration.id] ?? "";
+		this._initialValue = EXAMPLE_VALUES[declaration.id] ?? "";
 		this._submitted = undefined;
 		this._refresh();
 	}
@@ -114,11 +167,15 @@ export class EditPlayground extends LitElement {
 		this._snapshot = snapshot(field);
 	}
 
-	private _onPreset = (e: Event): void => {
+	private _onEditor = (e: Event): void => {
+		this._loadEditor((e.currentTarget as HTMLSelectElement).value as Editor);
+	};
+
+	private _onExample = (e: Event): void => {
 		const id = (e.currentTarget as HTMLSelectElement).value;
-		const declaration = this._presets.find((preset) => preset.id === id);
+		const declaration = this._examples.find((example) => example.id === id);
 		if (typeof declaration !== "undefined") {
-			this._loadPreset(declaration);
+			this._loadExample(declaration);
 		}
 	};
 
@@ -163,16 +220,25 @@ export class EditPlayground extends LitElement {
 		void Promise.resolve().then(this._refresh);
 	};
 
-	private _renderPresets() {
+	private _renderSelect(
+		label: string,
+		value: string,
+		options: { value: string; label: string }[],
+		onChange: (e: Event) => void,
+	) {
 		return html`
 			<label class="edit-playground-source">
-				<span>Preset</span>
+				<span>${label}</span>
 				<div class="select">
-					<select .value=${this._presetId} @change=${this._onPreset}>
-						${this._presets.map(
-							(preset) =>
-								html`<option value=${preset.id}>
-									${preset.id} (${preset.type})
+					<select @change=${onChange}>
+						${options.map(
+							// on the options, `.value` on the select would apply before they're replaced
+							(option) =>
+								html`<option
+									value=${option.value}
+									.selected=${live(option.value === value)}
+								>
+									${option.label}
 								</option>`,
 						)}
 					</select>
@@ -184,10 +250,36 @@ export class EditPlayground extends LitElement {
 		`;
 	}
 
+	private _renderPickers() {
+		const editors = (Object.keys(EDITORS) as Editor[]).filter(
+			(editor) => this._examplesOf(editor).length > 0,
+		);
+
+		return html`
+			<div class="edit-playground-pickers">
+				${this._renderSelect(
+					"Editor",
+					this._editor,
+					editors.map((editor) => ({ value: editor, label: EDITORS[editor] })),
+					this._onEditor,
+				)}
+				${this._renderSelect(
+					"Example",
+					this._exampleId,
+					this._examplesOf(this._editor).map((example) => ({
+						value: example.id,
+						label: example.label.en,
+					})),
+					this._onExample,
+				)}
+			</div>
+		`;
+	}
+
 	override render() {
 		return html`
 			<div class="edit-playground-sources">
-				${this._renderPresets()}
+				${this._renderPickers()}
 				<label class="edit-playground-source">
 					<span>Declaration</span>
 					<textarea
@@ -225,7 +317,7 @@ export class EditPlayground extends LitElement {
 					${
 						typeof this._declaration !== "undefined"
 							? keyed(
-									this._presetId,
+									this._exampleId,
 									html`<edit-field
 										.declaration=${this._declaration}
 										value=${this._initialValue}

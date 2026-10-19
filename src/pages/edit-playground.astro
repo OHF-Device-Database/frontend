@@ -9,8 +9,8 @@ import Layout from "../layouts/Layout.astro";
 	<div class="container edit-playground-page">
 		<h1>Edit playground</h1>
 		<p class="edit-playground-lede">
-			Pick a preset or edit the declaration to debug one field at a time.
-			Submitting shows the form data instead of sending it.
+			Pick an editor and an example, or edit the declaration, to debug one field
+			at a time. Submitting shows the form data instead of sending it.
 		</p>
 		<edit-playground></edit-playground>
 	</div>
@@ -55,11 +55,21 @@ import Layout from "../layouts/Layout.astro";
 		gap: var(--space-3);
 	}
 
+	.edit-playground-pickers {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+		gap: var(--space-3);
+	}
+
 	.edit-playground-source {
 		display: grid;
 		gap: var(--space-2);
 		font-size: var(--fs-14);
 		font-weight: var(--fw-semibold);
+	}
+	/* the wrapper stretches in the grid, the chevron follows its right edge */
+	.edit-playground-source .select select {
+		width: 100%;
 	}
 	.edit-playground-source textarea {
 		min-height: 360px;
