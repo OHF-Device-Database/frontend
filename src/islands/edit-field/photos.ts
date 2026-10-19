@@ -4,8 +4,10 @@ import { ifDefined } from "lit/directives/if-defined.js";
 import { m } from "../../paraglide/messages.js";
 import { getLocale } from "../../paraglide/runtime.js";
 import { localized } from "../../utilities/localized.js";
+import { icon } from "../../utilities/presentation/icon.js";
 import { notifyChange } from "./events";
 import type { DeclarationPhotos } from "../../types/declaration";
+import type { ValidationIssue } from "../../validation";
 import type { EditFieldRenderContext } from "./context";
 
 /** `null` is an empty slot, `preview` is an object url */
@@ -46,8 +48,13 @@ export const renderPhotos = (
 	ctx: EditFieldRenderContext<DeclarationPhotos>,
 	photos: PhotoSlotValue[],
 	onPhotos: (photos: PhotoSlotValue[]) => void,
+	/** issues to show, those about a slot highlight it */
+	issues: ValidationIssue[],
 ) => {
 	const { declaration, ids, describedBy, invalid, disabled } = ctx;
+	const invalidSlots = new Set(
+		issues.flatMap((issue) => ("slot" in issue ? [issue.slot] : [])),
+	);
 	const or = new Intl.ListFormat(getLocale(), { type: "disjunction" });
 	const categoryLabel = (id: string) => {
 		const category = declaration.categories[id];
@@ -98,7 +105,10 @@ export const renderPhotos = (
 				};
 
 				return html`
-					<section class="edit-field-photo" aria-labelledby=${titleId}>
+					<section
+						class="edit-field-photo ${invalidSlots.has(index) ? "is-invalid" : ""}"
+						aria-labelledby=${titleId}
+					>
 						<p class="edit-field-photo-title" id=${titleId}>
 							${m.edit_field_photo_slot({ number })}
 							<span>
@@ -111,58 +121,72 @@ export const renderPhotos = (
 						</p>
 						${
 							photo === null
-								? html`<input
-										type="file"
-										accept="image/*"
-										aria-labelledby=${titleId}
-										?disabled=${disabled}
-										@change=${onFile}
-									/>`
+								? html`<div class="edit-field-photo-frame is-empty">
+										<span class="edit-field-photo-add" aria-hidden="true">
+											${icon("imagePlus", 24)} ${m.edit_field_photo_add()}
+										</span>
+										<!-- covers the frame, so a click or a dropped file reaches it -->
+										<input
+											type="file"
+											accept="image/*"
+											aria-labelledby=${titleId}
+											?disabled=${disabled}
+											@change=${onFile}
+										/>
+									</div>`
 								: html`
-										<img src=${photo.preview} alt=${photo.file.name} />
+										<div class="edit-field-photo-frame">
+											<img src=${photo.preview} alt=${photo.file.name} />
+											<button
+												type="button"
+												class="edit-field-photo-remove"
+												aria-label=${m.edit_field_photo_remove({ number })}
+												?disabled=${disabled}
+												@click=${(e: Event) => {
+													set(index, null);
+													notifyChange(e.currentTarget);
+												}}
+											>
+												${icon("x")}
+											</button>
+										</div>
 										${
 											categories.length > 1
-												? html`<select
-														aria-label=${m.edit_field_photo_category({ number })}
-														?disabled=${disabled}
-														@change=${(e: Event) =>
-															set(index, {
-																...photo,
-																category: (e.currentTarget as HTMLSelectElement)
-																	.value,
-															})}
-													>
-														<option
-															value=""
-															disabled
-															?selected=${photo.category === ""}
+												? html`<div class="select">
+														<select
+															aria-label=${m.edit_field_photo_category({ number })}
+															?disabled=${disabled}
+															@change=${(e: Event) =>
+																set(index, {
+																	...photo,
+																	category: (
+																		e.currentTarget as HTMLSelectElement
+																	).value,
+																})}
 														>
-															${m.edit_field_photo_choose_category()}
-														</option>
-														${categories.map(
-															(id) =>
-																html`<option
-																	value=${id}
-																	?selected=${photo.category === id}
-																>
-																	${categoryLabel(id)}
-																</option>`,
-														)}
-													</select>`
+															<option
+																value=""
+																disabled
+																?selected=${photo.category === ""}
+															>
+																${m.edit_field_photo_choose_category()}
+															</option>
+															${categories.map(
+																(id) =>
+																	html`<option
+																		value=${id}
+																		?selected=${photo.category === id}
+																	>
+																		${categoryLabel(id)}
+																	</option>`,
+															)}
+														</select>
+														<span class="select-chevron" aria-hidden="true">
+															${icon("chevronDown", 20)}
+														</span>
+													</div>`
 												: nothing
 										}
-										<button
-											type="button"
-											class="btn btn-secondary"
-											aria-label=${m.edit_field_photo_remove({ number })}
-											?disabled=${disabled}
-											@click=${(e: Event) => {
-												set(index, null);
-												notifyChange(e.currentTarget);
-											}}
-										>
-											${m.edit_field_photo_remove_short()}
-										</button>
 									`
 						}
 					</section>

@@ -16,6 +16,7 @@ import {
 	Droplets,
 	ExternalLink,
 	Funnel,
+	ImagePlus,
 	Languages,
 	LayoutGrid,
 	Lightbulb,
@@ -171,6 +172,7 @@ const PRESENTATION_GENERIC = {
 	warning: renderable(TriangleAlert),
 	help: renderable(CircleQuestionMark),
 	barcode: renderable(Barcode),
+	imagePlus: renderable(ImagePlus),
 } as const;
 
 export const device = {

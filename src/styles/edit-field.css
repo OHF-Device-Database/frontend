@@ -287,39 +287,106 @@ edit-field:state(user-invalid) .edit-field-options label {
 /* photos */
 .edit-field-photos {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+	grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
 	gap: var(--space-4);
 }
 .edit-field-photo {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr);
 	align-content: start;
-	justify-items: start;
 	gap: var(--space-2);
-	font-size: var(--fs-13);
 }
 .edit-field-photo-title {
 	margin: 0;
+	font-size: var(--fs-13);
 	font-weight: var(--fw-medium);
+	line-height: var(--lh-snug);
 }
 .edit-field-photo-title span {
 	display: block;
 	font-weight: var(--fw-regular);
 	color: var(--fg-muted);
 }
-.edit-field-photo input,
-.edit-field-photo select {
-	max-width: 100%;
-	font: inherit;
-}
-.edit-field-photo img {
-	width: 100%;
+.edit-field-photo-frame {
+	position: relative;
+	display: grid;
 	aspect-ratio: 4 / 3;
-	object-fit: cover;
 	border: 1px solid var(--border);
 	border-radius: var(--radius-3);
 	background: var(--surface-sunken);
+	overflow: hidden;
+	transition: var(--transition-fast);
 }
-edit-field:state(user-invalid) .edit-field-photo img {
+.edit-field-photo-frame.is-empty {
+	place-items: center;
+	border-style: dashed;
+	border-color: var(--border-strong);
+	color: var(--fg-muted);
+}
+.edit-field-photo-frame.is-empty:hover {
+	border-color: var(--fg-muted);
+	background: var(--surface-tint-mid);
+	color: var(--fg);
+}
+.edit-field-photo-frame:has(input:focus-visible) {
+	box-shadow: var(--ring-focus);
+}
+.edit-field-photo-frame:has(input:disabled) {
+	background: var(--surface-sunken);
+	color: var(--fg-disabled);
+}
+.edit-field-photo-add {
+	display: grid;
+	justify-items: center;
+	gap: var(--space-1);
+	padding: var(--space-3);
+	font-size: var(--fs-12);
+	line-height: var(--lh-snug);
+	text-align: center;
+}
+.edit-field-photo-frame input {
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+	cursor: pointer;
+}
+.edit-field-photo-frame input:disabled {
+	cursor: default;
+}
+/* out of the flow, so the image size never changes the frame,
+   large images shrink to fit and small ones keep their size */
+.edit-field-photo-frame img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: scale-down;
+}
+.edit-field-photo-remove {
+	position: absolute;
+	top: var(--space-2);
+	right: var(--space-2);
+	display: inline-flex;
+	padding: var(--space-1);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-pill);
+	background: var(--surface);
+	color: var(--fg);
+	cursor: pointer;
+	transition: var(--transition-fast);
+}
+.edit-field-photo-remove:hover {
+	border-color: var(--border-strong);
+	background: var(--surface-tint-mid);
+}
+.edit-field-photo-remove:focus-visible {
+	outline: 0;
+	box-shadow: var(--ring-focus);
+}
+.edit-field-photo .select select {
+	width: 100%;
+}
+.edit-field-photo.is-invalid .edit-field-photo-frame,
+.edit-field-photo.is-invalid select {
 	border-color: var(--error);
 }

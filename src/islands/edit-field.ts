@@ -304,6 +304,7 @@ export class EditField extends LitElement {
 					{ ...ctx, declaration },
 					this._photos,
 					this._onPhotos,
+					this._showIssue ? this._issues : [],
 				);
 		}
 	}
