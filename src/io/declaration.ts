@@ -192,13 +192,22 @@ const flattenCategories = (
 		...flattenCategories(children),
 	]);
 
+// brand and category come from the same response
+let dimensionsOnce: ReturnType<typeof getDimensions> | undefined;
+const sharedDimensions = () => {
+	dimensionsOnce ??= getDimensions().catch((error: unknown) => {
+		dimensionsOnce = undefined;
+		throw error;
+	});
+	return dimensionsOnce;
+};
+
 // every option at once, served from the dimensions until dedicated endpoints
 // exist (paginated like `/api/unstable/derived/devices`, filtered by `?term`)
 export const getResourceOptions = async (
 	resource: z.infer<typeof IoDeclarationPickerResource>,
-	signal?: AbortSignal,
 ): Promise<IoResourceOption[]> => {
-	const { dimensions } = await getDimensions({}, signal);
+	const { dimensions } = await sharedDimensions();
 
 	switch (resource) {
 		case "brand":

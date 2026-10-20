@@ -178,6 +178,20 @@ export class EditField extends LitElement {
 		this._disabled = disabled;
 	}
 
+	// a moved field reconnects, so previews are recreated rather than the photos dropped
+	override connectedCallback(): void {
+		super.connectedCallback();
+		this._photos = this._photos.map(
+			(photo) =>
+				photo && { ...photo, preview: URL.createObjectURL(photo.file) },
+		);
+	}
+
+	override disconnectedCallback(): void {
+		super.disconnectedCallback();
+		releasePhotos(this._photos);
+	}
+
 	protected override createRenderRoot(): HTMLElement {
 		return this;
 	}
