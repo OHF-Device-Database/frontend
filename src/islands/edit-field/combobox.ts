@@ -143,6 +143,19 @@ export class EditFieldCombobox extends LitElement {
 		void this._fetch();
 	};
 
+	// typing replaces the shown label instead of appending to it
+	private _onFocus = (e: FocusEvent): void => {
+		(e.currentTarget as HTMLInputElement).select();
+	};
+
+	private _onClick = (e: MouseEvent): void => {
+		// the mouseup after focusing drops the selection, so select again
+		if (!this._open) {
+			(e.currentTarget as HTMLInputElement).select();
+		}
+		this._openPopup();
+	};
+
 	private _onInput = (e: Event): void => {
 		this._term = (e.currentTarget as HTMLInputElement).value;
 		this._typed = true;
@@ -275,6 +288,8 @@ export class EditFieldCombobox extends LitElement {
 	override render() {
 		const active = this._open && this._active !== -1;
 
+		// the input belongs to the form, so a reset restores its `defaultValue`
+		// even when the picked value didn't change and nothing re-renders
 		return html`
 			<div
 				class="edit-field-control"
@@ -295,10 +310,12 @@ export class EditFieldCombobox extends LitElement {
 					autocomplete="off"
 					spellcheck="false"
 					.value=${live(this._term)}
+					.defaultValue=${this._valueLabel}
 					?disabled=${this.disabled}
 					@input=${this._onInput}
 					@keydown=${this._onKeyDown}
-					@click=${this._openPopup}
+					@focus=${this._onFocus}
+					@click=${this._onClick}
 				/>
 			</div>
 			<div

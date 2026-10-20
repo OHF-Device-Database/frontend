@@ -12,7 +12,15 @@ const PREFIX_ICON: Partial<Record<string, Parameters<typeof icon>[0]>> = {
 };
 
 export const renderText = (ctx: EditFieldRenderContext<DeclarationText>) => {
-	const { declaration, value, ids, describedBy, invalid, disabled } = ctx;
+	const {
+		declaration,
+		value,
+		defaultValue,
+		ids,
+		describedBy,
+		invalid,
+		disabled,
+	} = ctx;
 	const { pattern } = declaration;
 	const max = pattern.length?.max;
 	const prefix = PREFIX_ICON[declaration.id];
@@ -24,12 +32,14 @@ export const renderText = (ctx: EditFieldRenderContext<DeclarationText>) => {
 		);
 	};
 
-	// no `name` and no constraint attributes: the host submits and validates
+	// no `name` and no constraint attributes: the host submits and validates,
+	// `defaultValue` is what a form reset restores
 	const control = pattern.multiline
 		? html`<textarea
 				id=${ids.control}
 				rows="3"
 				.value=${live(value)}
+				.defaultValue=${defaultValue}
 				aria-describedby=${ifDefined(describedBy)}
 				aria-invalid=${invalid ? "true" : nothing}
 				?disabled=${disabled}
@@ -40,6 +50,7 @@ export const renderText = (ctx: EditFieldRenderContext<DeclarationText>) => {
 				type="text"
 				id=${ids.control}
 				.value=${live(value)}
+				.defaultValue=${defaultValue}
 				inputmode=${numeric ? "numeric" : nothing}
 				spellcheck=${numeric ? "false" : nothing}
 				autocomplete="off"

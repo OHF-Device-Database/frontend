@@ -101,6 +101,18 @@ describe("Declaration", () => {
 		).toBe(false);
 	});
 
+	test("rejects photos without categories", (t) => {
+		const result = Declaration.safeParse({
+			id: "photos",
+			type: "photos",
+			label: { en: "Photos" },
+			categories: {},
+			pattern: { slots: [{ constrained: false }] },
+		});
+		t.expect(result.success).toBe(false);
+		t.expect(result.error?.issues[0]?.message).toBe("no categories");
+	});
+
 	test("rejects photo slots referencing unknown categories", (t) => {
 		const result = Declaration.safeParse({
 			id: "photos",

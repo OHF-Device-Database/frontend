@@ -113,13 +113,18 @@ export const IoDeclarationPhotos = z
 	.object({
 		...IoDeclarationBase,
 		type: z.literal("photos"),
-		categories: z.record(
-			z.string(),
-			z.object({
-				label: IoDeclarationLocalized,
-				description: z.optional(IoDeclarationLocalized),
+		// every photo gets a category, so there has to be one to pick
+		categories: z
+			.record(
+				z.string(),
+				z.object({
+					label: IoDeclarationLocalized,
+					description: z.optional(IoDeclarationLocalized),
+				}),
+			)
+			.refine((categories) => Object.keys(categories).length > 0, {
+				message: "no categories",
 			}),
-		),
 		pattern: z.object({ slots: z.array(IoDeclarationPhotosSlot).min(1) }),
 	})
 	.superRefine(({ categories, pattern }, ctx) => {

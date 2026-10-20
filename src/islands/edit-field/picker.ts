@@ -2,7 +2,6 @@ import { html, nothing } from "lit";
 
 import { getResourceOptions } from "../../io/declaration";
 import { m } from "../../paraglide/messages.js";
-import { getLocale } from "../../paraglide/runtime.js";
 import { localized } from "../../utilities/localized.js";
 import * as presentation from "../../utilities/presentation";
 import { icon } from "../../utilities/presentation/icon.js";
@@ -95,9 +94,7 @@ const resourceSource = (
 				options: ranked.slice(0, PAGE_SIZE).map(({ id, name, count }) => ({
 					value: id,
 					label: name,
-					detail: m.edit_field_option_devices({
-						count: count.toLocaleString(getLocale()),
-					}),
+					detail: m.edit_field_option_devices({ count }),
 				})),
 				total: ranked.length,
 			};

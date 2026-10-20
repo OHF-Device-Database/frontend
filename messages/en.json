@@ -195,7 +195,20 @@
 	"device_wtb_all_sites": "All comparison sites we link to, by country",
 	"edit_field_about": "About {label}",
 	"edit_field_unset": "Not set",
-	"edit_field_option_devices": "{count} devices",
+	"edit_field_option_devices": [
+		{
+			"declarations": [
+				"input count",
+				"local countPlural = count: plural",
+				"local countNumber = count: number"
+			],
+			"selectors": ["countPlural"],
+			"match": {
+				"countPlural=one": "{countNumber} device",
+				"countPlural=other": "{countNumber} devices"
+			}
+		}
+	],
 	"edit_field_combobox_loading": "Loading…",
 	"edit_field_combobox_error": "Couldn't load options, try typing again",
 	"edit_field_combobox_empty": "No matches",
