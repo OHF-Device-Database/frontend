@@ -255,7 +255,14 @@ export class EditFieldCombobox extends LitElement {
 				}
 				break;
 			case "Tab":
-				this._dismiss();
+				// Tab moves through the options and only
+				// leaves the field when going past the last one
+				if (this._open && !e.shiftKey && this._active < count - 1) {
+					e.preventDefault();
+					this._active += 1;
+				} else {
+					this._dismiss();
+				}
 				break;
 		}
 	};
