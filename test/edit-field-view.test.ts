@@ -1,5 +1,4 @@
 import { describe, test } from "vitest";
-import type { TemplateResult } from "lit";
 
 import { renderEditFieldView } from "../src/utilities/edit-field-view";
 import { renderToHtml } from "../src/utilities/ssr";
@@ -29,15 +28,11 @@ const picker: Declaration = {
 	],
 };
 
-// without lit's hydration comments, to assert on the markup itself
-const toHtml = (template: TemplateResult) =>
-	renderToHtml(template).replaceAll(/<!--\/?lit-[^>]*-->/g, "");
-
 const view = (
 	declaration: Declaration,
 	value: string,
 	resourceLabel?: string,
-) => toHtml(renderEditFieldView({ declaration, value, resourceLabel }));
+) => renderToHtml(renderEditFieldView({ declaration, value, resourceLabel }));
 
 describe("renderEditFieldView", () => {
 	test("pairs the label with the value", (t) => {
@@ -74,7 +69,7 @@ describe("renderEditFieldView", () => {
 			pattern: { slots: [{ constrained: false }] },
 		};
 		t.expect(view(photos, "")).toContain("Not set");
-		const html = toHtml(
+		const html = renderToHtml(
 			renderEditFieldView({
 				declaration: photos,
 				value: "",

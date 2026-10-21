@@ -58,7 +58,7 @@ const renderValue = ({
 	value,
 	resourceLabel,
 	photos = [],
-}: EditFieldViewInput): TemplateResult | string => {
+}: EditFieldViewInput): TemplateResult => {
 	if (declaration.type === "photos") {
 		return renderPhotos(declaration, photos);
 	}
@@ -77,15 +77,15 @@ const renderValue = ({
 				true: m.edit_field_toggle_yes(),
 				false: m.edit_field_toggle_no(),
 			};
-			return labels[value] ?? value;
+			return html`${labels[value] ?? value}`;
 		}
 		case "picker": {
 			if (declaration.resource !== "none") {
-				return resourceLabel ?? value;
+				return html`${resourceLabel ?? value}`;
 			}
 			const option = declaration.options.find(({ id }) => id === value);
 			if (typeof option === "undefined") {
-				return value;
+				return html`${value}`;
 			}
 
 			return html`<span class="edit-field-view-option">
@@ -117,7 +117,8 @@ const renderValue = ({
  * read only field as a `<dt>` / `<dd>` pair, meant for a `<dl>`
  *
  * a lit template, islands render it as is, astro renders it to a string with
- * `renderToHtml` from `utilities/ssr.ts`
+ * `renderToHtml` from `utilities/ssr.ts`, so it has to stay serializable:
+ * no event listeners, property bindings or refs
  */
 export const renderEditFieldView = (
 	input: EditFieldViewInput,
