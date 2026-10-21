@@ -1,10 +1,12 @@
+import { html, nothing } from "lit";
+import { unsafeHTML } from "lit/directives/unsafe-html.js";
+import type { TemplateResult } from "lit";
+
 import { m } from "../paraglide/messages.js";
 import { localized } from "./localized";
-import { markup, trusted } from "./markup";
 import * as presentation from "./presentation";
 import { iconSvg } from "./presentation/svg";
 import type { Declaration, DeclarationPhotos } from "../types/declaration";
-import type { Markup } from "./markup";
 
 export type EditFieldViewInput = {
 	declaration: Declaration;
@@ -24,26 +26,26 @@ export type EditFieldViewPhoto = {
 };
 
 const unset = () =>
-	markup`<span class="edit-field-view-unset">${m.edit_field_unset()}</span>`;
+	html`<span class="edit-field-view-unset">${m.edit_field_unset()}</span>`;
 
 const renderPhotos = (
 	declaration: DeclarationPhotos,
 	photos: readonly EditFieldViewPhoto[],
-): Markup => {
+): TemplateResult => {
 	if (photos.length === 0) {
 		return unset();
 	}
 
-	return markup`<ul class="edit-field-view-photos">
+	return html`<ul class="edit-field-view-photos">
 		${photos.map((photo) => {
 			const category = declaration.categories[photo.category];
-			return markup`<li>
+			return html`<li>
 				<figure>
-					<img src="${photo.src}" alt="${photo.alt}" />
+					<img src=${photo.src} alt=${photo.alt} />
 					${
 						typeof category !== "undefined"
-							? markup`<figcaption>${localized(category.label)}</figcaption>`
-							: false
+							? html`<figcaption>${localized(category.label)}</figcaption>`
+							: nothing
 					}
 				</figure>
 			</li>`;
@@ -56,7 +58,7 @@ const renderValue = ({
 	value,
 	resourceLabel,
 	photos = [],
-}: EditFieldViewInput): Markup => {
+}: EditFieldViewInput): TemplateResult => {
 	if (declaration.type === "photos") {
 		return renderPhotos(declaration, photos);
 	}
@@ -66,41 +68,44 @@ const renderValue = ({
 
 	switch (declaration.type) {
 		case "text":
-			return markup`<span
+			return html`<span
 				class="edit-field-view-text ${declaration.pattern.kind === "ean" ? "is-code" : ""}"
-			>${value}</span>`;
+				>${value}</span
+			>`;
 		case "toggle": {
 			const labels: Record<string, string> = {
 				true: m.edit_field_toggle_yes(),
 				false: m.edit_field_toggle_no(),
 			};
-			return markup`${labels[value] ?? value}`;
+			return html`${labels[value] ?? value}`;
 		}
 		case "picker": {
 			if (declaration.resource !== "none") {
-				return markup`${resourceLabel ?? value}`;
+				return html`${resourceLabel ?? value}`;
 			}
 			const option = declaration.options.find(({ id }) => id === value);
 			if (typeof option === "undefined") {
-				return markup`${value}`;
+				return html`${value}`;
 			}
 
-			return markup`<span class="edit-field-view-option">
+			return html`<span class="edit-field-view-option">
 				${
 					typeof option.icon !== "undefined"
-						? markup`<span class="edit-field-view-option-icon">${trusted(
-								iconSvg(presentation.declarationIcon(option.icon), 20),
-							)}</span>`
-						: false
+						? html`<span class="edit-field-view-option-icon"
+								>${unsafeHTML(
+									iconSvg(presentation.declarationIcon(option.icon), 20),
+								)}</span
+							>`
+						: nothing
 				}
 				<span class="edit-field-view-option-text">
 					<span>${localized(option.title)}</span>
 					${
 						typeof option.subtitle !== "undefined"
-							? markup`<span class="edit-field-view-option-subtitle">${localized(
-									option.subtitle,
-								)}</span>`
-							: false
+							? html`<span class="edit-field-view-option-subtitle"
+									>${localized(option.subtitle)}</span
+								>`
+							: nothing
 					}
 				</span>
 			</span>`;
@@ -111,12 +116,14 @@ const renderValue = ({
 /**
  * read only field as a `<dt>` / `<dd>` pair, meant for a `<dl>`
  *
- * a plain string, so it renders on the server without javascript:
- * `<dl><Fragment set:html={toHtml(renderEditFieldView(input))} /></dl>` in astro,
- * `unsafeHTML(toHtml(...))` in an island
+ * a lit template, islands render it as is, astro renders it to a string with
+ * `renderToHtml` from `utilities/ssr.ts`, so it has to stay serializable:
+ * no event listeners, property bindings or refs
  */
-export const renderEditFieldView = (input: EditFieldViewInput): Markup =>
-	markup`<div class="edit-field-view">
+export const renderEditFieldView = (
+	input: EditFieldViewInput,
+): TemplateResult =>
+	html`<div class="edit-field-view">
 		<dt class="edit-field-view-label">${localized(input.declaration.label)}</dt>
 		<dd class="edit-field-view-value">${renderValue(input)}</dd>
 	</div>`;

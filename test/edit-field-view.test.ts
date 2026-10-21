@@ -1,7 +1,7 @@
 import { describe, test } from "vitest";
 
 import { renderEditFieldView } from "../src/utilities/edit-field-view";
-import { markup, toHtml, trusted } from "../src/utilities/markup";
+import { renderToHtml } from "../src/utilities/ssr";
 import type { Declaration } from "../src/types/declaration";
 
 const text: Declaration = {
@@ -32,22 +32,7 @@ const view = (
 	declaration: Declaration,
 	value: string,
 	resourceLabel?: string,
-) => toHtml(renderEditFieldView({ declaration, value, resourceLabel }));
-
-describe("markup", () => {
-	test("escapes interpolated text", (t) => {
-		t.expect(toHtml(markup`<p>${`<b title="x">&'`}</p>`)).toBe(
-			"<p>&lt;b title=&quot;x&quot;&gt;&amp;&#39;</p>",
-		);
-	});
-
-	test("keeps nested and trusted markup, skips empty values", (t) => {
-		const items = ["a", "<b>"].map((item) => markup`<li>${item}</li>`);
-		t.expect(
-			toHtml(markup`<ul>${items}${false}${undefined}${trusted("<hr>")}</ul>`),
-		).toBe("<ul><li>a</li><li>&lt;b&gt;</li><hr></ul>");
-	});
-});
+) => renderToHtml(renderEditFieldView({ declaration, value, resourceLabel }));
 
 describe("renderEditFieldView", () => {
 	test("pairs the label with the value", (t) => {
@@ -84,7 +69,7 @@ describe("renderEditFieldView", () => {
 			pattern: { slots: [{ constrained: false }] },
 		};
 		t.expect(view(photos, "")).toContain("Not set");
-		const html = toHtml(
+		const html = renderToHtml(
 			renderEditFieldView({
 				declaration: photos,
 				value: "",
