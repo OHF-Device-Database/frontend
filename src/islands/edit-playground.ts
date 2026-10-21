@@ -3,14 +3,16 @@ import { html, LitElement, nothing } from "lit";
 import { state } from "lit/decorators.js";
 import { keyed } from "lit/directives/keyed.js";
 import { live } from "lit/directives/live.js";
-import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import type { PropertyValues } from "lit";
 
 import { getDeclarations, getResourceOptions } from "../io/declaration";
 import { Declaration } from "../types/declaration";
 import { defineElementOnce } from "../utilities/define-element.js";
 import { renderEditFieldView } from "../utilities/edit-field-view.js";
-import { toHtml } from "../utilities/markup.js";
+import {
+	EXAMPLE_VALUES,
+	EXTRA_EXAMPLES,
+} from "../utilities/edit-playground-examples.js";
 import { icon } from "../utilities/presentation/icon.js";
 import { notifyChange } from "./edit-field/events.js";
 import type { EditFieldViewPhoto } from "../utilities/edit-field-view.js";
@@ -36,37 +38,6 @@ const editorOf = (declaration: Declaration): Editor => {
 	}
 
 	return declaration.resource === "none" ? "options" : "resource";
-};
-
-// variants the mocked declarations don't cover
-const EXTRA_EXAMPLES: Declaration[] = [
-	{
-		id: "notes",
-		type: "text",
-		label: { en: "Notes" },
-		hint: { en: "Anything else worth knowing about the device" },
-		pattern: {
-			multiline: true,
-			length: { max: 500 },
-			kind: "letter",
-			regex: "[\\p{L}\\p{M}\\p{N}\\p{P}\\p{Zs}\\p{Sc}\\p{Sm}]",
-		},
-	},
-	{
-		id: "battery-powered",
-		type: "toggle",
-		label: { en: "Battery powered" },
-		hint: { en: "Runs on batteries" },
-	},
-];
-
-const EXAMPLE_VALUES: Record<string, string> = {
-	name: "Hue White A19",
-	ean: "4006381333931",
-	"light.dimming": "true",
-	"local-operation": "cloud-ish",
-	brand: "Philips",
-	category: "lighting",
 };
 
 type FieldSnapshot = {
@@ -325,16 +296,12 @@ export class EditPlayground extends LitElement {
 
 	private _renderView(declaration: Declaration) {
 		return html`<dl class="edit-field-views">
-			${unsafeHTML(
-				toHtml(
-					renderEditFieldView({
-						declaration,
-						value: this._initialValue,
-						resourceLabel: this._resourceLabel,
-						photos: this._savedPhotos,
-					}),
-				),
-			)}
+			${renderEditFieldView({
+				declaration,
+				value: this._initialValue,
+				resourceLabel: this._resourceLabel,
+				photos: this._savedPhotos,
+			})}
 		</dl>`;
 	}
 

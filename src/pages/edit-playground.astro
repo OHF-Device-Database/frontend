@@ -1,7 +1,26 @@
 ---
 import Layout from "../layouts/Layout.astro";
 
+import { getDeclarations } from "../io/declaration";
+import { renderEditFieldView } from "../utilities/edit-field-view";
+import {
+	EXAMPLE_VALUES,
+	EXTRA_EXAMPLES,
+} from "../utilities/edit-playground-examples";
+import { renderToHtml } from "../utilities/ssr";
+
 // temporary page to try edit field declarations, not linked and not indexed
+
+// the same views the island renders, as the device page would on the server
+const { declarations } = await getDeclarations();
+const views = [...declarations, ...EXTRA_EXAMPLES].map((declaration) =>
+	renderToHtml(
+		renderEditFieldView({
+			declaration,
+			value: EXAMPLE_VALUES[declaration.id] ?? "",
+		}),
+	),
+);
 ---
 
 <Layout title="Edit playground">
@@ -14,6 +33,12 @@ import Layout from "../layouts/Layout.astro";
 			submits only changed fields and shows the form data instead of sending it.
 		</p>
 		<edit-playground></edit-playground>
+		<section class="edit-playground-server">
+			<h2>Rendered on the server</h2>
+			<dl class="edit-field-views">
+				{views.map((view) => <Fragment set:html={view} />)}
+			</dl>
+		</section>
 	</div>
 </Layout>
 
@@ -119,5 +144,13 @@ import Layout from "../layouts/Layout.astro";
 	}
 	.edit-playground-output pre {
 		background: var(--surface-sunken);
+	}
+
+	.edit-playground-server {
+		margin-top: var(--space-8);
+	}
+	.edit-playground-server h2 {
+		margin: 0 0 var(--space-4);
+		font-size: var(--fs-16);
 	}
 </style>
