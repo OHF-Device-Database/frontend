@@ -7,7 +7,7 @@ import type { DeclarationText } from "../../types/declaration";
 import type { EditFieldRenderContext } from "./context";
 
 // presentation is keyed by declaration id, it is not part of the declaration
-const PREFIX_ICON: Partial<Record<string, Parameters<typeof icon>[0]>> = {
+const PREFIX_ICON: Record<string, Parameters<typeof icon>[0]> = {
 	ean: "barcode",
 };
 
