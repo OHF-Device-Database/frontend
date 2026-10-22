@@ -42,11 +42,23 @@ All commands are run from the root of the project, from a terminal:
 
 The app is a mix of **prerendered** content pages (about, how it works, editorial stance, imprint — one static file per locale, generated under `src/pages/[...locale]/`) and **server-rendered** pages that depend on the device API or on query parameters (home, browse, device detail, surveys, 404, `robots.txt`). It reads these env vars:
 
-| Variable            | Required | Default                 | Description                                                                                                                 |
-| :------------------ | :------- | :---------------------- | :-------------------------------------------------------------------------------------------------------------------------- |
-| `API_AUTHORITY`     | No       | `http://localhost:3000` | Base URL of the device API. The app fetches `/api/unstable/derived/devices` from here, server-side.                         |
-| `CSR_API_AUTHORITY` | No       | `http://localhost:3000` | Base URL of the device API for client-side fetches (search box, filters). Served to the browser by `/config.js` at runtime. |
-| `NOINDEX`           | No       | `true`                  | Adds `noindex` for preview deploys. Set to `false` for a real production deploy.                                            |
+| Variable                     | Required | Default                 | Description                                                                                                                 |
+| :--------------------------- | :------- | :---------------------- | :-------------------------------------------------------------------------------------------------------------------------- |
+| `API_AUTHORITY`              | No       | `http://localhost:3000` | Base URL of the device API. The app fetches `/api/unstable/derived/devices` from here, server-side.                         |
+| `CSR_API_AUTHORITY`          | No       | `http://localhost:3000` | Base URL of the device API for client-side fetches (search box, filters). Served to the browser by `/config.js` at runtime. |
+| `NOINDEX`                    | No       | `true`                  | Adds `noindex` for preview deploys. Set to `false` for a real production deploy.                                            |
+| `GITHUB_OAUTH_CLIENT_ID`     | No       | _(unset)_               | Client identifier of the GitHub OAuth app behind `/vendor/github/authorize`. While unset, the routes answer `503`.          |
+| `GITHUB_OAUTH_CLIENT_SECRET` | No       | _(unset)_               | Client secret for the token exchange. Never leaves the server.                                                              |
+
+### GitHub sign-in
+
+`/vendor/github/authorize` and `/vendor/github/callback` (register as OAuth callback url) enable token exchange, other routes in `/vendor/github` are required because they act on http-only cookies.
+
+| Cookie           | Lifetime                              | HTTP only | Holds                         | Path             |
+| :--------------- | :------------------------------------ | :-------- | :---------------------------- | :--------------- |
+| `github-user`    | 400 days (browser max)                | no        | the account name, for display | /                |
+| `github-token`   | the token's `expires_in`              | no        | access token and scope        | /                |
+| `github-refresh` | whatever github reports or six months | yes       | the refresh token             | `/vendor/github` |
 
 Create a `.env` for local runs (auto-loaded by Astro and `netlify dev`):
 
