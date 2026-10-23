@@ -4,6 +4,7 @@ import {
 } from "astro:env/server";
 import type { APIRoute } from "astro";
 
+import { SESSION_CHANGE_HEADERS } from "../../../io/oauth";
 import { GitHubOAuth } from "../../../io/vendor/github/oauth";
 import {
 	GITHUB_COOKIE_TOKEN,
@@ -39,6 +40,6 @@ export const POST: APIRoute = async ({ cookies }) => {
 
 	return new Response(null, {
 		status: 204,
-		headers: { "cache-control": "no-store" },
+		headers: { "cache-control": "no-store", ...SESSION_CHANGE_HEADERS },
 	});
 };

@@ -4,6 +4,7 @@ import {
 } from "astro:env/server";
 import type { APIRoute } from "astro";
 
+import { SESSION_CHANGE_HEADERS } from "../../../io/oauth";
 import {
 	GITHUB_COOKIE_REFRESH,
 	GitHubOAuth,
@@ -12,10 +13,10 @@ import { GITHUB_COOKIE_USER } from "../../../io/vendor/github/session";
 
 export const prerender = false;
 
-const status = (code: number): Response =>
+const status = (code: number, headers: Record<string, string> = {}): Response =>
 	new Response(null, {
 		status: code,
-		headers: { "cache-control": "no-store" },
+		headers: { "cache-control": "no-store", ...headers },
 	});
 
 /** trades the refresh token for a new access token */
@@ -30,7 +31,7 @@ export const POST: APIRoute = async ({ cookies, url }) => {
 	const refreshToken = cookies.get(GITHUB_COOKIE_REFRESH)?.value;
 	if (typeof refreshToken === "undefined") {
 		GitHubOAuth.session.clear(cookies);
-		return status(401);
+		return status(401, SESSION_CHANGE_HEADERS);
 	}
 
 	try {
@@ -44,7 +45,7 @@ export const POST: APIRoute = async ({ cookies, url }) => {
 		const login = cookies.get(GITHUB_COOKIE_USER)?.value;
 		if (typeof login === "undefined") {
 			GitHubOAuth.session.clear(cookies);
-			return status(401);
+			return status(401, SESSION_CHANGE_HEADERS);
 		}
 
 		GitHubOAuth.session.write({ url, token, login }, cookies);
@@ -54,6 +55,6 @@ export const POST: APIRoute = async ({ cookies, url }) => {
 		// a refresh token is single-use, re-authentication required
 		GitHubOAuth.session.clear(cookies);
 
-		return status(401);
+		return status(401, SESSION_CHANGE_HEADERS);
 	}
 };

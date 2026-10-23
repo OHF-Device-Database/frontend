@@ -4,6 +4,7 @@ import {
 } from "astro:env/server";
 import type { APIRoute } from "astro";
 
+import { SESSION_CHANGE_HEADERS } from "../../../io/oauth";
 import {
 	GITHUB_COOKIE_REFRESH,
 	GitHubOAuth,
@@ -16,10 +17,10 @@ import {
 export const prerender = false;
 
 /** crafts uncached response with empty body and provided status code  */
-const status = (code: number): Response =>
+const status = (code: number, headers: Record<string, string> = {}): Response =>
 	new Response(null, {
 		status: code,
-		headers: { "cache-control": "no-store" },
+		headers: { "cache-control": "no-store", ...headers },
 	});
 
 /**
@@ -75,13 +76,13 @@ export const DELETE: APIRoute = async ({ cookies }) => {
 		// address, and holding on to dead credentials helps nobody
 		GitHubOAuth.session.clear(cookies);
 
-		return status(204);
+		return status(204, SESSION_CHANGE_HEADERS);
 	}
 
 	if (!accessToken) {
 		GitHubOAuth.session.clear(cookies);
 
-		return status(204);
+		return status(204, SESSION_CHANGE_HEADERS);
 	}
 
 	try {
@@ -96,5 +97,5 @@ export const DELETE: APIRoute = async ({ cookies }) => {
 
 	GitHubOAuth.session.clear(cookies);
 
-	return status(204);
+	return status(204, SESSION_CHANGE_HEADERS);
 };

@@ -52,6 +52,9 @@ export const safeReturnTo = (value: string | null | undefined): string => {
 	return value.split("#")[0] ?? "/";
 };
 
+/** browsers key their cache on the url alone, so pages cached before signing in or out would outlive it */
+export const SESSION_CHANGE_HEADERS = { "clear-site-data": '"cache"' } as const;
+
 export const returnToRedirect = (returnTo: string): Response =>
 	new Response(null, {
 		status: 302,
@@ -59,6 +62,7 @@ export const returnToRedirect = (returnTo: string): Response =>
 			location: returnTo,
 			// carries Set-Cookie with the token; a cached copy would hand it to the next visitor
 			"cache-control": "no-store",
+			...SESSION_CHANGE_HEADERS,
 		},
 	});
 
