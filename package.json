@@ -30,6 +30,7 @@
 		]
 	},
 	"dependencies": {
+		"@lit-labs/ssr": "^4.1.0",
 		"lucide": "^1.17.0",
 		"undici": "^8.10.0"
 	},

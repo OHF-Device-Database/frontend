@@ -1,0 +1,45 @@
+.edit-form {
+	display: grid;
+	gap: var(--space-5);
+}
+
+/* the revert button sits next to the field label */
+.edit-form-row {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: start;
+	column-gap: var(--space-3);
+}
+.edit-form-row > edit-field {
+	grid-column: 1 / -1;
+	grid-row: 1;
+}
+.edit-form-revert {
+	grid-column: 2;
+	grid-row: 1;
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-1);
+	padding: 2px var(--space-2);
+	border: 0;
+	border-radius: var(--radius-3);
+	background: transparent;
+	color: var(--fg-muted);
+	font: inherit;
+	font-size: var(--fs-13);
+	cursor: pointer;
+	transition: var(--transition-fast);
+}
+.edit-form-revert:hover {
+	background: var(--surface-tint-mid);
+	color: var(--fg);
+}
+.edit-form-revert:focus-visible {
+	outline: 0;
+	box-shadow: var(--ring-focus);
+}
+
+.edit-form-actions {
+	display: flex;
+	gap: var(--space-2);
+}
