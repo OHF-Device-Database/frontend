@@ -97,30 +97,38 @@ Images are published only when a GitHub Release is published (semver tags; prere
 
 ## ⚡ Caching
 
-The site is server-rendered and designed to sit behind a CDN (Cloudflare). Cacheable responses
-emit `Cache-Control: public, max-age=0, s-maxage=<n>, stale-while-revalidate=<n>`:
+The site is server-rendered and meant to sit behind a CDN (Cloudflare in production, Netlify for
+deploy previews). The server doesn't cache anything itself, it only sends headers for the CDN.
 
-- `max-age=0` — browsers always revalidate, so users never see stale data without a check (that
-  check hits the warm edge cache and returns instantly).
-- `s-maxage` — the shared/CDN edge TTL. Cloudflare uses this for its edge cache TTL.
-- `stale-while-revalidate` — the edge serves stale content instantly while it refreshes in the background.
+Pages call `Astro.cache.set()` and [`src/io/cache-provider.ts`](src/io/cache-provider.ts) turns
+that into:
 
-Per-route TTLs live in [`src/lib/cache.ts`](src/lib/cache.ts) and are applied via `applyCdnCache()`:
+- `Cache-Control: no-cache`, so browsers always revalidate.
+- `CDN-Cache-Control: max-age=<n>`, the edge TTL. It's `no-store` when there's no TTL. We don't
+  use `s-maxage`, because Cloudflare turns off stale-while-revalidate when it's present.
+- `Cache-Tag`, `Last-Modified` and `ETag` when the page provides them.
 
-| Route               | Fresh (`s-maxage`) | Stale (`swr`) |
-| :------------------ | :----------------- | :------------ |
-| `/browse`           | 60s                | 5min          |
-| `/device/:id`       | 5min               | 1h            |
-| `/device/:id` (404) | 30s                | 1min          |
-| `/api/suggest`      | 30s                | 2min          |
+| Route                | TTL                      |
+| :------------------- | :----------------------- |
+| `/`                  | from the API's `max-age` |
+| `/browse`            | from the API's `max-age` |
+| `/devices/:id`       | from the API's `max-age` |
+| `/devices/:id` (404) | 60s                      |
+| `/surveys`           | 1 day                    |
 
-The same TTLs also drive Astro's in-process response cache (`Astro.cache.set`), which shields the
-upstream API even on edge cache misses. Fingerprinted assets under `/_astro/` are served
-`immutable` for a year.
+Pages that don't call `Astro.cache.set()` get no cache headers. Fingerprinted assets under
+`/_astro/` are served `immutable` for a year.
 
-> **Cloudflare:** by default Cloudflare does **not** cache HTML/JSON — only static file extensions.
-> To benefit from `s-maxage` on these routes, add a Cache Rule that makes them eligible for cache
-> ("Cache Everything"); Cloudflare then honors the origin `s-maxage` for the edge TTL.
+Feature flags (the `device-database.features` cookie or `?feature=`) change the rendered output, so
+those responses always get `Cache-Control: private, no-store` and `CDN-Cache-Control: no-store`.
+
+> **Cloudflare** doesn't cache HTML by default and doesn't key on cookies, so it needs Cache Rules:
+>
+> - Bypass the cache when the `device-database.features` cookie or a `feature` query parameter is
+>   present. Origin headers can't stop Cloudflare from serving a copy it already has.
+> - Otherwise make HTML eligible for cache, use the origin's cache headers, and bypass when there
+>   are none.
+> - Keep the query string in the cache key.
 
 ## 👀 Want to learn more?
 
