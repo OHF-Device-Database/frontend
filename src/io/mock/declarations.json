@@ -1,0 +1,132 @@
+[
+	{
+		"id": "name",
+		"type": "text",
+		"label": { "en": "Name" },
+		"hint": { "en": "Name of the device" },
+		"description": { "en": "Minimally identifying name of a device." },
+		"pattern": {
+			"multiline": false,
+			"length": { "min": 3, "max": 64 },
+			"kind": "letter",
+			"regex": "[\\p{L}\\p{M}\\p{N}\\p{P}\\p{Zs}\\p{Sc}\\p{Sm}]"
+		}
+	},
+	{
+		"id": "ean",
+		"type": "text",
+		"label": { "en": "EAN" },
+		"hint": { "en": "A European barcode" },
+		"description": { "en": "An EAN-13 or EAN-8 barcode." },
+		"pattern": {
+			"multiline": false,
+			"kind": "ean"
+		}
+	},
+	{
+		"id": "light.dimming",
+		"type": "toggle",
+		"label": { "en": "Dimmable" },
+		"hint": { "en": "Capable of brightness adjustments" },
+		"description": {
+			"en": "Indicates that the device has brightness adjustment capability."
+		}
+	},
+	{
+		"id": "brand",
+		"type": "picker",
+		"label": { "en": "Brand" },
+		"resource": "brand",
+		"hint": { "en": "Vendor that put their brand on the device" },
+		"description": {
+			"en": "The vendor that put their brand on a device. Often the manufacturer of a device, but not necessarily."
+		}
+	},
+	{
+		"id": "category",
+		"type": "picker",
+		"label": { "en": "Category" },
+		"resource": "category",
+		"hint": { "en": "Category of the device" },
+		"description": { "en": "Primary category of a device." }
+	},
+	{
+		"id": "local-operation",
+		"type": "picker",
+		"label": { "en": "Local Operation" },
+		"resource": "none",
+		"options": [
+			{
+				"id": "local",
+				"title": { "en": "Fully Local" },
+				"subtitle": {
+					"en": "Does not depend on cloud access for any functionality."
+				},
+				"icon": "sun"
+			},
+			{
+				"id": "cloud-ish",
+				"title": { "en": "Degraded without Cloud" },
+				"subtitle": { "en": "Needs cloud access for full functionality." },
+				"icon": "sun-behind-cloud"
+			},
+			{
+				"id": "cloud",
+				"title": { "en": "Cloud Required" },
+				"subtitle": { "en": "Can not be used without cloud access." },
+				"icon": "cloud"
+			}
+		],
+		"hint": { "en": "Local operation" },
+		"description": {
+			"en": "Whether a device keeps working without cloud access."
+		}
+	},
+	{
+		"id": "photos",
+		"type": "photos",
+		"label": { "en": "Photos" },
+		"categories": {
+			"packshot": {
+				"label": { "en": "Packshot" },
+				"description": {
+					"en": "Clean, isolated product on a plain background."
+				}
+			},
+			"hero-shot": {
+				"label": { "en": "Hero shot" },
+				"description": {
+					"en": "Visually striking composition showcasing the product as the main focus."
+				}
+			},
+			"packaging": {
+				"label": { "en": "Packaging" },
+				"description": {
+					"en": "The product’s packaging, including its design, labels, and materials."
+				}
+			},
+			"unboxing": {
+				"label": { "en": "Unboxing" },
+				"description": {
+					"en": "The product being removed from or revealed inside its packaging."
+				}
+			},
+			"product-in-use": {
+				"label": { "en": "Product-in-use" },
+				"description": {
+					"en": "The product being used in a real-life context."
+				}
+			}
+		},
+		"pattern": {
+			"slots": [
+				{ "constrained": true, "categories": ["packshot", "hero-shot"] },
+				{ "constrained": true, "categories": ["product-in-use"] },
+				{ "constrained": true, "categories": ["unboxing"] },
+				{ "constrained": true, "categories": ["packaging"] },
+				{ "constrained": false },
+				{ "constrained": false }
+			]
+		}
+	}
+]

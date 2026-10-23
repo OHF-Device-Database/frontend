@@ -34,6 +34,12 @@
 	outline: 0;
 	box-shadow: var(--ring-focus);
 }
+/* `is-disabled` for links, which can't be disabled */
+.btn:disabled,
+.btn.is-disabled {
+	opacity: 0.4;
+	pointer-events: none;
+}
 
 input[type="text"],
 input[type="search"] {
