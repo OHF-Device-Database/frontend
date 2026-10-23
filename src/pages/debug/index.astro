@@ -1,0 +1,25 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="Debug">
+	<meta name="robots" content="noindex, nofollow" slot="head" />
+
+	<div class="container-narrow content-page">
+		<section class="content-section content-intro">
+			<h1>Debug</h1>
+			<p class="content-lede">
+				Features that are deployed but not on by default. Changes apply to pages
+				you open next.
+			</p>
+		</section>
+
+		<section class="content-section">
+			<debug-menu></debug-menu>
+		</section>
+	</div>
+</Layout>
+
+<script>
+	import "../../islands/debug-menu";
+</script>
