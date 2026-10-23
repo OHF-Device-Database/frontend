@@ -9,6 +9,7 @@ import PlausibleAnalytics from "../components/PlausibleAnalytics.astro";
 import { m } from "../paraglide/messages.js";
 import { getLocale } from "../paraglide/runtime.js";
 import globalCss from "../styles/global.css?url";
+import { featureDataset, features } from "../utilities/feature";
 
 interface Props {
 	title?: string;
@@ -17,9 +18,11 @@ interface Props {
 }
 
 const { title, page = "page", back } = Astro.props;
+
+const featureAttributes = featureDataset(features());
 ---
 
-<html lang={getLocale()} transition:animate="none">
+<html lang={getLocale()} transition:animate="none" {...featureAttributes}>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1" />

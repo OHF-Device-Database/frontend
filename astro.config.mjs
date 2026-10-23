@@ -2,7 +2,7 @@
 import netlify from "@astrojs/netlify";
 import node from "@astrojs/node";
 import { paraglideVitePlugin } from "@inlang/paraglide-js";
-import { defineConfig, envField, memoryCache } from "astro/config";
+import { defineConfig, envField } from "astro/config";
 
 // Netlify sets NETLIFY=true in its builds. Everywhere else (dev, Docker) we
 // run the standalone Node server.
@@ -113,6 +113,10 @@ export default defineConfig({
 		],
 	},
 	cache: {
-		provider: memoryCache(),
+		// only emits cache headers, caching itself is done by the cdn in front
+		provider: {
+			name: "cdn-headers",
+			entrypoint: new URL("./src/io/cache-provider.ts", import.meta.url),
+		},
 	},
 });

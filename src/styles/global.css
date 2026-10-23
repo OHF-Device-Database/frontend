@@ -18,6 +18,7 @@
 @import "./sheet.css";
 @import "./loading.css";
 @import "./redaction.css";
+@import "./debug-menu.css";
 @import "./edit-field.css";
 @import "./edit-field-view.css";
 @import "./edit-form.css";
