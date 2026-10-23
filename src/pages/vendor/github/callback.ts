@@ -156,6 +156,7 @@ export const GET: APIRoute = async ({ cookies, url }) => {
 			message:
 				url.searchParams.get("error_description") ??
 				"GitHub access was not granted.",
+			returnTo: pending.returnTo,
 		});
 	}
 

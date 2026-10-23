@@ -161,3 +161,56 @@ describe("clearing the browser cache when the session changes", () => {
 		t.expect(response.headers.has("clear-site-data")).toBe(false);
 	});
 });
+
+describe("without an oauth app configured", () => {
+	afterEach(() => {
+		env.clientId = "Iv1.abc";
+		env.clientSecret = "s3cret";
+		vi.unstubAllGlobals();
+	});
+
+	const unconfigure = () => {
+		// the env schema defaults to an empty string, not `undefined`
+		env.clientId = "";
+		env.clientSecret = "";
+
+		const fetched = vi.fn();
+		vi.stubGlobal("fetch", fetched);
+
+		return fetched;
+	};
+
+	test("refresh answers 503 without calling github", async (t) => {
+		const fetched = unconfigure();
+
+		const response = await refresh(
+			context({ "github-refresh": "ghr_x", "github-user": "octocat" }),
+		);
+
+		t.expect(response.status).toBe(503);
+		t.expect(fetched).not.toHaveBeenCalled();
+	});
+
+	test("sign-out still ends the session without calling github", async (t) => {
+		const fetched = unconfigure();
+
+		const response = await signOut(context({ "github-token": liveToken }));
+
+		t.expect(response.status).toBe(204);
+		t.expect(fetched).not.toHaveBeenCalled();
+	});
+});
+
+describe("declining on github", () => {
+	test("leads back to the page sign-in started from", async (t) => {
+		const response = await callback(
+			context(
+				{ "github-oauth-hello": { state: STATE, returnTo: "/browse" } },
+				"https://example.com/vendor/github/callback?error=access_denied",
+			),
+		);
+
+		t.expect(response.status).toBe(400);
+		t.expect(await response.text()).toContain('href="/browse"');
+	});
+});

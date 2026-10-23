@@ -21,10 +21,7 @@ const status = (code: number, headers: Record<string, string> = {}): Response =>
 
 /** trades the refresh token for a new access token */
 export const POST: APIRoute = async ({ cookies, url }) => {
-	if (
-		typeof GITHUB_OAUTH_CLIENT_ID === "undefined" ||
-		typeof GITHUB_OAUTH_CLIENT_SECRET === "undefined"
-	) {
+	if (!GITHUB_OAUTH_CLIENT_ID || !GITHUB_OAUTH_CLIENT_SECRET) {
 		return status(503);
 	}
 

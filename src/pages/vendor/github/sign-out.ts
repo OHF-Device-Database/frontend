@@ -22,8 +22,8 @@ export const POST: APIRoute = async ({ cookies }) => {
 	// don't revoke when token is expired / absent
 	if (
 		typeof token !== "undefined" &&
-		typeof GITHUB_OAUTH_CLIENT_ID !== "undefined" &&
-		typeof GITHUB_OAUTH_CLIENT_SECRET !== "undefined"
+		GITHUB_OAUTH_CLIENT_ID &&
+		GITHUB_OAUTH_CLIENT_SECRET
 	) {
 		try {
 			await GitHubOAuth.token.revoke({

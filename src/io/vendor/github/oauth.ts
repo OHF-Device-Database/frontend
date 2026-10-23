@@ -214,7 +214,7 @@ export class GitHubOAuth {
 			}
 		},
 
-		/** drops everything but the account name, which is kept so the page can still greet by name */
+		/** drops the whole session, account name included */
 		clear: (cookies: AstroCookies): void => {
 			cookies.delete(GITHUB_COOKIE_TOKEN, { path: "/" });
 			cookies.delete(GITHUB_COOKIE_REFRESH, { path: GITHUB_OAUTH_COOKIE_PATH });
