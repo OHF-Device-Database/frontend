@@ -5,7 +5,11 @@ import { defineMiddleware, sequence } from "astro:middleware";
 import "./io/http-cache.ts";
 
 import { paraglideMiddleware } from "./paraglide/server.js";
-import { featureParamApply } from "./utilities/feature";
+import {
+	FEATURE_COOKIE,
+	FEATURE_PARAM,
+	featureParamApply,
+} from "./utilities/feature";
 import { localeFromParam } from "./utilities/locale";
 import { scopeFeature } from "./utilities/scope.ts";
 
@@ -29,14 +33,27 @@ const paraglide = defineMiddleware((context, next) => {
 });
 
 // applies enablement from `?feature=` query parameters and provides render context
-const feature = defineMiddleware((context, next) => {
+const feature = defineMiddleware(async (context, next) => {
 	if (context.isPrerendered) {
 		return next();
 	}
 
+	// checked before `featureParamApply`, which can change the cookie
+	const flagged =
+		context.cookies.has(FEATURE_COOKIE) ||
+		context.url.searchParams.has(FEATURE_PARAM);
+
 	featureParamApply(context);
 
-	return scopeFeature.run(context.cookies, next);
+	const response = await scopeFeature.run(context.cookies, next);
+
+	// output depends on the flags, which shared caches don't key on
+	if (flagged) {
+		response.headers.set("Cache-Control", "private, no-store");
+		response.headers.set("CDN-Cache-Control", "no-store");
+	}
+
+	return response;
 });
 
 const noindex = defineMiddleware(async (_, next) => {

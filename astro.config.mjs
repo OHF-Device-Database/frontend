@@ -113,10 +113,10 @@ export default defineConfig({
 		],
 	},
 	cache: {
-		// custom cache provider that skips requests carrying feature flags
+		// only emits cache headers, caching itself is done by the cdn in front
 		provider: {
-			name: "feature-memory",
-			entrypoint: new URL("./src/io/feature-cache.ts", import.meta.url),
+			name: "cdn-headers",
+			entrypoint: new URL("./src/io/cache-provider.ts", import.meta.url),
 		},
 	},
 });
