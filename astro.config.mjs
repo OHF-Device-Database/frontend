@@ -2,7 +2,7 @@
 import netlify from "@astrojs/netlify";
 import node from "@astrojs/node";
 import { paraglideVitePlugin } from "@inlang/paraglide-js";
-import { defineConfig, envField, memoryCache } from "astro/config";
+import { defineConfig, envField } from "astro/config";
 
 // Netlify sets NETLIFY=true in its builds. Everywhere else (dev, Docker) we
 // run the standalone Node server.
@@ -113,6 +113,10 @@ export default defineConfig({
 		],
 	},
 	cache: {
-		provider: memoryCache(),
+		// custom cache provider that skips requests carrying feature flags
+		provider: {
+			name: "feature-memory",
+			entrypoint: new URL("./src/io/feature-cache.ts", import.meta.url),
+		},
 	},
 });
