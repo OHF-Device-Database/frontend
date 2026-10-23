@@ -4,12 +4,9 @@ import { defineMiddleware, sequence } from "astro:middleware";
 // middleware isn't shipped to clients, therefor perform side-effect import of caching setup here
 import "./io/http-cache.ts";
 
+import { cache } from "./middleware/cache";
 import { paraglideMiddleware } from "./paraglide/server.js";
-import {
-	FEATURE_COOKIE,
-	FEATURE_PARAM,
-	featureParamApply,
-} from "./utilities/feature";
+import { featureParamApply } from "./utilities/feature";
 import { localeFromParam } from "./utilities/locale";
 import { scopeFeature } from "./utilities/scope.ts";
 
@@ -38,22 +35,9 @@ const feature = defineMiddleware(async (context, next) => {
 		return next();
 	}
 
-	// checked before `featureParamApply`, which can change the cookie
-	const flagged =
-		context.cookies.has(FEATURE_COOKIE) ||
-		context.url.searchParams.has(FEATURE_PARAM);
-
 	featureParamApply(context);
 
-	const response = await scopeFeature.run(context.cookies, next);
-
-	// output depends on the flags, which shared caches don't key on
-	if (flagged) {
-		response.headers.set("Cache-Control", "private, no-store");
-		response.headers.set("CDN-Cache-Control", "no-store");
-	}
-
-	return response;
+	return scopeFeature.run(context.cookies, next);
 });
 
 const noindex = defineMiddleware(async (_, next) => {
@@ -66,4 +50,4 @@ const noindex = defineMiddleware(async (_, next) => {
 	return response;
 });
 
-export const onRequest = sequence(feature, paraglide, noindex);
+export const onRequest = sequence(cache, feature, paraglide, noindex);

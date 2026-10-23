@@ -119,12 +119,16 @@ that into:
 Pages that don't call `Astro.cache.set()` get no cache headers. Fingerprinted assets under
 `/_astro/` are served `immutable` for a year.
 
-Feature flags (the `device-database.features` cookie or `?feature=`) change the rendered output, so
-those responses always get `Cache-Control: private, no-store` and `CDN-Cache-Control: no-store`.
+SSR requests with any cookie (including feature flags and login cookies), an `Authorization`
+header, or `?feature=` always get `Cache-Control: private, no-store` and
+`CDN-Cache-Control: no-store`. Responses that set or delete cookies do too.
+Middleware disables Astro's cache headers for these responses so page TTLs cannot override this.
+Netlify varies cached pages by query string, `Cookie`, and `Authorization` to keep these requests
+away from anonymous cache entries.
 
 > **Cloudflare** doesn't cache HTML by default and doesn't key on cookies, so it needs Cache Rules:
 >
-> - Bypass the cache when the `device-database.features` cookie or a `feature` query parameter is
+> - Bypass the cache when any cookie, an `Authorization` header, or a `feature` query parameter is
 >   present. Origin headers can't stop Cloudflare from serving a copy it already has.
 > - Otherwise make HTML eligible for cache, use the origin's cache headers, and bypass when there
 >   are none.
