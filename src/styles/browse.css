@@ -280,10 +280,6 @@ a.browse-pagination-page:hover {
 	color: var(--fg-muted);
 	font-variant-numeric: tabular-nums;
 }
-.btn.is-disabled {
-	opacity: 0.4;
-	pointer-events: none;
-}
 @media (max-width: 767px) {
 	.browse {
 		padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));

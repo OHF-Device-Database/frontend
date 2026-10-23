@@ -192,5 +192,48 @@
 	"device_wtb_choose": "Choose your country",
 	"device_wtb_selection": "Sites are chosen for independence and no paid ranking, and listed in alphabetical order. {#link}Missing a comparison site? Get in touch{/link}",
 	"device_wtb_location": "Your country is preselected from your device's time zone, read only in your browser. Your choice is remembered on this device.",
-	"device_wtb_all_sites": "All comparison sites we link to, by country"
+	"device_wtb_all_sites": "All comparison sites we link to, by country",
+	"edit_field_about": "About {label}",
+	"edit_field_unset": "Not set",
+	"edit_field_option_devices": [
+		{
+			"declarations": [
+				"input count",
+				"local countPlural = count: plural",
+				"local countNumber = count: number"
+			],
+			"selectors": ["countPlural"],
+			"match": {
+				"countPlural=one": "{countNumber} device",
+				"countPlural=other": "{countNumber} devices"
+			}
+		}
+	],
+	"edit_field_combobox_loading": "Loading…",
+	"edit_field_combobox_error": "Couldn't load options, try typing again",
+	"edit_field_combobox_empty": "No matches",
+	"edit_field_combobox_count": "Matches: {count}",
+	"edit_field_combobox_more": "Showing {shown} of {total}. Search to narrow down.",
+	"edit_field_photo_slot": "Photo {number}",
+	"edit_field_photo_any": "Any category",
+	"edit_field_photo_category": "Category for photo {number}",
+	"edit_field_photo_choose_category": "Category",
+	"edit_field_photo_remove": "Remove photo {number}",
+	"edit_field_photo_add": "Choose or drop an image",
+	"edit_form_revert": "Revert",
+	"edit_form_revert_field": "Revert {label}",
+	"edit_form_submit": "Submit changes",
+	"edit_form_reset": "Revert all",
+	"edit_field_toggle_yes": "Yes",
+	"edit_field_toggle_no": "No",
+	"edit_field_issue_multiline": "Must be a single line",
+	"edit_field_issue_invalid_character": "{character} at position {position} is not allowed",
+	"edit_field_issue_too_short": "Must be at least {min} characters, currently {length}",
+	"edit_field_issue_too_long": "Must be at most {max} characters, currently {length}",
+	"edit_field_issue_ean_length": "Must be 8 or 13 digits, currently {length}",
+	"edit_field_issue_ean_checksum": "The last digit doesn't match the others, check for typos",
+	"edit_field_issue_unknown_option": "Choose one of the available options",
+	"edit_field_issue_unset": "A value that was set can't be removed",
+	"edit_field_issue_photo_type": "Photo {number} is not an image",
+	"edit_field_issue_photo_category": "Choose a category for photo {number}"
 }

@@ -1,0 +1,156 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+import { getDeclarations } from "../io/declaration";
+import { renderEditFieldView } from "../utilities/edit-field-view";
+import {
+	EXAMPLE_VALUES,
+	EXTRA_EXAMPLES,
+} from "../utilities/edit-playground-examples";
+import { renderToHtml } from "../utilities/ssr";
+
+// temporary page to try edit field declarations, not linked and not indexed
+
+// the same views the island renders, as the device page would on the server
+const { declarations } = await getDeclarations();
+const views = [...declarations, ...EXTRA_EXAMPLES].map((declaration) =>
+	renderToHtml(
+		renderEditFieldView({
+			declaration,
+			value: EXAMPLE_VALUES[declaration.id] ?? "",
+		}),
+	),
+);
+---
+
+<Layout title="Edit playground">
+	<meta slot="head" name="robots" content="noindex, nofollow" />
+	<div class="container edit-playground-page">
+		<h1>Edit playground</h1>
+		<p class="edit-playground-lede">
+			Pick an editor and an example, or edit the declaration, to debug one field
+			at a time. View shows the initial value as the device page would, edit
+			submits only changed fields and shows the form data instead of sending it.
+		</p>
+		<edit-playground></edit-playground>
+		<section class="edit-playground-server">
+			<h2>Rendered on the server</h2>
+			<dl class="edit-field-views">
+				{views.map((view) => <Fragment set:html={view} />)}
+			</dl>
+		</section>
+	</div>
+</Layout>
+
+<script>
+	import "../islands/edit-playground";
+</script>
+
+<!-- global because scoped styles don't reach markup rendered by the island -->
+<style is:global>
+	.edit-playground-page {
+		padding-top: var(--space-6);
+		padding-bottom: var(--space-8);
+	}
+	.edit-playground-page h1 {
+		margin-bottom: var(--space-2);
+	}
+	.edit-playground-lede {
+		margin: 0 0 var(--space-6);
+		color: var(--fg-muted);
+	}
+
+	edit-playground {
+		display: grid;
+		gap: var(--space-6);
+		align-items: start;
+	}
+	@media (min-width: 1024px) {
+		edit-playground {
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		}
+	}
+
+	.edit-playground-sources,
+	.edit-playground-preview,
+	.edit-playground-edit {
+		display: grid;
+		gap: var(--space-5);
+	}
+	.edit-playground-sources {
+		gap: var(--space-3);
+	}
+	.edit-playground-edit[hidden] {
+		display: none;
+	}
+
+	.edit-playground-pickers {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+		gap: var(--space-3);
+	}
+
+	.edit-playground-source {
+		display: grid;
+		gap: var(--space-2);
+		font-size: var(--fs-14);
+		font-weight: var(--fw-semibold);
+	}
+	/* the wrapper stretches in the grid, the chevron follows its right edge */
+	.edit-playground-source .select select {
+		width: 100%;
+	}
+	.edit-playground-source textarea {
+		min-height: 360px;
+		padding: var(--space-3);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-3);
+		background: var(--surface-sunken);
+		color: var(--fg);
+		font-family: var(--font-mono);
+		font-size: var(--fs-12);
+		font-weight: var(--fw-regular);
+		line-height: var(--lh-snug);
+		resize: vertical;
+		outline: 0;
+	}
+	.edit-playground-source input,
+	.edit-playground-source select {
+		font-weight: var(--fw-regular);
+	}
+	.edit-playground-source textarea:focus-visible {
+		box-shadow: var(--ring-focus);
+	}
+	.edit-playground-source textarea[aria-invalid="true"] {
+		border-color: var(--error);
+	}
+
+	.edit-playground-error,
+	.edit-playground-output pre {
+		margin: 0;
+		padding: var(--space-3);
+		border-radius: var(--radius-3);
+		font-family: var(--font-mono);
+		font-size: var(--fs-12);
+		white-space: pre-wrap;
+	}
+	.edit-playground-error {
+		background: var(--error-soft);
+		color: var(--error-strong);
+	}
+	.edit-playground-output h2 {
+		margin: 0 0 var(--space-2);
+		font-size: var(--fs-16);
+	}
+	.edit-playground-output pre {
+		background: var(--surface-sunken);
+	}
+
+	.edit-playground-server {
+		margin-top: var(--space-8);
+	}
+	.edit-playground-server h2 {
+		margin: 0 0 var(--space-4);
+		font-size: var(--fs-16);
+	}
+</style>
