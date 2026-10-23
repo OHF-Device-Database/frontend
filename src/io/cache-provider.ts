@@ -10,19 +10,17 @@ const cacheProvider: CacheProviderFactory = () => ({
 	setHeaders: (options) => {
 		const headers = new Headers();
 
-		// browsers always revalidate, the cdn keeps its own ttl
-		headers.set("Cache-Control", "no-cache");
-
+		// the same ttl for browsers and the cdn, which adds `Age` on the way through
 		const directives =
 			typeof options.maxAge !== "undefined" && options.maxAge > 0
 				? buildCacheControlDirectives(options)
 				: undefined;
 		if (typeof directives === "undefined") {
-			headers.set("CDN-Cache-Control", "no-store");
+			headers.set("Cache-Control", "no-store");
 			return headers;
 		}
 
-		headers.set("CDN-Cache-Control", directives);
+		headers.set("Cache-Control", `public, ${directives}`);
 		// Cookie/auth requests must miss anonymous entries, middleware marks them no-store.
 		headers.set("Netlify-Vary", "query, header=Cookie|Authorization");
 		if (typeof options.tags !== "undefined" && options.tags.length > 0) {

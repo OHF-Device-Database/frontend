@@ -51,9 +51,8 @@ describe("CDN cache headers", () => {
 				lastModified: new Date("2026-01-01T00:00:00Z"),
 			},
 		});
-		t.expect(response.headers.get("cache-control")).toBe("no-cache");
-		t.expect(response.headers.get("cdn-cache-control")).toBe(
-			"max-age=60, stale-while-revalidate=30",
+		t.expect(response.headers.get("cache-control")).toBe(
+			"public, max-age=60, stale-while-revalidate=30",
 		);
 		t.expect(response.headers.get("netlify-vary")).toBe(
 			"query, header=Cookie|Authorization",
@@ -74,14 +73,13 @@ describe("CDN cache headers", () => {
 					...(maxAge === undefined ? {} : { maxAge }),
 				},
 			});
-			expect(response.headers.get("cdn-cache-control")).toBe("no-store");
+			expect(response.headers.get("cache-control")).toBe("no-store");
 		},
 	);
 
 	test("leaves anonymous pages without cache options unchanged", async (t) => {
 		const { response } = await render({ options: {} });
 		t.expect(response.headers.has("cache-control")).toBe(false);
-		t.expect(response.headers.has("cdn-cache-control")).toBe(false);
 	});
 });
 
@@ -100,7 +98,6 @@ describe("cache bypass middleware", () => {
 		for (const options of [{ maxAge: 60 }, {}]) {
 			const { response } = await render({ ...input, options });
 			expect(response.headers.get("cache-control")).toBe("private, no-store");
-			expect(response.headers.get("cdn-cache-control")).toBe("no-store");
 		}
 	});
 
@@ -119,7 +116,6 @@ describe("cache bypass middleware", () => {
 					}),
 			});
 			expect(response.headers.get("cache-control")).toBe("private, no-store");
-			expect(response.headers.get("cdn-cache-control")).toBe("no-store");
 			expect(response.status).toBe(302);
 			expect(response.headers.has("set-cookie")).toBe(true);
 		},
@@ -140,7 +136,6 @@ describe("cache bypass middleware", () => {
 				},
 			});
 			expect(response.headers.get("cache-control")).toBe("private, no-store");
-			expect(response.headers.get("cdn-cache-control")).toBe("no-store");
 			expect([...context.cookies.headers()]).toHaveLength(1);
 			expect([...context.cookies.headers()][0]).toContain("login=");
 		},
@@ -154,7 +149,7 @@ describe("cache bypass middleware", () => {
 				return new Response("page");
 			},
 		});
-		t.expect(response.headers.get("cdn-cache-control")).toBe("no-store");
+		t.expect(response.headers.get("cache-control")).toBe("private, no-store");
 		t.expect([...context.cookies.headers()][0]).toContain(`${FEATURE_COOKIE}=`);
 	});
 
@@ -165,7 +160,7 @@ describe("cache bypass middleware", () => {
 				return new Response("page");
 			},
 		});
-		t.expect(response.headers.get("cdn-cache-control")).toBe("max-age=60");
+		t.expect(response.headers.get("cache-control")).toBe("public, max-age=60");
 	});
 
 	test("skips prerender request headers", async (t) => {

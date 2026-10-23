@@ -103,9 +103,10 @@ deploy previews). The server doesn't cache anything itself, it only sends header
 Pages call `Astro.cache.set()` and [`src/io/cache-provider.ts`](src/io/cache-provider.ts) turns
 that into:
 
-- `Cache-Control: no-cache`, so browsers always revalidate.
-- `CDN-Cache-Control: max-age=<n>`, the edge TTL. It's `no-store` when there's no TTL. We don't
-  use `s-maxage`, because Cloudflare turns off stale-while-revalidate when it's present.
+- `Cache-Control: public, max-age=<n>`, the TTL for browsers and the CDN alike. The CDN adds
+  `Age` on the way through, so browsers count from the original render. It's `no-store` when
+  there's no TTL. We don't use `s-maxage`, because Cloudflare turns off stale-while-revalidate
+  when it's present.
 - `Cache-Tag`, `Last-Modified` and `ETag` when the page provides them.
 
 | Route                | TTL                      |
@@ -120,8 +121,8 @@ Pages that don't call `Astro.cache.set()` get no cache headers. Fingerprinted as
 `/_astro/` are served `immutable` for a year.
 
 SSR requests with any cookie (including feature flags and login cookies), an `Authorization`
-header, or `?feature=` always get `Cache-Control: private, no-store` and
-`CDN-Cache-Control: no-store`. Responses that set or delete cookies do too.
+header, or `?feature=` always get `Cache-Control: private, no-store`. Responses that set or
+delete cookies do too.
 Middleware disables Astro's cache headers for these responses so page TTLs cannot override this.
 Netlify varies cached pages by query string, `Cookie`, and `Authorization` to keep these requests
 away from anonymous cache entries.

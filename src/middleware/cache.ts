@@ -23,7 +23,6 @@ export const cache = defineMiddleware(async (context, next) => {
 		// Astro applies the provider's headers after middleware returns.
 		context.cache.set(false);
 		response.headers.set("Cache-Control", "private, no-store");
-		response.headers.set("CDN-Cache-Control", "no-store");
 	}
 
 	return response;
