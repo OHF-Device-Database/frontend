@@ -17,6 +17,8 @@ export const prerender = false;
 export const POST: APIRoute = async ({ cookies }) => {
 	const token = GitHubSession.token.deserialize(
 		cookies.get(GITHUB_COOKIE_TOKEN)?.value,
+		Date.now(),
+		0,
 	);
 
 	// don't revoke when token is expired / absent

@@ -70,11 +70,13 @@ export class GitHubOperation {
 		return collapsed;
 	}
 
-	static signOut(): void {
+	static async signOut(): Promise<void> {
 		// survives the navigation when sign-out is the last thing a page does
-		void fetch(GITHUB_SIGN_OUT_PATH, { method: "POST", keepalive: true }).catch(
-			() => undefined,
-		);
+		// the token cookie stays until the request is done, the server needs it to revoke
+		await fetch(GITHUB_SIGN_OUT_PATH, {
+			method: "POST",
+			keepalive: true,
+		}).catch(() => undefined);
 
 		GitHubSession.forget();
 	}

@@ -80,9 +80,14 @@ export class GitHubSession {
 			return token;
 		},
 
+		/**
+		 * `skewMs` defaults to treating a token close to expiry as expired, which suits
+		 * requests about to be made with it. revocation passes `0`: the token still works
+		 */
 		deserialize: (
 			serialized: string | undefined,
 			now: number = Date.now(),
+			skewMs: number = EXPIRY_SKEW_MS,
 		): GitHubToken | undefined => {
 			if (!serialized) {
 				return undefined;
@@ -99,7 +104,7 @@ export class GitHubSession {
 				return undefined;
 			}
 
-			return parsed.expiresAt - EXPIRY_SKEW_MS <= now ? undefined : parsed;
+			return parsed.expiresAt - skewMs <= now ? undefined : parsed;
 		},
 	};
 

@@ -37,7 +37,7 @@ const revocableToken = async (
 ): Promise<
 	{ accessToken: string; renewed?: GithubOAuthToken | undefined } | undefined
 > => {
-	const current = GitHubSession.token.deserialize(cookie);
+	const current = GitHubSession.token.deserialize(cookie, Date.now(), 0);
 	if (typeof current !== "undefined") {
 		return { accessToken: current.token };
 	}
