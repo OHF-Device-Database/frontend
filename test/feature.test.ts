@@ -1,4 +1,4 @@
-import { describe, test } from "vitest";
+import { describe, test, vi } from "vitest";
 
 import { FEATURES } from "../src/types/feature";
 import {
@@ -20,10 +20,26 @@ import { scopeFeature } from "../src/utilities/scope";
 import type { FeatureName, FeatureState } from "../src/types/feature";
 import type { FeatureCookieJarWritable } from "../src/utilities/feature";
 
+// the real registry can be empty, so the tests bring their own features
+vi.mock("../src/types/feature", () => {
+	const FEATURES = {
+		one: { label: "one", description: "first test feature" },
+		two: { label: "two", description: "second test feature" },
+	};
+	const FEATURE_NAMES = Object.keys(FEATURES);
+
+	return {
+		FEATURES,
+		FEATURE_NAMES,
+		isFeatureName: (value: unknown) =>
+			(FEATURE_NAMES as unknown[]).includes(value),
+	};
+});
+
 const names = Object.keys(FEATURES) as [FeatureName, ...FeatureName[]];
 const [name] = names;
 
-const stateWith = (enabled: Iterable<FeatureName>): FeatureState => {
+const stateWith = (enabled: Iterable<FeatureName>) => {
 	const on = new Set(enabled);
 
 	return Object.fromEntries(names.map((n) => [n, on.has(n)])) as FeatureState;
@@ -92,7 +108,9 @@ describe("featureParseEnabled", () => {
 
 	test("drops names that are not features", (t) => {
 		t.expect(featureParseEnabled("gone|also-gone")).toEqual(new Set());
-		t.expect(featureParseEnabled(`gone|${name}`)).toEqual(new Set([name]));
+		t.expect(featureParseEnabled(`gone|${String(name)}`)).toEqual(
+			new Set([name]),
+		);
 	});
 });
 
@@ -134,11 +152,13 @@ describe("featureDataset", () => {
 		const attributes = featureDataset(stateWith([name]));
 
 		t.expect(Object.keys(attributes)).toHaveLength(names.length);
-		t.expect(attributes[`data-feature-${name}`]).toBe("on");
+		t.expect(attributes[`data-feature-${String(name)}`]).toBe("on");
 	});
 
 	test("an unlisted feature reads as off", (t) => {
-		t.expect(featureDataset(allOff)[`data-feature-${name}`]).toBe("off");
+		t.expect(featureDataset(allOff)[`data-feature-${String(name)}`]).toBe(
+			"off",
+		);
 	});
 });
 
@@ -305,7 +325,9 @@ describe("featureParamApply", () => {
 	});
 
 	test("writes back, so the state survives a navigation that drops the query", (t) => {
-		const astro = request(`https://example.com/?${FEATURE_PARAM}=${name}`);
+		const astro = request(
+			`https://example.com/?${FEATURE_PARAM}=${String(name)}`,
+		);
 		featureParamApply(astro);
 
 		t.expect(features(astro.cookies)).toEqual(stateWith([name]));

@@ -106,7 +106,8 @@ export const featureParseEnabled = (value: string): Set<FeatureName> => {
 export const featureSerializeEnabled = (enabled: Set<FeatureName>) =>
 	[...enabled].join(SEPARATOR);
 
-const featureStateOf = (enabled: Set<FeatureName>): FeatureState =>
+// no return type, lint calls the assertion unnecessary while the registry is empty
+const featureStateOf = (enabled: Set<FeatureName>) =>
 	Object.fromEntries(
 		FEATURE_NAMES.map((name) => [name, enabled.has(name)] as const),
 	) as FeatureState;
@@ -122,7 +123,8 @@ const enabledOf = (jar?: FeatureCookieJar): Set<FeatureName> => {
 export const featureDataset = (state: FeatureState): Record<string, string> =>
 	Object.fromEntries(
 		FEATURE_NAMES.map(
-			(name) => [`data-feature-${name}`, state[name] ? "on" : "off"] as const,
+			(name) =>
+				[`data-feature-${String(name)}`, state[name] ? "on" : "off"] as const,
 		),
 	);
 

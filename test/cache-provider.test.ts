@@ -85,14 +85,14 @@ describe("CDN cache headers", () => {
 
 describe("cache bypass middleware", () => {
 	test.each([
-		{ headers: { Cookie: `${FEATURE_COOKIE}=foo` } },
+		{ headers: { Cookie: `${FEATURE_COOKIE}=example` } },
 		{ headers: { Cookie: `${FEATURE_COOKIE}=` } },
 		{ headers: { Cookie: "github_oauth=example" } },
 		{ headers: { Cookie: "unknown_login_cookie=example" } },
 		{ headers: { Cookie: "" } },
 		{ headers: { Authorization: "Bearer example" } },
 		{ headers: { Authorization: "" } },
-		{ query: "?feature=foo" },
+		{ query: "?feature=example" },
 		{ query: "?feature=" },
 	])("bypasses personalized requests: %j", async (input) => {
 		for (const options of [{ maxAge: 60 }, {}]) {
