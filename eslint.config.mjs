@@ -23,6 +23,11 @@ export default tseslint.config(
 	{
 		rules: {
 			"@eslint-community/eslint-comments/require-description": "error",
+			// feature names are `never` while no feature is registered
+			"@typescript-eslint/restrict-template-expressions": [
+				"error",
+				{ allowNever: true },
+			],
 		},
 	},
 	configs["flat/recommended"],
