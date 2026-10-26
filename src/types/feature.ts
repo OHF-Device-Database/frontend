@@ -5,7 +5,12 @@ export type FeatureDefinition = {
 	description: string;
 };
 
-export const FEATURES = {} as const satisfies Record<string, FeatureDefinition>;
+export const FEATURES = {
+	account: {
+		label: "Account",
+		description: "Sign in with GitHub and the account page",
+	},
+} as const satisfies Record<string, FeatureDefinition>;
 
 export type FeatureName = keyof typeof FEATURES;
 export type FeatureState = Record<FeatureName, boolean>;
