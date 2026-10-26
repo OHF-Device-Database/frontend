@@ -120,7 +120,7 @@ export const authorizeUrl = (params: {
 const TokenResponse = z.object({
 	access_token: z.string().min(1),
 	scope: z.string().optional(),
-	expires_in: z.number(),
+	expires_in: z.number().optional(),
 	refresh_token: z.string().optional(),
 	refresh_token_expires_in: z.number().optional(),
 });
