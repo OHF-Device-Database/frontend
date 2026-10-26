@@ -70,15 +70,30 @@ export class GitHubOperation {
 		return collapsed;
 	}
 
-	static async signOut(): Promise<void> {
-		// survives the navigation when sign-out is the last thing a page does
-		// the token cookie stays until the request is done, the server needs it to revoke
-		await fetch(GITHUB_SIGN_OUT_PATH, {
-			method: "POST",
-			keepalive: true,
-		}).catch(() => undefined);
+	/**
+	 * `false` if the server could not be reached or refused: the http-only refresh
+	 * cookie may still be there, so the session is left as it was
+	 */
+	static async signOut(): Promise<boolean> {
+		let response: Response;
+		try {
+			// survives the navigation when sign-out is the last thing a page does
+			// the token cookie stays until the request is done, the server needs it to revoke
+			response = await fetch(GITHUB_SIGN_OUT_PATH, {
+				method: "POST",
+				keepalive: true,
+			});
+		} catch {
+			return false;
+		}
+
+		if (!response.ok) {
+			return false;
+		}
 
 		GitHubSession.forget();
+
+		return true;
 	}
 
 	static async revoke(): Promise<boolean> {
