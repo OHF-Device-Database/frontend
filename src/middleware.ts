@@ -4,8 +4,11 @@ import { defineMiddleware, sequence } from "astro:middleware";
 // middleware isn't shipped to clients, therefor perform side-effect import of caching setup here
 import "./io/http-cache.ts";
 
+import { cache } from "./middleware/cache";
 import { paraglideMiddleware } from "./paraglide/server.js";
+import { featureParamApply } from "./utilities/feature";
 import { localeFromParam } from "./utilities/locale";
+import { scopeFeature } from "./utilities/scope.ts";
 
 // Astro routes `src/pages/[...locale]/`, Paraglide resolves the locale for `getLocale()`
 const paraglide = defineMiddleware((context, next) => {
@@ -26,6 +29,17 @@ const paraglide = defineMiddleware((context, next) => {
 	return paraglideMiddleware(request, () => next());
 });
 
+// applies enablement from `?feature=` query parameters and provides render context
+const feature = defineMiddleware(async (context, next) => {
+	if (context.isPrerendered) {
+		return next();
+	}
+
+	featureParamApply(context);
+
+	return scopeFeature.run(context.cookies, next);
+});
+
 const noindex = defineMiddleware(async (_, next) => {
 	const response = await next();
 
@@ -36,4 +50,4 @@ const noindex = defineMiddleware(async (_, next) => {
 	return response;
 });
 
-export const onRequest = sequence(paraglide, noindex);
+export const onRequest = sequence(cache, feature, paraglide, noindex);

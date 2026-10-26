@@ -1,8 +1,8 @@
 import type { IoHeadersCaching } from "../io";
 
 /**
- * Turns the API caching headers into `Astro.cache.set()` options. They only
- * drive Astro's in-process cache, the response has no `Cache-Control` header.
+ * Turns the API caching headers into `Astro.cache.set()` options, which
+ * `src/io/cache-provider.ts` turns into response headers for the CDN.
  */
 export const cachePolicy = (headers: IoHeadersCaching) => ({
 	// exact optional property buffoonery
