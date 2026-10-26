@@ -31,19 +31,20 @@ export const POST: APIRoute = async ({ cookies, url }) => {
 		return status(401, SESSION_CHANGE_HEADERS);
 	}
 
+	// account name missing, re-authentication required
+	// checked before refreshing, which would use up the refresh token
+	const login = cookies.get(GITHUB_COOKIE_USER)?.value;
+	if (typeof login === "undefined") {
+		GitHubOAuth.session.clear(cookies);
+		return status(401, SESSION_CHANGE_HEADERS);
+	}
+
 	try {
 		const token = await GitHubOAuth.token.refresh({
 			clientId: GITHUB_OAUTH_CLIENT_ID,
 			clientSecret: GITHUB_OAUTH_CLIENT_SECRET,
 			refreshToken,
 		});
-
-		// account name missing, re-authentication required
-		const login = cookies.get(GITHUB_COOKIE_USER)?.value;
-		if (typeof login === "undefined") {
-			GitHubOAuth.session.clear(cookies);
-			return status(401, SESSION_CHANGE_HEADERS);
-		}
 
 		GitHubOAuth.session.write({ url, token, login }, cookies);
 
