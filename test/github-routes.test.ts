@@ -206,11 +206,13 @@ describe("declining on github", () => {
 		const response = await callback(
 			context(
 				{ "github-oauth-hello": { state: STATE, returnTo: "/browse" } },
-				"https://example.com/vendor/github/callback?error=access_denied",
+				`https://example.com/vendor/github/callback?error=access_denied&state=${STATE}`,
 			),
 		);
 
 		t.expect(response.status).toBe(400);
-		t.expect(await response.text()).toContain('href="/browse"');
+		const body = await response.text();
+		t.expect(body).toContain("GitHub access was not granted.");
+		t.expect(body).toContain('href="/browse"');
 	});
 });
