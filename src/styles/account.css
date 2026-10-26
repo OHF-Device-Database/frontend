@@ -1,6 +1,9 @@
 .account {
-	display: flex;
+	display: none;
 	align-items: center;
+}
+html[data-feature-account="on"] .account {
+	display: flex;
 }
 .account-trigger {
 	anchor-name: --account;
@@ -151,6 +154,9 @@ html[data-github-session] .account-avatar {
 	}
 }
 
+html:not([data-feature-account="on"]) .account-page {
+	display: none;
+}
 .account-page {
 	padding-top: var(--space-10);
 	padding-bottom: var(--space-10);
