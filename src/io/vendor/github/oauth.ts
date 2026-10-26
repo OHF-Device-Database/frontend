@@ -157,6 +157,14 @@ export class GitHubOAuth {
 				refresh_token: params.refreshToken,
 			}),
 
+		/**
+		 * whether github turned the refresh token down for good (spent, expired or revoked),
+		 * as opposed to a timeout or outage where it may still be valid
+		 */
+		isRefreshRejected: (error: unknown): boolean =>
+			error instanceof OAuthError &&
+			(error.code === "bad_refresh_token" || error.code === "invalid_grant"),
+
 		/** for signing out: this one token stops working, the authorization stands */
 		revoke: (params: AppRevocation): Promise<void> =>
 			revokeResource("token", params),

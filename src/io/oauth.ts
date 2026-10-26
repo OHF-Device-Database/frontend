@@ -125,6 +125,12 @@ const TokenResponse = z.object({
 	refresh_token_expires_in: z.number().optional(),
 });
 
+// rfc 6749 answers errors with 400, github answers them with 200
+const TokenErrorResponse = z.object({
+	error: z.string().min(1),
+	error_description: z.string().optional(),
+});
+
 export type OAuthToken = {
 	accessToken: string;
 	scope?: string | undefined;
@@ -150,6 +156,13 @@ export const requestToken = async (
 		signal: AbortSignal.timeout(options.timeoutMs),
 	});
 
+	const payload: unknown = await response.json().catch(() => undefined);
+
+	const rejected = TokenErrorResponse.safeParse(payload);
+	if (rejected.success) {
+		throw new OAuthError(rejected.data.error, rejected.data.error_description);
+	}
+
 	if (!response.ok) {
 		throw new OAuthError(
 			"exchange_failed",
@@ -157,7 +170,7 @@ export const requestToken = async (
 		);
 	}
 
-	const parsed = TokenResponse.safeParse(await response.json());
+	const parsed = TokenResponse.safeParse(payload);
 	if (!parsed.success) {
 		throw new OAuthError("exchange_failed", "unexpected token response");
 	}

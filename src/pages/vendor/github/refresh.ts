@@ -48,8 +48,13 @@ export const POST: APIRoute = async ({ cookies, url }) => {
 		GitHubOAuth.session.write({ url, token, login }, cookies);
 
 		return status(204);
-	} catch {
-		// a refresh token is single-use, re-authentication required
+	} catch (error) {
+		// timeout or outage, the refresh token may still be good
+		if (!GitHubOAuth.token.isRefreshRejected(error)) {
+			return status(503);
+		}
+
+		// spent, expired or revoked, re-authentication required
 		GitHubOAuth.session.clear(cookies);
 
 		return status(401, SESSION_CHANGE_HEADERS);

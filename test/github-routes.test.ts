@@ -140,7 +140,7 @@ describe("clearing the browser cache when the session changes", () => {
 	});
 
 	test("when a failed refresh ends the session", async (t) => {
-		githubAnswers(() => new Response(null, { status: 400 }));
+		githubAnswers(() => Response.json({ error: "bad_refresh_token" }));
 
 		const response = await refresh(
 			context({ "github-refresh": "ghr_x", "github-user": "octocat" }),
