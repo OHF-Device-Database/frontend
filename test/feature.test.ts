@@ -16,6 +16,7 @@ import {
 	featuresReset,
 	featuresSet,
 } from "../src/utilities/feature";
+import { recordOf } from "../src/utilities/record";
 import { scopeFeature } from "../src/utilities/scope";
 import type { FeatureName, FeatureState } from "../src/types/feature";
 import type { FeatureCookieJarWritable } from "../src/utilities/feature";
@@ -39,10 +40,10 @@ vi.mock("../src/types/feature", () => {
 const names = Object.keys(FEATURES) as [FeatureName, ...FeatureName[]];
 const [name] = names;
 
-const stateWith = (enabled: Iterable<FeatureName>) => {
+const stateWith = (enabled: Iterable<FeatureName>): FeatureState => {
 	const on = new Set(enabled);
 
-	return Object.fromEntries(names.map((n) => [n, on.has(n)])) as FeatureState;
+	return recordOf(names, (n) => on.has(n));
 };
 
 const allOff = stateWith([]);
@@ -108,9 +109,7 @@ describe("featureParseEnabled", () => {
 
 	test("drops names that are not features", (t) => {
 		t.expect(featureParseEnabled("gone|also-gone")).toEqual(new Set());
-		t.expect(featureParseEnabled(`gone|${String(name)}`)).toEqual(
-			new Set([name]),
-		);
+		t.expect(featureParseEnabled(`gone|${name}`)).toEqual(new Set([name]));
 	});
 });
 
@@ -152,13 +151,11 @@ describe("featureDataset", () => {
 		const attributes = featureDataset(stateWith([name]));
 
 		t.expect(Object.keys(attributes)).toHaveLength(names.length);
-		t.expect(attributes[`data-feature-${String(name)}`]).toBe("on");
+		t.expect(attributes[`data-feature-${name}`]).toBe("on");
 	});
 
 	test("an unlisted feature reads as off", (t) => {
-		t.expect(featureDataset(allOff)[`data-feature-${String(name)}`]).toBe(
-			"off",
-		);
+		t.expect(featureDataset(allOff)[`data-feature-${name}`]).toBe("off");
 	});
 });
 
@@ -325,9 +322,7 @@ describe("featureParamApply", () => {
 	});
 
 	test("writes back, so the state survives a navigation that drops the query", (t) => {
-		const astro = request(
-			`https://example.com/?${FEATURE_PARAM}=${String(name)}`,
-		);
+		const astro = request(`https://example.com/?${FEATURE_PARAM}=${name}`);
 		featureParamApply(astro);
 
 		t.expect(features(astro.cookies)).toEqual(stateWith([name]));

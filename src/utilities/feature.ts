@@ -2,6 +2,7 @@
 import type { AsyncLocalStorage } from "node:async_hooks";
 
 import { FEATURE_NAMES, isFeatureName } from "../types/feature";
+import { recordOf } from "./record";
 import type { FeatureName, FeatureState } from "../types/feature";
 
 export const FEATURE_COOKIE = "device-database.features";
@@ -106,11 +107,8 @@ export const featureParseEnabled = (value: string): Set<FeatureName> => {
 export const featureSerializeEnabled = (enabled: Set<FeatureName>) =>
 	[...enabled].join(SEPARATOR);
 
-// no return type, lint calls the assertion unnecessary while the registry is empty
-const featureStateOf = (enabled: Set<FeatureName>) =>
-	Object.fromEntries(
-		FEATURE_NAMES.map((name) => [name, enabled.has(name)] as const),
-	) as FeatureState;
+const featureStateOf = (enabled: Set<FeatureName>): FeatureState =>
+	recordOf(FEATURE_NAMES, (name) => enabled.has(name));
 
 /** what the cookie carries, empty when it is absent or unreadable */
 const enabledOf = (jar?: FeatureCookieJar): Set<FeatureName> => {
@@ -123,8 +121,7 @@ const enabledOf = (jar?: FeatureCookieJar): Set<FeatureName> => {
 export const featureDataset = (state: FeatureState): Record<string, string> =>
 	Object.fromEntries(
 		FEATURE_NAMES.map(
-			(name) =>
-				[`data-feature-${String(name)}`, state[name] ? "on" : "off"] as const,
+			(name) => [`data-feature-${name}`, state[name] ? "on" : "off"] as const,
 		),
 	);
 
