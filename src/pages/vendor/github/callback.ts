@@ -148,24 +148,22 @@ export const GET: APIRoute = async ({ cookies, url }) => {
 			returnTo: pending.returnTo,
 		});
 
-	// GitHub sends `error=access_denied` when the visitor declines
-	const denied = url.searchParams.get("error");
-	if (denied !== null) {
-		return errorPage({
-			status: 400,
-			message:
-				url.searchParams.get("error_description") ??
-				"GitHub access was not granted.",
-			returnTo: pending.returnTo,
-		});
-	}
-
 	// csrf state mismatch
 	if (url.searchParams.get("state") !== pending.state) {
 		return errorPage({
 			status: 400,
 			message:
 				"This sign-in could not be verified as the one that started here. Please try again.",
+			returnTo: pending.returnTo,
+		});
+	}
+
+	// GitHub sends `error=access_denied` when the visitor declines
+	// fixed message, the url's `error_description` would let anyone put text on this page
+	if (url.searchParams.has("error")) {
+		return errorPage({
+			status: 400,
+			message: "GitHub access was not granted.",
 			returnTo: pending.returnTo,
 		});
 	}
