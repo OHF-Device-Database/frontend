@@ -99,7 +99,7 @@ const errorPage = (params: {
 	});
 };
 
-/** reads and immediately invalidates the clears pending authorization */
+/** reads and immediately invalidates the pending authorization */
 const takePending = (cookies: AstroCookies): OAuthState | undefined => {
 	const cookie = cookies.get(GITHUB_COOKIE_OAUTH_HELLO);
 	cookies.delete(GITHUB_COOKIE_OAUTH_HELLO, { path: GITHUB_OAUTH_COOKIE_PATH });
