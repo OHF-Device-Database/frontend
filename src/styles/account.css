@@ -73,7 +73,8 @@ html[data-feature-account="on"] .account {
 	font-size: var(--fs-14);
 	font-weight: var(--fw-semibold);
 }
-.account-provider {
+.account-provider,
+.account-provider:visited {
 	display: flex;
 	align-items: center;
 	gap: var(--space-2);
