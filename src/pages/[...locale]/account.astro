@@ -1,0 +1,92 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+import { m } from "../../paraglide/messages.js";
+import { localizeHref } from "../../paraglide/runtime.js";
+import { localeStaticPaths } from "../../utilities/locale";
+
+export const getStaticPaths = localeStaticPaths;
+---
+
+<Layout page="page" title={m.account_title()}>
+	<div class="container-narrow account-page" data-home={localizeHref("/")}>
+		<p class="account-signed-out content-prose">{m.account_signed_out()}</p>
+
+		<div class="account-signed-in account-stack">
+			<section class="account-action">
+				<button type="button" class="account-button" data-account="sign-out">
+					{m.account_sign_out()}
+				</button>
+				<p>{m.account_sign_out_hint()}</p>
+			</section>
+
+			<section class="account-danger" aria-labelledby="account-danger-title">
+				<h2 id="account-danger-title">{m.account_danger_zone()}</h2>
+				<div class="account-action">
+					<button
+						type="button"
+						class="account-button account-button-danger"
+						data-account="disconnect"
+					>
+						{m.account_disconnect()}
+					</button>
+					<p>
+						{m.account_disconnect_hint()}<br />
+						{m.account_disconnect_hint_contributions()}
+					</p>
+				</div>
+			</section>
+
+			<p class="account-error" role="alert" data-account-error></p>
+		</div>
+	</div>
+</Layout>
+
+<script>
+	import { GitHubOperation } from "../../io/vendor/github/operations";
+	import { m } from "../../paraglide/messages.js";
+
+	const bind = () => {
+		const page = document.querySelector<HTMLElement>("[data-home]");
+		if (!page || page.dataset.bound) {
+			return;
+		}
+		page.dataset.bound = "true";
+
+		const home = page.dataset.home ?? "/";
+		const error = page.querySelector("[data-account-error]");
+		const buttons = [
+			...page.querySelectorAll<HTMLButtonElement>("[data-account]"),
+		];
+
+		const run = async (action: () => Promise<boolean>) => {
+			buttons.forEach((button) => (button.disabled = true));
+			if (error) error.textContent = "";
+
+			if (await action()) {
+				window.location.assign(home);
+				return;
+			}
+
+			buttons.forEach((button) => (button.disabled = false));
+			if (error) error.textContent = m.account_action_failed();
+		};
+
+		for (const button of buttons) {
+			button.addEventListener("click", () => {
+				switch (button.dataset.account) {
+					case "sign-out":
+						void run(() => GitHubOperation.signOut());
+						break;
+					case "disconnect":
+						if (window.confirm(m.account_disconnect_confirm())) {
+							void run(() => GitHubOperation.revoke());
+						}
+						break;
+				}
+			});
+		}
+	};
+
+	document.addEventListener("astro:page-load", bind);
+</script>

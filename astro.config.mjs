@@ -80,6 +80,18 @@ export default defineConfig({
 				optional: true,
 				default: true,
 			}),
+			GITHUB_OAUTH_CLIENT_ID: envField.string({
+				context: "server",
+				access: "secret",
+				optional: true,
+				default: "",
+			}),
+			GITHUB_OAUTH_CLIENT_SECRET: envField.string({
+				context: "server",
+				access: "secret",
+				optional: true,
+				default: "",
+			}),
 		},
 	},
 	adapter,

@@ -44,6 +44,20 @@ const featureAttributes = featureDataset(features());
 		}
 		<script src="/config.js" defer is:inline></script>
 
+		{/* Before first paint, so signed-in visitors don't see "Sign In" flash */}
+		<script is:inline>
+			(function () {
+				function apply() {
+					document.documentElement.toggleAttribute(
+						"data-github-session",
+						/(?:^|;\s*)github-user=/.test(document.cookie),
+					);
+				}
+				apply();
+				document.addEventListener("astro:after-swap", apply);
+			})();
+		</script>
+
 		<script is:inline>
 			(function () {
 				var KEY = "device-database.demoState.v1";

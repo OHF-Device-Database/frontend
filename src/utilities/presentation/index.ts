@@ -23,6 +23,7 @@ import {
 	Link,
 	List,
 	Lock,
+	LogIn,
 	PawPrint,
 	Pencil,
 	Printer,
@@ -175,6 +176,7 @@ const PRESENTATION_GENERIC = {
 	barcode: renderable(Barcode),
 	imagePlus: renderable(ImagePlus),
 	undo: renderable(Undo2),
+	logIn: renderable(LogIn),
 } as const;
 
 export const device = {
