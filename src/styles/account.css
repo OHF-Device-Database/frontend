@@ -5,6 +5,9 @@
 html[data-feature-account="on"] .account {
 	display: flex;
 }
+html[data-github-session=""] .account {
+	display: flex;
+}
 .account-trigger {
 	anchor-name: --account;
 	display: inline-flex;
