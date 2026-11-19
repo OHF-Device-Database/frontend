@@ -1,0 +1,29 @@
+---
+type Link = {
+	href: string;
+	label: string;
+	current?: boolean;
+};
+
+interface Props {
+	/** accessible name of the navigation */
+	label: string;
+	links: readonly Link[];
+}
+
+const { label, links } = Astro.props;
+---
+
+<nav aria-label={label} class="ui-sheet-nav">
+	{
+		links.map((link) => (
+			<a
+				class="ui-sheet-link"
+				href={link.href}
+				aria-current={link.current === true ? "page" : undefined}
+			>
+				{link.label}
+			</a>
+		))
+	}
+</nav>

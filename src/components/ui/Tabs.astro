@@ -1,0 +1,30 @@
+---
+type Tab = {
+	href: string;
+	label: string;
+	current?: boolean;
+};
+
+interface Props {
+	/** accessible name of the navigation */
+	label: string;
+	tabs: readonly Tab[];
+	class?: string;
+}
+
+const { label, tabs, class: className } = Astro.props;
+---
+
+<nav aria-label={label} class:list={["ui-tabs", className]}>
+	{
+		tabs.map((tab) => (
+			<a
+				class="ui-tab"
+				href={tab.href}
+				aria-current={tab.current === true ? "page" : undefined}
+			>
+				{tab.label}
+			</a>
+		))
+	}
+</nav>

@@ -1,0 +1,26 @@
+---
+import { iconToSvg } from "@openhomefoundation/icons";
+import type { IconNode } from "@openhomefoundation/icons";
+
+interface Props {
+	/** icon data, e.g. `iconSearch` from `@openhomefoundation/icons` */
+	icon: IconNode;
+	/** width and height in pixels */
+	size?: number;
+	strokeWidth?: number;
+	/** accessible name. without it the icon is hidden from screen readers */
+	label?: string;
+	class?: string;
+}
+
+const { icon, size = 16, strokeWidth, label, class: className } = Astro.props;
+
+const svg = iconToSvg(icon, {
+	size,
+	class: ["ui-icon", className].filter(Boolean).join(" "),
+	...(typeof strokeWidth === "undefined" ? {} : { strokeWidth }),
+	...(typeof label === "undefined" ? {} : { label }),
+});
+---
+
+<Fragment set:html={svg} />

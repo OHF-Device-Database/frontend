@@ -22,7 +22,13 @@ const { title, page = "page", back } = Astro.props;
 const featureAttributes = featureDataset(features());
 ---
 
-<html lang={getLocale()} transition:animate="none" {...featureAttributes}>
+<html
+	lang={getLocale()}
+	data-brand="ddb"
+	data-theme="auto"
+	transition:animate="none"
+	{...featureAttributes}
+>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -76,10 +82,10 @@ const featureAttributes = featureDataset(features());
 						: "light";
 				}
 				function apply(state) {
-					document.documentElement.setAttribute(
-						"data-resolved-theme",
-						resolve(state.theme),
-					);
+					var theme = resolve(state.theme);
+					document.documentElement.setAttribute("data-resolved-theme", theme);
+					// read by the @openhomefoundation/tokens stylesheets
+					document.documentElement.setAttribute("data-theme", theme);
 					document.documentElement.setAttribute(
 						"data-view",
 						state.view === "grid" ? "grid" : "list",

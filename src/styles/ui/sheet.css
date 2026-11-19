@@ -1,0 +1,105 @@
+/*
+ * Sheet, from the "Menu" panel that opens under the menu button: 458px wide,
+ * 56px from the top and 22px from the end on desktop, edge to edge with 16px
+ * margins on a phone. A raised panel with an outline, an 8px radius and 32px
+ * padding. Content is 24px apart and the footer sits at the bottom.
+ * A native <dialog>, so focus trapping and Escape come from the browser.
+ */
+.ui-sheet {
+	--ui-sheet-top: 56px;
+	--ui-sheet-edge: 22px;
+
+	position: fixed;
+	inset: var(--ui-sheet-top) var(--ui-sheet-edge) 18px auto;
+	box-sizing: border-box;
+	width: min(458px, calc(100vw - var(--ui-sheet-edge) * 2));
+	height: auto;
+	max-width: none;
+	max-height: none;
+	margin: 0;
+	padding: var(--ohf-space-32);
+	border: var(--ohf-border-width-default) solid var(--ohf-color-border-default);
+	border-radius: var(--ohf-radius-l);
+	background: var(--ohf-color-bg-surface-raised);
+	box-shadow: var(--ohf-shadow-lg);
+	color: var(--ohf-color-text-default);
+	overflow: auto;
+}
+.ui-sheet[open] {
+	display: flex;
+	flex-direction: column;
+	gap: var(--ohf-space-24);
+	animation: ui-sheet-in var(--ohf-duration-normal) var(--ohf-easing-out);
+}
+.ui-sheet[data-side="start"] {
+	inset-inline: var(--ui-sheet-edge) auto;
+}
+.ui-sheet::backdrop {
+	background: var(--ohf-color-bg-overlay);
+}
+@keyframes ui-sheet-in {
+	from {
+		opacity: 0;
+		transform: translateY(-8px);
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.ui-sheet[open] {
+		animation: none;
+	}
+}
+@media (max-width: 600px) {
+	.ui-sheet {
+		--ui-sheet-top: 64px;
+		--ui-sheet-edge: 16px;
+
+		inset-block-end: 16px;
+		width: auto;
+		inset-inline: var(--ui-sheet-edge);
+	}
+}
+.ui-sheet-footer {
+	display: flex;
+	flex-direction: column;
+	gap: var(--ohf-space-16);
+	margin-top: auto;
+}
+.ui-sheet-footer:empty {
+	display: none;
+}
+.ui-sheet-separator {
+	flex: none;
+	width: 100%;
+	height: 1px;
+	margin: 0;
+	border: 0;
+	background: var(--ohf-color-border-default);
+}
+
+/* the large links at the top of the menu: 24/28 medium, 8px apart */
+.ui-sheet-nav {
+	display: flex;
+	flex-direction: column;
+	gap: var(--ohf-space-8);
+}
+.ui-sheet-nav .ui-sheet-link {
+	color: var(--ohf-color-text-default);
+	font-size: var(--ohf-font-size-24);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-28);
+	letter-spacing: -0.72px;
+	text-decoration: none;
+	transition: color var(--ohf-duration-fast) var(--ohf-easing-standard);
+}
+.ui-sheet-nav:hover .ui-sheet-link:not(:hover),
+.ui-sheet-nav:has([aria-current]) .ui-sheet-link:not([aria-current], :hover) {
+	color: var(--ohf-color-text-subtle);
+}
+.ui-sheet-nav .ui-sheet-link:hover {
+	text-decoration: none;
+}
+.ui-sheet-nav .ui-sheet-link:focus-visible {
+	outline: var(--ohf-border-width-focus) solid var(--ohf-color-border-focus);
+	outline-offset: 2px;
+	border-radius: var(--ohf-radius-sm);
+}

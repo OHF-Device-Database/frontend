@@ -1,0 +1,75 @@
+---
+import type { IconNode } from "@openhomefoundation/icons";
+import type { HTMLAttributes } from "astro/types";
+
+import Icon from "./Icon.astro";
+
+type Props = Omit<HTMLAttributes<"input">, "size" | "class" | "id"> & {
+	/** ties the label and the hint to the input */
+	id: string;
+	/** visible label. without it, pass `aria-label` */
+	label?: string;
+	/** help text under the field. reads as an error when `invalid` is set */
+	hint?: string;
+	invalid?: boolean;
+	/** md 40px, sm 32px */
+	size?: "md" | "sm";
+	shape?: "rounded" | "pill";
+	/** icon before the text, e.g. `iconSearch` */
+	icon?: IconNode;
+	class?: string;
+};
+
+const {
+	id,
+	label,
+	hint,
+	invalid = false,
+	size = "md",
+	shape = "rounded",
+	icon,
+	class: className,
+	type = "text",
+	...rest
+} = Astro.props;
+
+const hintId = typeof hint === "string" ? `${id}-hint` : undefined;
+---
+
+<div class:list={["ui-field", className]}>
+	{
+		label && (
+			<label class="ui-field-label" for={id}>
+				{label}
+			</label>
+		)
+	}
+	<div
+		class="ui-field-control"
+		data-size={size}
+		data-shape={shape === "pill" ? "pill" : undefined}
+	>
+		{icon && <Icon icon={icon} />}
+		<input
+			{...rest}
+			id={id}
+			type={type}
+			class="ui-field-input"
+			aria-invalid={invalid ? "true" : undefined}
+			aria-describedby={hintId}
+		/>
+		{/* e.g. a plain xs Button that clears the field */}
+		<slot name="trailing" />
+	</div>
+	{
+		hint && (
+			<p
+				class="ui-field-hint"
+				id={hintId}
+				data-invalid={invalid ? "" : undefined}
+			>
+				{hint}
+			</p>
+		)
+	}
+</div>

@@ -1,0 +1,40 @@
+/*
+ * Tabs, from the bar on the device details page: links to sections or pages,
+ * 14/20 medium, 24px apart, with a line under the current one.
+ */
+.ui-tabs {
+	display: flex;
+	align-items: flex-end;
+	gap: var(--ohf-space-24);
+	overflow-x: auto;
+	border-block: 0.5px solid var(--ohf-color-border-default);
+	scrollbar-width: none;
+}
+.ui-tabs .ui-tab {
+	flex: none;
+	display: inline-flex;
+	align-items: center;
+	box-sizing: border-box;
+	height: 52px;
+	border-bottom: var(--ohf-border-width-default) solid transparent;
+	color: var(--ohf-color-text-subtle);
+	font-size: var(--ohf-font-size-14);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-20);
+	letter-spacing: -0.14px;
+	white-space: nowrap;
+	text-decoration: none;
+	transition: color var(--ohf-duration-fast) var(--ohf-easing-standard);
+}
+.ui-tabs .ui-tab:hover {
+	color: var(--ohf-color-text-default);
+	text-decoration: none;
+}
+.ui-tabs .ui-tab[aria-current] {
+	border-bottom-color: var(--ohf-color-border-strong);
+	color: var(--ohf-color-text-default);
+}
+.ui-tabs .ui-tab:focus-visible {
+	outline: var(--ohf-border-width-focus) solid var(--ohf-color-border-focus);
+	outline-offset: -2px;
+}

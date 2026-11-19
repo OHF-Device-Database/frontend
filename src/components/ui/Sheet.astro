@@ -1,0 +1,30 @@
+---
+interface Props {
+	/**
+	 * open it with a button that has `data-modal-open="<id>"`.
+	 * any button inside with `data-modal-close` closes it
+	 */
+	id: string;
+	/** accessible name of the sheet */
+	label: string;
+	/** which side of the screen it opens on */
+	side?: "end" | "start";
+	class?: string;
+}
+
+const { id, label, side = "end", class: className } = Astro.props;
+---
+
+<dialog
+	id={id}
+	aria-label={label}
+	class:list={["ui-sheet", className]}
+	data-side={side === "start" ? "start" : undefined}
+>
+	<slot />
+	<div class="ui-sheet-footer"><slot name="footer" /></div>
+</dialog>
+
+<script>
+	import "./dialog";
+</script>

@@ -1,0 +1,60 @@
+/*
+ * Checkbox, from the filter rows in Browse: a 16px box with a 4px radius next
+ * to a 13/20 medium label. Checked is the brand accent. The check mark is
+ * ours: the "checkbox checked" frame is a plain filled square.
+ */
+.ui-checkbox {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--ohf-space-8);
+	color: var(--ohf-color-text-subtle);
+	font-size: var(--ohf-font-size-13);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-20);
+	cursor: pointer;
+}
+.ui-checkbox:has(.ui-checkbox-input:checked) {
+	color: var(--ohf-color-text-default);
+}
+.ui-checkbox:has(.ui-checkbox-input:disabled) {
+	color: var(--ohf-color-text-disabled);
+	cursor: not-allowed;
+}
+.ui-checkbox .ui-checkbox-input {
+	appearance: none;
+	flex: none;
+	display: grid;
+	place-content: center;
+	box-sizing: border-box;
+	width: 16px;
+	height: 16px;
+	margin: 0;
+	border: var(--ohf-border-width-default) solid var(--ohf-color-alpha-20);
+	border-radius: var(--ohf-radius-sm);
+	background: var(--ohf-color-bg-surface-hover);
+	cursor: inherit;
+	transition:
+		background-color var(--ohf-duration-fast) var(--ohf-easing-standard),
+		border-color var(--ohf-duration-fast) var(--ohf-easing-standard);
+}
+.ui-checkbox .ui-checkbox-input::before {
+	content: "";
+	width: 9px;
+	height: 5px;
+	margin-top: -2px;
+	border: solid var(--ohf-color-text-on-accent);
+	border-width: 0 0 1.5px 1.5px;
+	transform: rotate(-45deg) scale(0);
+	transition: transform var(--ohf-duration-fast) var(--ohf-easing-standard);
+}
+.ui-checkbox .ui-checkbox-input:checked {
+	border-color: var(--ohf-color-alpha-12);
+	background: var(--ohf-color-bg-accent-default);
+}
+.ui-checkbox .ui-checkbox-input:checked::before {
+	transform: rotate(-45deg) scale(1);
+}
+.ui-checkbox .ui-checkbox-input:focus-visible {
+	outline: var(--ohf-border-width-focus) solid var(--ohf-color-border-focus);
+	outline-offset: 2px;
+}

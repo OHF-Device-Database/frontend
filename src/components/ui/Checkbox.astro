@@ -1,0 +1,14 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+type Props = Omit<HTMLAttributes<"input">, "type" | "class"> & {
+	class?: string;
+};
+
+const { class: className, ...rest } = Astro.props;
+---
+
+<label class:list={["ui-checkbox", className]}>
+	<input {...rest} type="checkbox" class="ui-checkbox-input" />
+	<span><slot /></span>
+</label>

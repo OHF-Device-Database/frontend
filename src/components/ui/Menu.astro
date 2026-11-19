@@ -1,0 +1,30 @@
+---
+interface Props {
+	/** the trigger needs `popovertarget="<id>"` */
+	id: string;
+	/** accessible name of the menu */
+	label: string;
+	/** which edge of the trigger the menu lines up with */
+	align?: "start" | "end";
+	class?: string;
+}
+
+const { id, label, align = "start", class: className } = Astro.props;
+
+const anchor = `--ui-menu-${id}`;
+---
+
+<div class="ui-menu-anchor" style={`anchor-name: ${anchor}`}>
+	{/* a Button with `popovertarget` */}
+	<slot name="trigger" />
+	<nav
+		popover
+		id={id}
+		aria-label={label}
+		class:list={["ui-menu", className]}
+		data-align={align === "end" ? "end" : undefined}
+		style={`position-anchor: ${anchor}`}
+	>
+		<slot />
+	</nav>
+</div>

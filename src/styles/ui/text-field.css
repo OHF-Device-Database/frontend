@@ -1,0 +1,93 @@
+/*
+ * Text field, from the "Text Field" frames in Settings and Sign in.
+ * 40px high, 8px radius, 14/20 regular. The label sits 12px above the field.
+ * The focus ring is the two rings drawn in the Sign in frame: a 2px gap in the
+ * canvas colour, then 2px in the focus colour.
+ */
+.ui-field {
+	display: grid;
+	gap: var(--ohf-space-12);
+	min-width: 0;
+}
+.ui-field-label {
+	color: var(--ohf-color-text-subtle);
+	font-size: var(--ohf-font-size-14);
+	font-weight: var(--ohf-font-weight-regular);
+	line-height: var(--ohf-line-height-20);
+}
+.ui-field-hint {
+	margin: calc(var(--ohf-space-4) * -1) 0 0;
+	color: var(--ohf-color-text-subtle);
+	font-size: var(--ohf-font-size-12);
+	line-height: var(--ohf-line-height-16);
+}
+.ui-field-hint[data-invalid] {
+	color: var(--ohf-color-text-danger);
+}
+.ui-field-control {
+	display: flex;
+	align-items: center;
+	gap: var(--ohf-space-8);
+	box-sizing: border-box;
+	height: var(--ohf-size-control-md);
+	padding: 0 var(--ohf-space-12);
+	border: var(--ohf-border-width-default) solid var(--ohf-color-border-default);
+	border-radius: var(--ohf-radius-l);
+	background: var(--ohf-color-bg-surface-raised);
+	color: var(--ohf-color-icon-subtle);
+	transition:
+		border-color var(--ohf-duration-fast) var(--ohf-easing-standard),
+		box-shadow var(--ohf-duration-fast) var(--ohf-easing-standard);
+}
+.ui-field-control:hover {
+	border-color: var(--ohf-color-border-control);
+}
+.ui-field-control:focus-within {
+	box-shadow:
+		0 0 0 2px var(--ohf-color-bg-canvas),
+		0 0 0 4px var(--ohf-color-border-focus);
+}
+.ui-field-control[data-size="sm"] {
+	height: var(--ohf-size-control-sm);
+}
+.ui-field-control[data-shape="pill"] {
+	border-radius: var(--ohf-radius-pill);
+}
+.ui-field-control:has(.ui-field-input[aria-invalid="true"]) {
+	border-color: var(--ohf-color-border-danger);
+}
+.ui-field-control:has(.ui-field-input:disabled) {
+	border-color: var(--ohf-color-border-disabled);
+	background: var(--ohf-color-bg-disabled);
+}
+
+/* resets the global `input[type="search"]` and friends in controls.css */
+.ui-field-control .ui-field-input {
+	flex: 1;
+	min-width: 0;
+	height: 100%;
+	margin: 0;
+	padding: 0 var(--ohf-space-4);
+	border: 0;
+	border-radius: 0;
+	outline: 0;
+	background: transparent;
+	box-shadow: none;
+	color: var(--ohf-color-text-default);
+	font-family: inherit;
+	font-size: var(--ohf-font-size-14);
+	font-weight: var(--ohf-font-weight-regular);
+	line-height: var(--ohf-line-height-20);
+	letter-spacing: 0;
+}
+.ui-field-control .ui-field-input::placeholder {
+	color: var(--ohf-color-text-placeholder);
+	opacity: 1;
+}
+.ui-field-control .ui-field-input:disabled {
+	color: var(--ohf-color-text-disabled);
+	cursor: not-allowed;
+}
+.ui-field-control .ui-field-input::-webkit-search-cancel-button {
+	display: none;
+}

@@ -1,0 +1,66 @@
+---
+import { iconX } from "@openhomefoundation/icons";
+
+import Button from "./Button.astro";
+
+interface Props {
+	/**
+	 * open it with a button that has `data-modal-open="<id>"`.
+	 * any button inside with `data-modal-close` closes it
+	 */
+	id: string;
+	/** visible heading. without it, pass `label` */
+	title?: string;
+	/** accessible name when there is no visible title */
+	label?: string;
+	/** label of the close button */
+	closeLabel: string;
+	/** md 528px, sm 400px */
+	size?: "md" | "sm";
+	class?: string;
+}
+
+const {
+	id,
+	title,
+	label,
+	closeLabel,
+	size = "md",
+	class: className,
+} = Astro.props;
+
+const titleId = `${id}-title`;
+---
+
+<dialog
+	id={id}
+	class:list={["ui-modal", className]}
+	data-size={size}
+	aria-labelledby={title ? titleId : undefined}
+	aria-label={title ? undefined : label}
+>
+	<header class="ui-modal-header">
+		{
+			title && (
+				<h2 class="ui-modal-title" id={titleId}>
+					{title}
+				</h2>
+			)
+		}
+		<Button
+			variant="plain"
+			icon={iconX}
+			iconPlacement="only"
+			label={closeLabel}
+			data-modal-close
+		/>
+	</header>
+	<div class="ui-modal-body">
+		<slot />
+	</div>
+	<footer class="ui-modal-footer"><slot name="footer" /></footer>
+</dialog>
+
+<script>
+	import "./dialog";
+</script>

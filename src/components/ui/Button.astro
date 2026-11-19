@@ -1,0 +1,80 @@
+---
+import type { IconNode } from "@openhomefoundation/icons";
+import type { HTMLAttributes } from "astro/types";
+
+import Icon from "./Icon.astro";
+
+type Shared = {
+	/**
+	 * primary: filled. ghost: outlined. raised: surface with a shadow.
+	 * tonal: translucent fill with an outline. plain: no fill, no outline.
+	 */
+	variant?: "primary" | "ghost" | "raised" | "tonal" | "plain";
+	/** xs 24px, sm 32px, md 36px, lg 40px, xl 48px, compact 30px pill */
+	size?: "xs" | "sm" | "md" | "lg" | "xl" | "compact";
+	shape?: "rounded" | "pill";
+	disabled?: boolean;
+	class?: string;
+} & (
+	| { icon?: IconNode; iconPlacement?: "leading" | "trailing"; label?: never }
+	/** an icon-only button has no visible text, so it needs a label */
+	| { icon: IconNode; iconPlacement: "only"; label: string }
+);
+
+type Props = Shared &
+	(
+		| ({ href: string } & Omit<HTMLAttributes<"a">, "href" | "class">)
+		| ({ href?: never } & Omit<HTMLAttributes<"button">, "disabled" | "class">)
+	);
+
+const {
+	variant = "ghost",
+	size = "md",
+	shape = "rounded",
+	disabled = false,
+	icon,
+	iconPlacement = "leading",
+	label,
+	class: className,
+	href,
+	...rest
+} = Astro.props;
+
+const iconOnly = iconPlacement === "only";
+
+const shared = {
+	class: ["ui-button", className].filter(Boolean).join(" "),
+	"data-variant": variant,
+	"data-size": size,
+	"data-shape": shape === "pill" ? "pill" : undefined,
+	"data-icon-only": iconOnly ? "" : undefined,
+	"aria-label": iconOnly ? label : undefined,
+};
+---
+
+{
+	typeof href === "string" ? (
+		<a
+			{...(rest as HTMLAttributes<"a">)}
+			{...shared}
+			href={disabled ? undefined : href}
+			aria-disabled={disabled ? "true" : undefined}
+			role={disabled ? "link" : undefined}
+		>
+			{icon && iconPlacement !== "trailing" && <Icon icon={icon} />}
+			{!iconOnly && <slot />}
+			{icon && iconPlacement === "trailing" && <Icon icon={icon} />}
+		</a>
+	) : (
+		<button
+			type="button"
+			{...(rest as HTMLAttributes<"button">)}
+			{...shared}
+			disabled={disabled}
+		>
+			{icon && iconPlacement !== "trailing" && <Icon icon={icon} />}
+			{!iconOnly && <slot />}
+			{icon && iconPlacement === "trailing" && <Icon icon={icon} />}
+		</button>
+	)
+}

@@ -1,0 +1,64 @@
+---
+import type { IconNode } from "@openhomefoundation/icons";
+
+import Icon from "./Icon.astro";
+
+type Option = {
+	value: string;
+	label: string;
+	/** with an icon, the label is only read by screen readers */
+	icon?: IconNode;
+	disabled?: boolean;
+};
+
+interface Props {
+	/** form field name, shared by every option */
+	name: string;
+	/** accessible name of the group */
+	label: string;
+	options: readonly Option[];
+	/** the selected option's value */
+	value?: string;
+	shape?: "rounded" | "pill";
+	/** stretch to the width of the container */
+	block?: boolean;
+	class?: string;
+}
+
+const {
+	name,
+	label,
+	options,
+	value,
+	shape = "rounded",
+	block = false,
+	class: className,
+} = Astro.props;
+---
+
+<div
+	role="radiogroup"
+	aria-label={label}
+	class:list={["ui-segmented", className]}
+	data-shape={shape === "pill" ? "pill" : undefined}
+	data-block={block ? "" : undefined}
+>
+	{
+		options.map((option) => (
+			<label class="ui-segmented-option">
+				<input
+					type="radio"
+					class="ui-segmented-input"
+					name={name}
+					value={option.value}
+					checked={option.value === value}
+					disabled={option.disabled === true}
+				/>
+				{option.icon && <Icon icon={option.icon} />}
+				<span class:list={[option.icon && "ui-visually-hidden"]}>
+					{option.label}
+				</span>
+			</label>
+		))
+	}
+</div>

@@ -1,0 +1,90 @@
+/*
+ * Menu, from the Categories dropdown and the main menu panel: a raised panel
+ * with an outline and an 8px radius. Items are 36px high, 14/20 medium, 2px
+ * apart, subtle until hovered or current. A native popover anchored to its
+ * trigger, like the language picker.
+ */
+.ui-menu-anchor {
+	display: inline-block;
+}
+.ui-menu {
+	position-area: bottom span-right;
+	position-try-fallbacks: flip-inline, flip-block;
+	box-sizing: border-box;
+	min-width: 220px;
+	max-width: calc(100vw - var(--ohf-space-32));
+	max-height: min(480px, calc(100dvh - var(--ohf-space-32)));
+	margin: var(--ohf-space-8) 0;
+	padding: var(--ohf-space-6);
+	border: var(--ohf-border-width-default) solid var(--ohf-color-border-default);
+	border-radius: var(--ohf-radius-l);
+	background: var(--ohf-color-bg-surface-raised);
+	box-shadow: var(--ohf-shadow-lg);
+	color: var(--ohf-color-text-default);
+	overflow: auto;
+}
+.ui-menu[data-align="end"] {
+	position-area: bottom span-left;
+}
+.ui-menu:popover-open {
+	display: flex;
+	flex-direction: column;
+	gap: var(--ohf-space-2);
+}
+/* without anchor positioning the menu sits under the nav, at the start */
+@supports not (position-area: bottom) {
+	.ui-menu {
+		inset: auto;
+		top: var(--ohf-space-64);
+		left: var(--ohf-space-16);
+	}
+}
+.ui-menu .ui-menu-item {
+	display: flex;
+	align-items: center;
+	gap: var(--ohf-space-8);
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 36px;
+	padding: var(--ohf-space-8) var(--ohf-space-12);
+	border: 0;
+	border-radius: var(--ohf-radius-md);
+	background: transparent;
+	color: var(--ohf-color-text-subtle);
+	font-family: inherit;
+	font-size: var(--ohf-font-size-14);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-20);
+	letter-spacing: 0;
+	text-align: start;
+	text-decoration: none;
+	cursor: pointer;
+	transition:
+		background-color var(--ohf-duration-fast) var(--ohf-easing-standard),
+		color var(--ohf-duration-fast) var(--ohf-easing-standard);
+}
+.ui-menu .ui-menu-item:hover {
+	background: var(--ohf-color-alpha-9);
+	color: var(--ohf-color-text-default);
+	text-decoration: none;
+}
+.ui-menu .ui-menu-item[aria-current] {
+	border-radius: var(--ohf-radius-l);
+	background: var(--ohf-color-alpha-12);
+	color: var(--ohf-color-text-default);
+}
+.ui-menu .ui-menu-item:focus-visible {
+	outline: var(--ohf-border-width-focus) solid var(--ohf-color-border-focus);
+	outline-offset: -2px;
+}
+.ui-menu .ui-menu-item:disabled {
+	color: var(--ohf-color-text-disabled);
+	cursor: not-allowed;
+}
+.ui-menu-separator {
+	flex: none;
+	height: 1px;
+	margin: var(--ohf-space-4) 0;
+	border: 0;
+	background: var(--ohf-color-border-default);
+}

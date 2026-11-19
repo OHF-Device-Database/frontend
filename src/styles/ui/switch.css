@@ -1,0 +1,58 @@
+/*
+ * Switch, from the "toggle default" (36x20, 16px knob) and "Local control
+ * toggle" (28x16, 12px knob) frames. On uses the brand accent.
+ */
+.ui-switch {
+	--ui-switch-width: 36px;
+	--ui-switch-height: 20px;
+	--ui-switch-knob: 16px;
+
+	appearance: none;
+	flex: none;
+	position: relative;
+	box-sizing: border-box;
+	width: var(--ui-switch-width);
+	height: var(--ui-switch-height);
+	margin: 0;
+	border: 0;
+	border-radius: var(--ohf-radius-pill);
+	background: var(--ohf-color-alpha-12);
+	box-shadow: inset 0 0 0 0.5px var(--ohf-color-alpha-25);
+	cursor: pointer;
+	transition: background-color var(--ohf-duration-fast)
+		var(--ohf-easing-standard);
+}
+.ui-switch::before {
+	content: "";
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: var(--ui-switch-knob);
+	height: var(--ui-switch-knob);
+	border-radius: var(--ohf-radius-pill);
+	background: var(--ohf-color-white);
+	box-shadow: var(--ohf-shadow-sm);
+	transition: transform var(--ohf-duration-fast) var(--ohf-easing-standard);
+}
+.ui-switch:checked {
+	background: var(--ohf-color-bg-accent-default);
+	box-shadow: none;
+}
+.ui-switch:checked::before {
+	transform: translateX(
+		calc(var(--ui-switch-width) - var(--ui-switch-knob) - 4px)
+	);
+}
+.ui-switch[data-size="sm"] {
+	--ui-switch-width: 28px;
+	--ui-switch-height: 16px;
+	--ui-switch-knob: 12px;
+}
+.ui-switch:focus-visible {
+	outline: var(--ohf-border-width-focus) solid var(--ohf-color-border-focus);
+	outline-offset: 2px;
+}
+.ui-switch:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
