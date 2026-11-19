@@ -4,5 +4,5 @@ allowBuilds:
   inotify: false
   sharp: false
 minimumReleaseAgeExclude:
-  - '@openhomefoundation/tokens@0.1.0'
-  - '@openhomefoundation/icons@0.1.0'
+  - "@openhomefoundation/tokens@0.1.0"
+  - "@openhomefoundation/icons@0.1.0"
