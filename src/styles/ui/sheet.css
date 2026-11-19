@@ -49,7 +49,8 @@
 	}
 }
 @media (max-width: 600px) {
-	.ui-sheet {
+	.ui-sheet,
+	.ui-sheet[data-side="start"] {
 		--ui-sheet-top: 64px;
 		--ui-sheet-edge: 16px;
 

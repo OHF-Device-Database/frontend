@@ -30,10 +30,13 @@ const {
 	icon,
 	class: className,
 	type = "text",
+	"aria-describedby": describedBy,
 	...rest
 } = Astro.props;
 
 const hintId = typeof hint === "string" ? `${id}-hint` : undefined;
+// keeps help or error text the caller already points at, next to our hint
+const describedByIds = [describedBy, hintId].filter(Boolean).join(" ");
 ---
 
 <div class:list={["ui-field", className]}>
@@ -56,7 +59,7 @@ const hintId = typeof hint === "string" ? `${id}-hint` : undefined;
 			type={type}
 			class="ui-field-input"
 			aria-invalid={invalid ? "true" : undefined}
-			aria-describedby={hintId}
+			aria-describedby={describedByIds === "" ? undefined : describedByIds}
 		/>
 		{/* e.g. a plain xs Button that clears the field */}
 		<slot name="trailing" />

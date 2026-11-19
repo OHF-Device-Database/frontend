@@ -48,7 +48,8 @@ const shared = {
 	"data-size": size,
 	"data-shape": shape === "pill" ? "pill" : undefined,
 	"data-icon-only": iconOnly ? "" : undefined,
-	"aria-label": iconOnly ? label : undefined,
+	// only set for an icon-only button, so a caller's own `aria-label` survives
+	...(iconOnly ? { "aria-label": label } : {}),
 };
 ---
 

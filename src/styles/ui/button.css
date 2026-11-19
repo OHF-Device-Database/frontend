@@ -48,6 +48,11 @@
 	background: var(--ui-button-bg-hover);
 	text-decoration: none;
 }
+/* outranks the global `a:hover` and `a:visited` in base.css */
+a.ui-button:hover,
+a.ui-button:visited {
+	color: var(--ui-button-fg);
+}
 .ui-button:active {
 	background: var(--ui-button-bg-pressed);
 }
