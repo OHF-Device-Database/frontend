@@ -6,12 +6,13 @@
 .ui-segmented {
 	display: inline-flex;
 	align-items: stretch;
-	gap: var(--ohf-space-4);
+	/* the segments touch, and sit 2px in from the edge, outline included */
+	gap: 0;
 	box-sizing: border-box;
 	height: 32px;
 	min-width: 0;
 	margin: 0;
-	padding: 2px;
+	padding: 1px;
 	border: var(--ohf-border-width-default) solid var(--ohf-color-border-default);
 	border-radius: var(--ohf-radius-md);
 	background: var(--ohf-color-bg-surface-sunken);
@@ -70,7 +71,9 @@
 }
 .ui-segmented[data-shape="pill"] {
 	height: 36px;
-	padding: 3px;
+	gap: var(--ohf-space-4);
+	/* 3px in from the edge, outline included */
+	padding: 2px;
 	border-color: var(--ohf-color-border-control);
 	border-radius: var(--ohf-radius-pill);
 }
