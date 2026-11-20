@@ -1,166 +1,402 @@
+/*
+ * The header, from the Figma header frame: 64px high with a hairline under it.
+ * The mark and the main links at the start, search in the middle, Contribute
+ * and the menu button at the end. On a phone it is the mark, search and the
+ * menu button, and the links and Contribute live in the menu.
+ */
 .appnav {
-	--logo-h: 32px;
 	position: sticky;
 	top: 0;
 	z-index: 20;
 	height: var(--nav-h);
 	background: var(--nav-bg);
-	border-bottom: 1px solid transparent;
-	transition: border-color 0.15s ease;
-}
-.appnav.is-scrolled {
-	border-bottom-color: var(--border);
+	border-bottom: 0.5px solid var(--ohf-color-border-control);
 }
 .appnav-inner {
 	height: 100%;
 	display: grid;
-	grid-template-columns: minmax(180px, 260px) minmax(0, 1fr) minmax(0, 1fr);
-	align-content: center;
-	align-items: end;
-	gap: var(--space-5);
+	/* equal sides keep the search in the middle of the page */
+	grid-template-columns: minmax(0, 1fr) minmax(0, 362px) minmax(0, 1fr);
+	align-items: center;
+	gap: var(--ohf-space-16);
 }
 .appnav-left {
 	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
+	align-items: center;
+	gap: var(--ohf-space-16);
+	min-width: 0;
 }
 .appnav-right {
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
-	gap: var(--space-3);
-	/* Logo height, so the picker centers on the logo. */
-	min-height: var(--logo-h);
-}
-.appnav .searchbox-header {
-	justify-self: center;
-	width: min(560px, 100%);
-	max-width: 100%;
+	gap: var(--ohf-space-8);
+	min-width: 0;
 }
 .brand {
+	flex: none;
 	display: inline-flex;
 	align-items: center;
-	gap: var(--space-3);
-	color: var(--fg);
-	font-family: var(--font-display);
-	font-weight: 600;
+	width: 40px;
+	height: 40px;
+	color: var(--ohf-color-text-default);
 	text-decoration: none;
 	-webkit-user-select: none;
 	user-select: none;
 	-webkit-touch-callout: none;
 	touch-action: manipulation;
 }
-.brand:hover {
-	text-decoration: none;
-	color: var(--fg);
+.brand:hover,
+.brand:visited {
+	color: var(--ohf-color-text-default);
 }
-.brand-logo {
+.brand:focus-visible,
+.appnav-link:focus-visible {
+	outline: var(--ohf-border-width-focus) solid var(--ohf-color-border-focus);
+	outline-offset: 2px;
+	border-radius: var(--ohf-radius-md);
+}
+.brand-mark {
 	display: block;
-	height: var(--logo-h);
-	width: auto;
-	color: var(--fg);
+	width: 32px;
+	height: 32px;
 }
 
-.preview-label,
-.preview-label:visited,
-.preview-label:hover {
-	color: var(--fg-muted);
+.appnav-links {
+	display: flex;
+	align-items: center;
+	gap: var(--ohf-space-4);
 }
-.preview-label {
+/* a link or the Categories button: 14/20 medium, subtle until hovered */
+.appnav-link {
 	display: inline-flex;
 	align-items: center;
-	gap: var(--space-1);
-	font-size: var(--fs-12);
-	font-weight: var(--fw-bold);
-	line-height: 1;
-	text-transform: uppercase;
+	gap: var(--ohf-space-4);
+	padding: var(--ohf-space-8) var(--ohf-space-12);
+	border: var(--ohf-border-width-default) solid transparent;
+	border-radius: var(--ohf-radius-sm);
+	background: transparent;
+	color: var(--ohf-color-text-subtle);
+	font-family: inherit;
+	font-size: var(--ohf-font-size-14);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-20);
+	letter-spacing: -0.14px;
+	white-space: nowrap;
+	text-decoration: none;
+	cursor: pointer;
+	transition:
+		background-color var(--ohf-duration-fast) var(--ohf-easing-standard),
+		color var(--ohf-duration-fast) var(--ohf-easing-standard);
+}
+.appnav-link:visited {
+	color: var(--ohf-color-text-subtle);
+}
+.appnav-link:hover,
+.appnav-link[aria-current] {
+	color: var(--ohf-color-text-default);
+	text-decoration: none;
+}
+/* while its menu is open */
+.appnav-link:has(+ :popover-open) {
+	border-color: var(--ohf-color-alpha-7-2);
+	border-radius: var(--ohf-radius-l);
+	background: var(--ohf-color-alpha-9);
+	color: var(--ohf-color-text-default);
+}
+
+/*
+ * The Categories menu: a search field over a list that scrolls. The panel is
+ * dark in both themes, black on a light page and raised on a dark one, so its
+ * text colours are fixed whites, as drawn in Figma.
+ */
+.appnav-categories-anchor {
+	anchor-name: --appnav-categories;
+	display: inline-block;
+}
+.appnav-categories {
+	--appnav-categories-bg: #000;
+
+	position-anchor: --appnav-categories;
+	position-area: bottom span-right;
+	box-sizing: border-box;
+	width: min(425px, calc(100vw - var(--page-gutter) * 2));
+	max-height: min(477px, calc(100dvh - var(--nav-h) - var(--ohf-space-32)));
+	margin: var(--ohf-space-4) 0 0;
+	padding: var(--ohf-space-6);
+	border: 1px solid rgb(255 255 255 / 8%);
+	border-radius: var(--ohf-radius-l);
+	background: var(--appnav-categories-bg);
+	box-shadow:
+		0 14px 36px -22px rgb(0 0 0 / 40%),
+		0 1px 2px 0 rgb(0 0 0 / 5%);
+	color: rgb(255 255 255 / 70%);
+	overflow: hidden;
+}
+[data-theme="dark"] .appnav-categories {
+	--appnav-categories-bg: #2b2b2a;
+}
+.appnav-categories:popover-open {
+	display: flex;
+	flex-direction: column;
+	gap: var(--ohf-space-6);
+}
+@supports not (position-area: bottom) {
+	.appnav-categories {
+		inset: var(--nav-h) auto auto var(--page-gutter);
+	}
+}
+.appnav-categories-search {
+	flex: none;
+	display: flex;
+	align-items: center;
+	height: 36px;
+	padding: 0 var(--ohf-space-8);
+	gap: var(--ohf-space-8);
+	color: rgb(190 190 190 / 80%);
+}
+/* the field has no border of its own, so the row shows the keyboard focus.
+   a fixed light ring, since the panel is dark in both themes */
+.appnav-categories-search:has(input:focus-visible) {
+	outline: var(--ohf-border-width-focus) solid rgb(255 255 255 / 70%);
+	outline-offset: -2px;
+	border-radius: var(--ohf-radius-md);
+}
+.appnav-categories .appnav-categories-search input {
+	flex: 1;
+	min-width: 0;
+	height: 100%;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	appearance: none;
+	background: transparent;
+	color: #fafafa;
+	font-family: inherit;
+	font-size: var(--ohf-font-size-14);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-20);
+}
+.appnav-categories-search input::placeholder {
+	color: rgb(190 190 190 / 80%);
+}
+.appnav-categories-search input::-webkit-search-cancel-button {
+	display: none;
+}
+.appnav-categories hr {
+	flex: none;
+	width: 100%;
+	height: 1px;
+	margin: 0;
+	border: 0;
+	background: rgb(217 217 217 / 12%);
+}
+.appnav-categories-list {
+	display: flex;
+	flex-direction: column;
+	gap: var(--ohf-space-2);
+	min-height: 0;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: #424242 transparent;
+}
+.appnav-categories-list li[hidden] {
+	display: none;
+}
+.appnav-categories-list a {
+	display: flex;
+	align-items: center;
+	height: 36px;
+	padding: 0 var(--ohf-space-12);
+	border-radius: var(--ohf-radius-md);
+	color: rgb(255 255 255 / 70%);
+	font-size: var(--ohf-font-size-14);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-20);
 	white-space: nowrap;
 	text-decoration: none;
 }
-.preview-label:hover {
-	text-decoration: underline;
+.appnav-categories-list a:hover,
+.appnav-categories-list a:focus-visible {
+	border-radius: var(--ohf-radius-l);
+	background: rgb(255 255 255 / 12%);
+	color: #fafafa;
+	text-decoration: none;
+	outline: 0;
 }
-.preview-banner {
-	background: var(--fg);
-	color: var(--fg-on-primary);
+.appnav-categories-empty {
+	margin: 0;
+	padding: var(--ohf-space-8) var(--ohf-space-12);
+	font-size: var(--ohf-font-size-14);
+	line-height: var(--ohf-line-height-20);
 }
-html[data-preview-banner="off"] .preview-banner {
+
+/* search: a 40px pill on a faint fill */
+.appnav .searchbox-header {
+	width: 100%;
+	max-width: 100%;
+}
+.appnav .searchbox-header .searchbox-input {
+	height: 40px;
+	border-color: var(--ohf-color-alpha-9);
+	border-radius: var(--ohf-radius-pill);
+	background: var(--ohf-color-alpha-7-2);
+}
+.appnav .searchbox-header .searchbox-input:focus-within {
+	border-color: var(--ohf-color-border-strong);
+}
+.appnav .searchbox-header .searchbox-input input {
+	background: transparent;
+}
+
+/* the menu button is 56px wide, 64px on a phone */
+.appnav .ui-button.appnav-menu-button[data-icon-only] {
+	width: 56px;
+	padding: 0;
+}
+
+.appnav-menu-button .appnav-menu-close {
 	display: none;
 }
-.preview-banner-inner {
+
+/* inside the menu */
+.appnav-phone-only {
+	display: none;
+}
+/* the list of categories takes the place of everything else in the menu */
+.appnav-menu-categories {
+	display: none;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--ohf-space-24);
+}
+#appnav-menu[data-view="categories"] > :not(.appnav-menu-categories) {
+	display: none;
+}
+#appnav-menu[data-view="categories"] > .appnav-menu-categories {
+	display: flex;
+}
+.appnav-menu-categories nav {
+	display: flex;
+	flex-direction: column;
+	gap: var(--ohf-space-2);
+	width: 100%;
+}
+.appnav-menu-categories nav a {
 	display: flex;
 	align-items: center;
-	gap: var(--space-4);
-	padding-top: var(--space-3);
-	padding-bottom: var(--space-3);
+	height: 36px;
+	padding: 0 var(--ohf-space-12);
+	border-radius: var(--ohf-radius-md);
+	color: var(--ohf-color-text-default);
+	font-size: var(--ohf-font-size-18);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-24);
+	letter-spacing: -0.54px;
+	text-decoration: none;
 }
-.preview-banner-text {
+.appnav-menu-categories nav a:hover,
+.appnav-menu-categories nav a:focus-visible {
+	border-radius: var(--ohf-radius-l);
+	background: var(--ohf-color-bg-surface-hover);
+	text-decoration: none;
+	outline: 0;
+}
+.appnav-settings {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px;
+}
+.appnav-settings .langpicker-trigger {
+	height: 36px;
+	padding: 0 var(--ohf-space-16) 0 var(--ohf-space-12);
+	border: var(--ohf-border-width-default) solid var(--ohf-color-border-control);
+	border-radius: var(--ohf-radius-pill);
+	background: var(--ohf-color-bg-surface-sunken);
+	color: var(--ohf-color-text-default);
+}
+/* its icons are subtle with a 1.5px line, and the chevron is small */
+.appnav-settings .langpicker-trigger svg {
+	color: var(--ohf-color-text-subtle);
+	stroke-width: 1.5;
+}
+.appnav-settings .langpicker-trigger svg:last-child {
+	width: 12px;
+	height: 12px;
+}
+.appnav-settings .langpicker-long {
+	display: inline;
+}
+.appnav-settings .langpicker-short {
+	display: none;
+}
+.appnav-new-here {
+	display: none;
 	margin: 0;
-	font-size: var(--fs-13);
-	line-height: 1.45;
+	color: var(--ohf-color-text-subtle);
+	font-size: var(--ohf-font-size-13);
+	line-height: 1.5;
+	text-align: center;
 }
-.preview-banner-text a {
-	color: inherit;
-	font-weight: var(--fw-medium);
+/* only for a visitor who can sign in and has not */
+html[data-feature-account="on"]:not([data-github-session]) .appnav-new-here {
+	display: block;
+}
+.appnav-new-here button {
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: var(--ohf-color-text-default);
+	font: inherit;
+	cursor: pointer;
+}
+.appnav-new-here button:hover {
 	text-decoration: underline;
 	text-underline-offset: 2px;
 }
-.preview-banner-close {
-	flex-shrink: 0;
-	margin-left: auto;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 28px;
-	height: 28px;
-	padding: 0;
-	border: 0;
-	border-radius: var(--radius-pill);
-	background: transparent;
-	color: inherit;
-	cursor: pointer;
-	opacity: 0.8;
-}
-.preview-banner-close:hover {
-	opacity: 1;
-	background: color-mix(in srgb, currentColor 14%, transparent);
-}
+
 @media (max-width: 899px) {
-	:root {
-		/* Tallest case: label + logo + search */
-		--nav-h: 116px;
-	}
-	.appnav {
-		/* Size to content so the home page isn't left with empty space */
-		height: auto;
-	}
 	.appnav-inner {
-		grid-template-columns: 1fr auto;
-		grid-template-areas:
-			"logo badge"
-			"search search";
-		gap: 0 var(--space-3);
-		/* Only add vertical room — keep .container's left/right padding so the logo and
-       search aren't flush against the screen edges. */
-		padding-top: var(--space-3);
-		padding-bottom: var(--space-3);
+		grid-template-columns: auto minmax(0, 1fr) auto;
+		gap: var(--ohf-space-8);
 	}
-	.appnav-left {
-		grid-area: logo;
-	}
-	.appnav-right {
-		grid-area: badge;
-	}
-	.appnav-inner > device-search {
-		grid-area: search;
-		margin-top: var(--space-3);
-	}
-	.appnav-search-empty {
+	.appnav-links,
+	.appnav .account-trigger {
 		display: none;
 	}
-	.appnav .searchbox-header {
-		width: 100%;
+	.appnav-phone-only {
+		display: revert;
+	}
+	/* the page dims behind the open menu and the button closes it. the dim
+     sits inside the header's layer, under its controls */
+	.appnav:has(#appnav-menu:popover-open)::before {
+		content: "";
+		position: fixed;
+		inset: 0;
+		z-index: -1;
+		background: var(--ohf-color-bg-overlay);
+	}
+	.appnav-menu-button:has(+ :popover-open) .appnav-menu-open {
+		display: none;
+	}
+	.appnav-menu-button:has(+ :popover-open) .appnav-menu-close {
+		display: block;
+	}
+	.appnav .ui-button.appnav-menu-button[data-icon-only] {
+		width: 64px;
+	}
+	/* Contribute is hidden here, so the sign-in panel has no button to hang
+     from. it sits under the header, opened from the menu */
+	.appnav .account-popover {
+		position-area: none;
+		inset: calc(var(--nav-h) + var(--ohf-space-8)) var(--page-gutter) auto;
+		justify-self: auto;
+		width: auto;
 		max-width: none;
-		justify-self: stretch;
+		margin: 0;
 	}
 }
