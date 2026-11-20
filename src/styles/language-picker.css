@@ -1,3 +1,7 @@
+/* each picker's menu hangs from its own button, also with two on a page */
+.langpicker {
+	anchor-scope: --langpicker;
+}
 .langpicker-trigger {
 	anchor-name: --langpicker;
 	display: inline-flex;

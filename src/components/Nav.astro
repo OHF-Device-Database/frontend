@@ -160,18 +160,20 @@ const links = [
 				<SheetNav label={m.nav_main_label()} links={links} />
 				<hr class="ui-sheet-separator" />
 				<div class="appnav-settings">
-					<SegmentedControl
-						name="appnav-theme"
-						label={m.nav_theme_label()}
-						shape="pill"
-						value="auto"
-						options={[
-							{ value: "auto", label: m.nav_theme_auto(), icon: iconMonitor },
-							{ value: "light", label: m.nav_theme_light(), icon: iconSun },
-							{ value: "dark", label: m.nav_theme_dark(), icon: iconMoon },
-						]}
-					/>
-					<LanguagePicker />
+					<div data-theme-switch>
+						<SegmentedControl
+							name="appnav-theme"
+							label={m.nav_theme_label()}
+							shape="pill"
+							value="auto"
+							options={[
+								{ value: "auto", label: m.nav_theme_auto(), icon: iconMonitor },
+								{ value: "light", label: m.nav_theme_light(), icon: iconSun },
+								{ value: "dark", label: m.nav_theme_dark(), icon: iconMoon },
+							]}
+						/>
+					</div>
+					<LanguagePicker id="appnav-language" />
 				</div>
 				<div class="appnav-menu-categories">
 					<Button
@@ -220,30 +222,7 @@ const links = [
 </header>
 
 <script>
-	type DemoState = {
-		getTheme?: () => string;
-		setTheme?: (theme: string) => void;
-	};
-	const demoState = () =>
-		(window as unknown as { DemoState?: DemoState }).DemoState;
-
-	const themeInputs = () =>
-		document.querySelectorAll<HTMLInputElement>('input[name="appnav-theme"]');
-
-	// the page may be cached for everyone, so the chosen theme is filled in here
-	const syncTheme = () => {
-		const theme = demoState()?.getTheme?.() ?? "auto";
-		for (const input of themeInputs()) {
-			input.checked = input.value === theme;
-		}
-	};
-
-	document.addEventListener("change", (event) => {
-		const input = event.target;
-		if (input instanceof HTMLInputElement && input.name === "appnav-theme") {
-			demoState()?.setTheme?.(input.value);
-		}
-	});
+	import "./theme-switch";
 
 	// the menu shows its main view or the list of categories
 	document.addEventListener("click", (event) => {
@@ -318,6 +297,4 @@ const links = [
 		},
 		true,
 	);
-
-	document.addEventListener("astro:page-load", syncTheme);
 </script>

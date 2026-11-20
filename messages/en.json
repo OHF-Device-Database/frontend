@@ -51,6 +51,8 @@
 	"footer_ohf": "Open Home Foundation",
 	"footer_copyright": "© {year} Open Home Foundation",
 	"footer_imprint": "Imprint",
+	"footer_ohf_initiative": "An Open Home Foundation Initiative",
+	"footer_links_label": "Footer",
 	"browse_title": "Browse",
 	"browse_filters": "Filters",
 	"browse_clear_all": "Clear all",
