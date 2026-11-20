@@ -1,0 +1,23 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+type Props = Omit<
+	HTMLAttributes<"input">,
+	"type" | "role" | "size" | "class"
+> & {
+	/** md 36x20, sm 28x16 */
+	size?: "md" | "sm";
+	class?: string;
+};
+
+const { size = "md", class: className, ...rest } = Astro.props;
+---
+
+{/* name it with `aria-label`, or a <label for> next to it */}
+<input
+	{...rest}
+	type="checkbox"
+	role="switch"
+	class:list={["ui-switch", className]}
+	data-size={size}
+/>

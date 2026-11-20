@@ -1,0 +1,35 @@
+---
+interface Props {
+	/**
+	 * the trigger needs `popovertarget="<id>"`. a button inside with
+	 * `popovertarget="<id>"` and `popovertargetaction="hide"` closes it
+	 */
+	id: string;
+	/** accessible name of the sheet */
+	label: string;
+	/** which edge of the trigger the sheet lines up with */
+	side?: "end" | "start";
+	class?: string;
+}
+
+const { id, label, side = "end", class: className } = Astro.props;
+
+const anchor = `--ui-sheet-${id}`;
+---
+
+<div class="ui-sheet-anchor" style={`anchor-name: ${anchor}`}>
+	{/* a Button with `popovertarget` */}
+	<slot name="trigger" />
+	<div
+		popover
+		id={id}
+		role="dialog"
+		aria-label={label}
+		class:list={["ui-sheet", className]}
+		data-side={side === "start" ? "start" : undefined}
+		style={`position-anchor: ${anchor}`}
+	>
+		<slot />
+		<div class="ui-sheet-footer"><slot name="footer" /></div>
+	</div>
+</div>

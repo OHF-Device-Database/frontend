@@ -1,0 +1,191 @@
+/*
+ * Sheet, from the "Menu" panel that drops down under the menu button: 458px
+ * wide, 8px under the button, lined up with its end edge and reaching down to
+ * 18px from the bottom of the screen. On a phone it spans the screen with 16px
+ * margins. An 8px radius, 32px padding, content 24px apart and the footer at
+ * the bottom.
+ * A native popover anchored to its trigger, like Menu: the page behind is not
+ * dimmed, and a click outside, Escape or the trigger closes it.
+ *
+ * The fill is the raised surface under a faint warm tint, with a soft glow
+ * inside the edge. Figma draws these with raw colours, there are no tokens.
+ */
+/*
+ * the fill's colours live on the theme boundaries, like the tokens, so a sheet
+ * takes them from its nearest `data-theme` and not from one further out
+ */
+:root,
+[data-theme="light"] {
+	--ui-sheet-tint: linear-gradient(
+		121.5deg,
+		rgb(209 202 194 / 30%) 10.558%,
+		rgb(237 235 233 / 30%) 111.12%
+	);
+	--ui-sheet-glow:
+		inset 25px 0 25px 0 rgb(255 255 255 / 20%),
+		inset 2.5px 0.6px 0 0 rgb(255 255 255 / 20%), inset 3.8px 2.5px 25px 0 #fff,
+		inset 0 0 69px 0 #fff;
+	--ui-sheet-border: 0.5px solid rgb(0 0 0 / 10%);
+}
+[data-theme="dark"] {
+	--ui-sheet-tint: linear-gradient(
+		122.6deg,
+		rgb(28 26 25 / 30%) 10.558%,
+		rgb(14 14 14 / 30%) 111.12%
+	);
+	--ui-sheet-glow:
+		inset 2.5px 0.6px 0 0 rgb(38 38 38 / 20%),
+		inset 3.8px 2.5px 33px 0 rgb(38 38 38 / 40%),
+		inset 0 0 40px 0 rgb(38 38 38 / 70%);
+	--ui-sheet-border: 1px solid rgb(255 255 255 / 12%);
+}
+@media (prefers-color-scheme: dark) {
+	[data-theme="auto"] {
+		--ui-sheet-tint: linear-gradient(
+			122.6deg,
+			rgb(28 26 25 / 30%) 10.558%,
+			rgb(14 14 14 / 30%) 111.12%
+		);
+		--ui-sheet-glow:
+			inset 2.5px 0.6px 0 0 rgb(38 38 38 / 20%),
+			inset 3.8px 2.5px 33px 0 rgb(38 38 38 / 40%),
+			inset 0 0 40px 0 rgb(38 38 38 / 70%);
+		--ui-sheet-border: 1px solid rgb(255 255 255 / 12%);
+	}
+}
+.ui-sheet-anchor {
+	display: inline-block;
+	/* stays as wide as the trigger when a grid or flex parent would stretch it */
+	width: fit-content;
+}
+.ui-sheet {
+	--ui-sheet-top: 56px;
+	--ui-sheet-end: 22px;
+	--ui-sheet-bottom: 18px;
+	--ui-sheet-start: auto;
+
+	position-area: bottom span-left;
+	/* without room under the trigger it takes its place under the page header */
+	position-try-fallbacks: --ui-sheet-screen;
+	box-sizing: border-box;
+	width: min(458px, calc(100vw - var(--ui-sheet-end) * 2));
+	/* fills the space under the trigger, down to the bottom margin */
+	align-self: stretch;
+	height: auto;
+	/* never taller than the room the screen fallback leaves */
+	min-height: min(
+		480px,
+		calc(100dvh - var(--ui-sheet-top) - var(--ui-sheet-bottom))
+	);
+	max-width: none;
+	max-height: none;
+	margin: var(--ohf-space-8) 0 var(--ui-sheet-bottom);
+	padding: var(--ohf-space-32);
+	border: var(--ui-sheet-border);
+	border-radius: var(--ohf-radius-l);
+	background: var(--ui-sheet-tint), var(--ohf-color-bg-surface-raised);
+	box-shadow:
+		var(--ui-sheet-glow),
+		0 0 5px 0 rgb(0 0 0 / 17%);
+	color: var(--ohf-color-text-default);
+	overflow: auto;
+}
+@position-try --ui-sheet-screen {
+	position-area: none;
+	inset: var(--ui-sheet-top) var(--ui-sheet-end) var(--ui-sheet-bottom)
+		var(--ui-sheet-start);
+	margin: 0;
+}
+.ui-sheet:popover-open {
+	display: flex;
+	flex-direction: column;
+	gap: var(--ohf-space-24);
+	animation: ui-sheet-in var(--ohf-duration-normal) var(--ohf-easing-out);
+}
+.ui-sheet[data-side="start"] {
+	position-area: bottom span-right;
+}
+@keyframes ui-sheet-in {
+	from {
+		opacity: 0;
+		transform: translateY(-8px);
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.ui-sheet:popover-open {
+		animation: none;
+	}
+}
+/* phone: the whole width, and the links one size down (20/28) */
+@media (max-width: 600px) {
+	.ui-sheet,
+	.ui-sheet[data-side="start"] {
+		--ui-sheet-top: 64px;
+		--ui-sheet-end: 16px;
+		--ui-sheet-bottom: 16px;
+		--ui-sheet-start: 16px;
+
+		position-area: bottom span-all;
+		justify-self: stretch;
+		width: auto;
+		margin-inline: var(--ui-sheet-end);
+	}
+	.ui-sheet .ui-sheet-nav .ui-sheet-link {
+		font-size: var(--ohf-font-size-20);
+		letter-spacing: 0;
+	}
+}
+/* without anchor positioning the sheet sits under the nav, at the end */
+@supports not (position-area: bottom) {
+	.ui-sheet,
+	.ui-sheet[data-side="start"] {
+		inset: var(--ui-sheet-top) var(--ui-sheet-end) var(--ui-sheet-bottom)
+			var(--ui-sheet-start);
+		margin: 0;
+	}
+}
+.ui-sheet-footer {
+	display: flex;
+	flex-direction: column;
+	gap: var(--ohf-space-16);
+	margin-top: auto;
+}
+.ui-sheet-footer:empty {
+	display: none;
+}
+.ui-sheet-separator {
+	flex: none;
+	width: 100%;
+	height: 1px;
+	margin: 0;
+	border: 0;
+	background: var(--ohf-color-border-default);
+}
+
+/* the large links at the top of the menu: 24/28 medium, 8px apart */
+.ui-sheet-nav {
+	display: flex;
+	flex-direction: column;
+	gap: var(--ohf-space-8);
+}
+.ui-sheet-nav .ui-sheet-link {
+	color: var(--ohf-color-text-default);
+	font-size: var(--ohf-font-size-24);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-28);
+	letter-spacing: -0.72px;
+	text-decoration: none;
+	transition: color var(--ohf-duration-fast) var(--ohf-easing-standard);
+}
+.ui-sheet-nav:hover .ui-sheet-link:not(:hover),
+.ui-sheet-nav:has([aria-current]) .ui-sheet-link:not([aria-current], :hover) {
+	color: var(--ohf-color-text-subtle);
+}
+.ui-sheet-nav .ui-sheet-link:hover {
+	text-decoration: none;
+}
+.ui-sheet-nav .ui-sheet-link:focus-visible {
+	outline: var(--ohf-border-width-focus) solid var(--ohf-color-border-focus);
+	outline-offset: 2px;
+	border-radius: var(--ohf-radius-sm);
+}

@@ -1,0 +1,625 @@
+---
+import {
+	iconArrowRight,
+	iconCalendar,
+	iconChartLine,
+	iconChevronDown,
+	iconCircleQuestionMark,
+	iconClock,
+	iconDownload,
+	iconEqual,
+	iconLanguages,
+	iconMonitor,
+	iconMoon,
+	iconPencil,
+	iconPlus,
+	iconSearch,
+	iconSun,
+	iconTrash,
+	iconX,
+} from "@openhomefoundation/icons";
+
+import Button from "../../components/ui/Button.astro";
+import Card from "../../components/ui/Card.astro";
+import CardRow from "../../components/ui/CardRow.astro";
+import Checkbox from "../../components/ui/Checkbox.astro";
+import Icon from "../../components/ui/Icon.astro";
+import Menu from "../../components/ui/Menu.astro";
+import MenuItem from "../../components/ui/MenuItem.astro";
+import Modal from "../../components/ui/Modal.astro";
+import SegmentedControl from "../../components/ui/SegmentedControl.astro";
+import Sheet from "../../components/ui/Sheet.astro";
+import SheetNav from "../../components/ui/SheetNav.astro";
+import Switch from "../../components/ui/Switch.astro";
+import Tabs from "../../components/ui/Tabs.astro";
+import TextField from "../../components/ui/TextField.astro";
+import Layout from "../../layouts/Layout.astro";
+
+const themes = ["light", "dark"] as const;
+const variants = ["primary", "ghost", "raised", "tonal", "plain"] as const;
+const categories = [
+	"Sensors",
+	"Lighting",
+	"Cameras",
+	"Buttons, switches and controls",
+	"Hubs and bridges",
+	"Energy monitoring",
+] as const;
+const sizes = ["xs", "sm", "md", "lg", "xl", "compact"] as const;
+---
+
+<Layout title="Components">
+	<meta name="robots" content="noindex, nofollow" slot="head" />
+
+	<div class="container-narrow content-page">
+		<section class="content-section content-intro">
+			<h1>Components</h1>
+			<p class="content-lede">
+				Built on the Open Home Foundation tokens and icons. Each one is shown in
+				the light and the dark theme.
+			</p>
+		</section>
+
+		<section class="content-section">
+			<h2>Button</h2>
+			<h3>In the Figma file</h3>
+			{
+				themes.map((theme) => (
+					<div class="ui-showcase" data-theme={theme}>
+						<div class="ui-showcase-group">
+							<p class="ui-showcase-label">Main navigation</p>
+							<div class="ui-showcase-row">
+								<Button variant="plain" size="sm">
+									Explore
+								</Button>
+								<Button
+									variant="plain"
+									size="sm"
+									icon={iconChevronDown}
+									iconPlacement="trailing"
+								>
+									Categories
+								</Button>
+								<Button variant="primary" size="lg" shape="pill">
+									Contribute
+								</Button>
+								<Button
+									variant="tonal"
+									size="lg"
+									shape="pill"
+									icon={iconEqual}
+									iconPlacement="only"
+									label="Menu"
+								/>
+								<Button
+									variant="primary"
+									size="lg"
+									shape="pill"
+									icon={iconX}
+									iconPlacement="only"
+									label="Close search"
+								/>
+							</div>
+						</div>
+						<div class="ui-showcase-group">
+							<p class="ui-showcase-label">Clear a field, close a dialog</p>
+							<div class="ui-showcase-row">
+								<Button
+									variant="plain"
+									size="xs"
+									icon={iconX}
+									iconPlacement="only"
+									label="Clear"
+								/>
+								<Button
+									variant="plain"
+									size="md"
+									icon={iconX}
+									iconPlacement="only"
+									label="Close"
+								/>
+							</div>
+						</div>
+						<div class="ui-showcase-group">
+							<p class="ui-showcase-label">Settings</p>
+							<div class="ui-showcase-row">
+								<Button size="sm">Change</Button>
+								<Button size="sm" aria-label="Remove GitHub connection">
+									Remove
+								</Button>
+								<Button size="sm">Disconnect</Button>
+								<Button size="sm">Use a different email</Button>
+								<Button disabled>Save changes</Button>
+								<Button variant="raised">View profile</Button>
+							</div>
+						</div>
+					</div>
+				))
+			}
+
+			<h3>Every variant</h3>
+			{
+				themes.map((theme) => (
+					<div class="ui-showcase" data-theme={theme}>
+						{variants.map((variant) => (
+							<div class="ui-showcase-group">
+								<p class="ui-showcase-label">{variant}</p>
+								<div class="ui-showcase-row">
+									{sizes.map((size) => (
+										<Button variant={variant} size={size}>
+											{size}
+										</Button>
+									))}
+								</div>
+								<div class="ui-showcase-row">
+									<Button variant={variant} icon={iconPlus}>
+										Leading
+									</Button>
+									<Button
+										variant={variant}
+										icon={iconArrowRight}
+										iconPlacement="trailing"
+									>
+										Trailing
+									</Button>
+									<Button
+										variant={variant}
+										icon={iconPencil}
+										iconPlacement="only"
+										label="Edit"
+									/>
+									<Button
+										variant={variant}
+										size="sm"
+										icon={iconTrash}
+										iconPlacement="only"
+										label="Delete"
+									/>
+									<Button variant={variant} disabled>
+										Disabled
+									</Button>
+									<Button variant={variant} href="#button">
+										Link
+									</Button>
+								</div>
+							</div>
+						))}
+					</div>
+				))
+			}
+		</section>
+
+		<section class="content-section">
+			<h2>Text field</h2>
+			{
+				themes.map((theme) => (
+					<div class="ui-showcase" data-theme={theme}>
+						<div class="ui-showcase-grid">
+							<TextField
+								id={`${theme}-display-name`}
+								label="Display name"
+								placeholder="Name"
+							/>
+							<TextField
+								id={`${theme}-location`}
+								label="Location"
+								value="Berlin, Germany"
+								hint="Shown on your public profile."
+							/>
+							<TextField
+								id={`${theme}-email`}
+								type="email"
+								shape="pill"
+								aria-label="Email"
+								placeholder="you@company.com"
+							/>
+							<TextField
+								id={`${theme}-search`}
+								type="search"
+								size="sm"
+								shape="pill"
+								icon={iconSearch}
+								aria-label="Search"
+								value="Energy monitoring"
+							>
+								<Button
+									slot="trailing"
+									variant="plain"
+									size="xs"
+									icon={iconX}
+									iconPlacement="only"
+									label="Clear"
+								/>
+							</TextField>
+							<TextField
+								id={`${theme}-invalid`}
+								label="Email"
+								value="not an email"
+								invalid
+								hint="Enter a valid email address."
+							/>
+							<TextField
+								id={`${theme}-disabled`}
+								label="Pronouns"
+								value="Don’t specify"
+								disabled
+							/>
+						</div>
+					</div>
+				))
+			}
+		</section>
+
+		<section class="content-section">
+			<h2>Switch and checkbox</h2>
+			{
+				themes.map((theme) => (
+					<div class="ui-showcase" data-theme={theme}>
+						<div class="ui-showcase-row">
+							<Switch aria-label="Off" />
+							<Switch aria-label="On" checked />
+							<Switch size="sm" aria-label="Small, off" />
+							<Switch size="sm" aria-label="Local control only" checked />
+							<Switch aria-label="Disabled" disabled />
+						</div>
+						<div class="ui-showcase-row">
+							<Checkbox name={`${theme}-category`} value="hubs">
+								Hubs, routers and bridges
+							</Checkbox>
+							<Checkbox name={`${theme}-category`} value="lighting" checked>
+								Lighting
+							</Checkbox>
+							<Checkbox name={`${theme}-category`} value="pets" disabled>
+								Pets
+							</Checkbox>
+						</div>
+					</div>
+				))
+			}
+		</section>
+
+		<section class="content-section">
+			<h2>Segmented control</h2>
+			{
+				themes.map((theme) => (
+					<div class="ui-showcase" data-theme={theme}>
+						<div class="ui-showcase-row">
+							<SegmentedControl
+								name={`${theme}-mode`}
+								label="Filter mode"
+								value="include"
+								options={[
+									{ value: "include", label: "Include" },
+									{ value: "exclude", label: "Exclude" },
+								]}
+								class="ui-showcase-wide"
+								block
+							/>
+							<SegmentedControl
+								name={`${theme}-theme`}
+								label="Theme"
+								shape="pill"
+								value="dark"
+								options={[
+									{ value: "auto", label: "System", icon: iconMonitor },
+									{ value: "light", label: "Light", icon: iconSun },
+									{ value: "dark", label: "Dark", icon: iconMoon },
+								]}
+							/>
+						</div>
+					</div>
+				))
+			}
+		</section>
+
+		<section class="content-section">
+			<h2>Tabs</h2>
+			{
+				themes.map((theme) => (
+					<div class="ui-showcase" data-theme={theme}>
+						<Tabs
+							label="Device sections"
+							tabs={[
+								{ href: "#overview", label: "Overview", current: true },
+								{ href: "#ecosystems", label: "Ecosystems" },
+								{ href: "#specifications", label: "Specifications" },
+								{ href: "#related", label: "Related devices" },
+								{ href: "#buy", label: "Where to buy" },
+								{ href: "#references", label: "References" },
+							]}
+						/>
+					</div>
+				))
+			}
+		</section>
+
+		<section class="content-section">
+			<h2>Card</h2>
+			{
+				themes.map((theme) => (
+					<div class="ui-showcase" data-theme={theme}>
+						<div class="ui-showcase-grid">
+							<Card title="Data source">
+								<Button
+									slot="action"
+									variant="plain"
+									size="xs"
+									icon={iconCircleQuestionMark}
+									iconPlacement="only"
+									label="About the data source"
+								/>
+								<dl class="ui-card-rows">
+									<CardRow label="Reports" icon={iconChartLine}>
+										904
+									</CardRow>
+									<CardRow label="Installations" icon={iconDownload}>
+										712
+									</CardRow>
+									<CardRow label="Last verified" icon={iconClock}>
+										Apr 1, 2026
+									</CardRow>
+									<CardRow label="First seen" icon={iconCalendar}>
+										Dec 23, 2025
+									</CardRow>
+								</dl>
+								<p class="ui-card-note">
+									Anonymised telemetry from opt-in Home Assistant users. No
+									accounts, no personal data, no tracking.
+								</p>
+							</Card>
+							<Card title="Raised" surface="raised">
+								<p class="ui-card-note">
+									A filled card, for content that sits on the canvas.
+								</p>
+								<Button variant="raised">View profile</Button>
+							</Card>
+						</div>
+					</div>
+				))
+			}
+		</section>
+
+		<section class="content-section">
+			<h2>Modal</h2>
+			{
+				themes.map((theme) => (
+					<div class="ui-showcase" data-theme={theme}>
+						<div class="ui-showcase-row">
+							<Button data-modal-open={`${theme}-sign-in`}>Sign in</Button>
+							<Button data-modal-open={`${theme}-confirm`}>
+								With a title and a footer
+							</Button>
+						</div>
+						<Modal id={`${theme}-sign-in`} label="Sign in" closeLabel="Close">
+							<div class="ui-showcase-sign-in">
+								<p class="ui-showcase-sign-in-title">
+									Join the community
+									<span>Contribute, share and build your setup</span>
+								</p>
+								<TextField
+									id={`${theme}-sign-in-email`}
+									type="email"
+									shape="pill"
+									aria-label="Email"
+									placeholder="you@company.com"
+								/>
+								<Button variant="primary" size="lg" shape="pill">
+									Continue
+								</Button>
+							</div>
+						</Modal>
+						<Modal
+							id={`${theme}-confirm`}
+							title="Disconnect GitHub"
+							closeLabel="Close"
+							size="sm"
+						>
+							<p class="ui-card-note">
+								You can connect it again at any time from your settings.
+							</p>
+							<Fragment slot="footer">
+								<Button size="sm" data-modal-close>
+									Cancel
+								</Button>
+								<Button size="sm" variant="primary">
+									Disconnect
+								</Button>
+							</Fragment>
+						</Modal>
+					</div>
+				))
+			}
+		</section>
+
+		<section class="content-section">
+			<h2>Menu</h2>
+			{
+				themes.map((theme) => (
+					<div class="ui-showcase" data-theme={theme}>
+						<div class="ui-showcase-row">
+							<Menu id={`${theme}-categories`} label="Categories">
+								<Button
+									slot="trigger"
+									variant="plain"
+									size="sm"
+									icon={iconChevronDown}
+									iconPlacement="trailing"
+									popovertarget={`${theme}-categories`}
+								>
+									Categories
+								</Button>
+								{categories.map((category, index) => (
+									<MenuItem href="#menu" current={index === 0}>
+										{category}
+									</MenuItem>
+								))}
+							</Menu>
+							<Menu id={`${theme}-actions`} label="Actions" align="end">
+								<Button
+									slot="trigger"
+									size="sm"
+									icon={iconChevronDown}
+									iconPlacement="trailing"
+									popovertarget={`${theme}-actions`}
+								>
+									Actions
+								</Button>
+								<MenuItem icon={iconPencil}>Edit</MenuItem>
+								<MenuItem icon={iconDownload}>Export</MenuItem>
+								<hr class="ui-menu-separator" />
+								<MenuItem icon={iconTrash}>Delete</MenuItem>
+							</Menu>
+						</div>
+					</div>
+				))
+			}
+		</section>
+
+		<section class="content-section">
+			<h2>Sheet</h2>
+			{
+				themes.map((theme) => (
+					<div class="ui-showcase" data-theme={theme}>
+						<Sheet id={`${theme}-main-menu`} label="Menu">
+							<Button
+								slot="trigger"
+								variant="tonal"
+								size="lg"
+								shape="pill"
+								icon={iconEqual}
+								iconPlacement="only"
+								label="Menu"
+								popovertarget={`${theme}-main-menu`}
+							/>
+							<SheetNav
+								label="Main"
+								links={[
+									{ href: "#sheet", label: "Home" },
+									{ href: "#sheet", label: "Browse" },
+									{ href: "#sheet", label: "How it works" },
+									{ href: "#sheet", label: "Editorial stance" },
+									{ href: "#sheet", label: "Contributors" },
+									{ href: "#sheet", label: "Privacy" },
+									{ href: "#sheet", label: "About" },
+								]}
+							/>
+							<hr class="ui-sheet-separator" />
+							<div class="ui-showcase-row">
+								<SegmentedControl
+									name={`${theme}-menu-theme`}
+									label="Theme"
+									shape="pill"
+									value={theme}
+									options={[
+										{ value: "auto", label: "System", icon: iconMonitor },
+										{ value: "light", label: "Light", icon: iconSun },
+										{ value: "dark", label: "Dark", icon: iconMoon },
+									]}
+								/>
+								<Button shape="pill" icon={iconLanguages}>
+									English
+									<Icon icon={iconChevronDown} size={12} />
+								</Button>
+							</div>
+							<Fragment slot="footer">
+								<div class="ui-showcase-socials">
+									<Button size="xl" shape="pill" href="#sheet">
+										Discord
+									</Button>
+									<Button size="xl" shape="pill" href="#sheet">
+										GitHub
+									</Button>
+									<Button size="xl" shape="pill" href="#sheet">
+										Mastodon
+									</Button>
+								</div>
+								<p class="ui-showcase-sheet-note">
+									New here? <a href="#sheet">Create an account</a>.
+								</p>
+							</Fragment>
+						</Sheet>
+					</div>
+				))
+			}
+		</section>
+	</div>
+</Layout>
+
+<style>
+	.ui-showcase {
+		display: grid;
+		gap: var(--ohf-space-24);
+		padding: var(--ohf-space-24);
+		margin-block: var(--ohf-space-16);
+		border: var(--ohf-border-width-default) solid
+			var(--ohf-color-border-default);
+		border-radius: var(--ohf-radius-container);
+		background: var(--ohf-color-bg-canvas);
+		color: var(--ohf-color-text-default);
+	}
+	.ui-showcase-group {
+		display: grid;
+		gap: var(--ohf-space-12);
+	}
+	.ui-showcase-label {
+		margin: 0;
+		color: var(--ohf-color-text-subtle);
+		font-size: var(--ohf-font-size-12);
+		line-height: var(--ohf-line-height-16);
+	}
+	.ui-showcase-label::first-letter {
+		text-transform: uppercase;
+	}
+	.ui-showcase-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+		align-items: end;
+		gap: var(--ohf-space-24);
+	}
+	.ui-showcase :global(.ui-showcase-wide) {
+		width: 264px;
+	}
+	.ui-showcase-sign-in {
+		display: grid;
+		gap: var(--ohf-space-12);
+		width: min(330px, 100%);
+		margin: 0 auto;
+		padding-bottom: var(--ohf-space-40);
+	}
+	.ui-showcase-sign-in-title {
+		margin: 0 0 var(--ohf-space-12);
+		font-size: var(--ohf-font-size-24);
+		font-weight: var(--ohf-font-weight-medium);
+		line-height: 1.3;
+		text-align: center;
+	}
+	.ui-showcase-sign-in-title span {
+		display: block;
+		color: var(--ohf-color-text-subtle);
+		line-height: 1.1;
+	}
+	.ui-showcase-socials {
+		display: flex;
+		gap: var(--ohf-space-8);
+	}
+	.ui-showcase-socials :global(.ui-button) {
+		flex: 1;
+		min-width: 0;
+	}
+	.ui-showcase-sheet-note {
+		margin: 0;
+		color: var(--ohf-color-text-subtle);
+		font-size: var(--ohf-font-size-13);
+		line-height: 1.5;
+		text-align: center;
+	}
+	.ui-showcase-sheet-note a {
+		color: var(--ohf-color-text-default);
+	}
+	.ui-showcase-row {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--ohf-space-12);
+	}
+</style>

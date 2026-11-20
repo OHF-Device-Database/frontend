@@ -1,0 +1,147 @@
+/*
+ * Button, from the Figma "Button" component: Primary, Ghost and Raised.
+ * Sizes are Small 32px, Medium 36px, XL 48px and Raised Compact 30px.
+ * Tonal, Plain, the pill shape and the 24px and 40px sizes cover the buttons
+ * drawn as plain frames: the nav, the menu button, clear and close.
+ *
+ * Read from Figma frames: Ghost Small, Ghost Medium Disabled and Raised.
+ * Primary, hover and pressed are not drawn in any frame we can open, so they
+ * follow the matching `--ohf-color-bg-*` tokens.
+ */
+.ui-button {
+	--ui-button-height: 36px;
+	--ui-button-padding: var(--ohf-space-16);
+	--ui-button-bg: transparent;
+	--ui-button-bg-hover: var(--ohf-color-bg-surface-hover);
+	--ui-button-bg-pressed: var(--ohf-color-alpha-9);
+	--ui-button-fg: var(--ohf-color-text-default);
+	--ui-button-border: transparent;
+	--ui-button-shadow: none;
+
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--ohf-space-8);
+	box-sizing: border-box;
+	height: var(--ui-button-height);
+	padding: 0 var(--ui-button-padding);
+	border: var(--ohf-border-width-default) solid var(--ui-button-border);
+	border-radius: var(--ohf-radius-md);
+	background: var(--ui-button-bg);
+	box-shadow: var(--ui-button-shadow);
+	color: var(--ui-button-fg);
+	font-family: inherit;
+	font-size: var(--ohf-font-size-13);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-20);
+	letter-spacing: 0;
+	white-space: nowrap;
+	text-decoration: none;
+	cursor: pointer;
+	user-select: none;
+	transition:
+		background-color var(--ohf-duration-fast) var(--ohf-easing-standard),
+		border-color var(--ohf-duration-fast) var(--ohf-easing-standard),
+		color var(--ohf-duration-fast) var(--ohf-easing-standard);
+}
+.ui-button:hover {
+	background: var(--ui-button-bg-hover);
+	text-decoration: none;
+}
+/* outranks the global `a:hover` and `a:visited` in base.css */
+a.ui-button:hover,
+a.ui-button:visited {
+	color: var(--ui-button-fg);
+}
+.ui-button:active {
+	background: var(--ui-button-bg-pressed);
+}
+.ui-button:focus-visible {
+	outline: var(--ohf-border-width-focus) solid var(--ohf-color-border-focus);
+	outline-offset: 2px;
+}
+
+/* sizes */
+.ui-button[data-size="xs"] {
+	--ui-button-height: 24px;
+	--ui-button-padding: var(--ohf-space-8);
+	gap: var(--ohf-space-4);
+}
+.ui-button[data-size="sm"] {
+	--ui-button-height: 32px;
+	--ui-button-padding: var(--ohf-space-12);
+}
+.ui-button[data-size="lg"] {
+	--ui-button-height: var(--ohf-size-control-md);
+}
+.ui-button[data-size="xl"] {
+	--ui-button-height: 48px;
+	--ui-button-padding: var(--ohf-space-20);
+}
+.ui-button[data-size="compact"] {
+	--ui-button-height: 30px;
+	--ui-button-padding: var(--ohf-space-12);
+	border-radius: var(--ohf-radius-pill);
+}
+.ui-button[data-shape="pill"] {
+	border-radius: var(--ohf-radius-pill);
+}
+.ui-button[data-icon-only] {
+	width: var(--ui-button-height);
+	padding: 0;
+}
+/* a round icon button reads as a dot, so the pill keeps its side padding */
+.ui-button[data-icon-only][data-shape="pill"] {
+	width: auto;
+	padding: 0 calc(var(--ui-button-height) / 2);
+}
+
+/* types */
+.ui-button[data-variant="primary"] {
+	--ui-button-bg: var(--ohf-color-bg-primary-default);
+	--ui-button-bg-hover: var(--ohf-color-bg-primary-hover);
+	--ui-button-bg-pressed: var(--ohf-color-bg-primary-pressed);
+	--ui-button-fg: var(--ohf-color-text-on-primary);
+}
+.ui-button[data-variant="ghost"] {
+	--ui-button-border: var(--ohf-color-alpha-12);
+}
+.ui-button[data-variant="tonal"] {
+	--ui-button-bg: var(--ohf-color-alpha-9);
+	--ui-button-bg-hover: var(--ohf-color-alpha-12);
+	--ui-button-bg-pressed: var(--ohf-color-alpha-16);
+	--ui-button-border: var(--ohf-color-alpha-12);
+}
+/* no fill and no outline: clear a field, close a dialog, a link in the nav */
+.ui-button[data-variant="plain"] {
+	--ui-button-bg-hover: var(--ohf-color-alpha-9);
+	--ui-button-bg-pressed: var(--ohf-color-alpha-12);
+}
+.ui-button[data-variant="raised"] {
+	--ui-button-bg: var(--ohf-color-bg-surface-default);
+	--ui-button-bg-hover:
+		linear-gradient(
+			var(--ohf-color-bg-surface-hover),
+			var(--ohf-color-bg-surface-hover)
+		),
+		var(--ohf-color-bg-surface-default);
+	--ui-button-bg-pressed:
+		linear-gradient(var(--ohf-color-alpha-9), var(--ohf-color-alpha-9)),
+		var(--ohf-color-bg-surface-default);
+	--ui-button-shadow:
+		0 2px 3px 0 var(--ohf-color-alpha-7-2), 0 0 0 1px var(--ohf-color-alpha-12),
+		0 1px 1px 0 var(--ohf-color-alpha-7-2);
+	border-width: 0;
+}
+
+/* `aria-disabled` for links, which can't be disabled */
+.ui-button:disabled,
+.ui-button[aria-disabled="true"] {
+	--ui-button-bg: var(--ohf-color-alpha-9);
+	--ui-button-fg: var(--ohf-color-button-disabled-foreground);
+	--ui-button-border: var(--ohf-color-border-disabled);
+	--ui-button-shadow: none;
+	background: var(--ui-button-bg);
+	cursor: not-allowed;
+	pointer-events: none;
+}

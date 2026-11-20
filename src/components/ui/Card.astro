@@ -1,0 +1,40 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+type Props = Omit<HTMLAttributes<"section">, "class" | "title"> & {
+	/** heading of the card, with a divider under it */
+	title?: string;
+	/** heading level of the title */
+	level?: 2 | 3 | 4;
+	/** outline: no fill. raised: filled, for a card on the canvas */
+	surface?: "outline" | "raised";
+	class?: string;
+};
+
+const {
+	title,
+	level = 3,
+	surface = "outline",
+	class: className,
+	...rest
+} = Astro.props;
+
+const Heading = `h${level}` as const;
+---
+
+<section
+	{...rest}
+	class:list={["ui-card", className]}
+	data-surface={surface === "raised" ? "raised" : undefined}
+>
+	{
+		title && (
+			<header class="ui-card-header">
+				<Heading class="ui-card-title">{title}</Heading>
+				{/* e.g. a plain icon Button */}
+				<slot name="action" />
+			</header>
+		)
+	}
+	<slot />
+</section>

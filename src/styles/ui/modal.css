@@ -1,0 +1,76 @@
+/*
+ * Modal, from the Sign in "modal" frame: 528px wide, 16px radius, a header
+ * with a 36px close button at the end, then the content. A native <dialog>,
+ * so focus trapping, Escape and the backdrop come from the browser.
+ */
+.ui-modal {
+	box-sizing: border-box;
+	width: min(528px, calc(100vw - var(--ohf-space-32)));
+	max-height: calc(100dvh - var(--ohf-space-32));
+	padding: 0;
+	border: var(--ohf-border-width-default) solid var(--ohf-color-border-subtle);
+	border-radius: var(--ohf-radius-xl);
+	background: var(--ohf-color-bg-surface-default);
+	box-shadow: var(--ohf-shadow-xl);
+	color: var(--ohf-color-text-default);
+	overflow: auto;
+}
+.ui-modal[data-size="sm"] {
+	width: min(400px, calc(100vw - var(--ohf-space-32)));
+}
+.ui-modal::backdrop {
+	background: var(--ohf-color-bg-overlay);
+}
+.ui-modal[open] {
+	animation: ui-modal-in var(--ohf-duration-normal) var(--ohf-easing-out);
+}
+@keyframes ui-modal-in {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.ui-modal[open] {
+		animation: none;
+	}
+}
+.ui-modal-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--ohf-space-16);
+	padding: var(--ohf-space-20) var(--ohf-space-20) var(--ohf-space-20)
+		var(--ohf-space-24);
+}
+.ui-modal .ui-modal-title {
+	flex: 1;
+	min-width: 0;
+	margin: 0;
+	color: var(--ohf-color-text-default);
+	font-family: inherit;
+	font-size: var(--ohf-font-size-18);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-24);
+	letter-spacing: 0;
+}
+.ui-modal-header:not(:has(.ui-modal-title)) {
+	justify-content: flex-end;
+}
+.ui-modal-body {
+	padding: var(--ohf-space-24) var(--ohf-space-24) var(--ohf-space-40);
+}
+.ui-modal-header:has(.ui-modal-title) + .ui-modal-body {
+	padding-top: var(--ohf-space-4);
+}
+.ui-modal-footer {
+	display: flex;
+	justify-content: flex-end;
+	gap: var(--ohf-space-8);
+	padding: var(--ohf-space-16) var(--ohf-space-24);
+	border-top: var(--ohf-border-width-default) solid
+		var(--ohf-color-border-subtle);
+}
+.ui-modal-footer:empty {
+	display: none;
+}

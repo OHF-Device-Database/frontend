@@ -1,0 +1,70 @@
+/*
+ * Card, from the "Card" frames on the device details page: a thin outline,
+ * 8px radius and 16px padding. The title is 15/24 medium with a divider 12px
+ * under it. Rows are 44px with a 20px icon, a 13px label and a subtle value.
+ */
+.ui-card {
+	display: flex;
+	flex-direction: column;
+	gap: var(--ohf-space-16);
+	box-sizing: border-box;
+	min-width: 0;
+	padding: var(--ohf-space-16);
+	border: var(--ohf-border-width-default) solid var(--ohf-color-border-subtle);
+	border-radius: var(--ohf-radius-l);
+	color: var(--ohf-color-text-default);
+}
+.ui-card[data-surface="raised"] {
+	border-color: var(--ohf-color-border-default);
+	background: var(--ohf-color-bg-surface-raised);
+}
+.ui-card-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--ohf-space-12);
+	padding-bottom: var(--ohf-space-12);
+	border-bottom: var(--ohf-border-width-default) solid
+		var(--ohf-color-border-default);
+	color: var(--ohf-color-icon-subtle);
+}
+.ui-card .ui-card-title {
+	margin: 0;
+	color: var(--ohf-color-text-default);
+	font-family: inherit;
+	font-size: var(--ohf-font-size-15);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-24);
+	letter-spacing: 0;
+}
+.ui-card-rows {
+	display: flex;
+	flex-direction: column;
+	margin: 0;
+}
+.ui-card-row {
+	display: flex;
+	align-items: center;
+	gap: var(--ohf-space-8);
+	min-height: 44px;
+	font-size: var(--ohf-font-size-13);
+	line-height: var(--ohf-line-height-20);
+}
+.ui-card-row dt {
+	flex: 1;
+	min-width: 0;
+	font-weight: var(--ohf-font-weight-medium);
+}
+.ui-card-row dd {
+	margin: 0;
+	color: var(--ohf-color-text-subtle);
+	font-weight: var(--ohf-font-weight-regular);
+	text-align: end;
+	white-space: nowrap;
+}
+.ui-card .ui-card-note {
+	margin: 0;
+	color: var(--ohf-color-text-subtle);
+	font-size: var(--ohf-font-size-12);
+	line-height: var(--ohf-line-height-16);
+}

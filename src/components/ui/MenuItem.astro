@@ -1,0 +1,36 @@
+---
+import type { IconNode } from "@openhomefoundation/icons";
+import type { HTMLAttributes } from "astro/types";
+
+import Icon from "./Icon.astro";
+
+type Props = {
+	icon?: IconNode;
+	/** marks the page or option the visitor is on */
+	current?: boolean;
+} & (
+	| ({ href: string } & Omit<HTMLAttributes<"a">, "href" | "class">)
+	| ({ href?: never } & Omit<HTMLAttributes<"button">, "class">)
+);
+
+const { icon, current = false, href, ...rest } = Astro.props;
+
+const shared = {
+	class: "ui-menu-item",
+	"aria-current": current ? ("page" as const) : undefined,
+};
+---
+
+{
+	typeof href === "string" ? (
+		<a {...(rest as HTMLAttributes<"a">)} {...shared} href={href}>
+			{icon && <Icon icon={icon} />}
+			<slot />
+		</a>
+	) : (
+		<button type="button" {...(rest as HTMLAttributes<"button">)} {...shared}>
+			{icon && <Icon icon={icon} />}
+			<slot />
+		</button>
+	)
+}

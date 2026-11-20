@@ -1,0 +1,19 @@
+---
+import type { IconNode } from "@openhomefoundation/icons";
+
+import Icon from "./Icon.astro";
+
+interface Props {
+	label: string;
+	icon?: IconNode;
+}
+
+const { label, icon } = Astro.props;
+---
+
+{/* goes inside <dl class="ui-card-rows">. the value is the slot */}
+<div class="ui-card-row">
+	{icon && <Icon icon={icon} size={20} />}
+	<dt>{label}</dt>
+	<dd><slot /></dd>
+</div>
