@@ -48,7 +48,8 @@
 	--ui-switch-height: 16px;
 	--ui-switch-knob: 12px;
 }
-.ui-switch:focus-visible {
+/* `input` so it outranks `input[type="checkbox"]:focus-visible` in controls.css */
+input.ui-switch:focus-visible {
 	outline: var(--ohf-border-width-focus) solid var(--ohf-color-border-focus);
 	outline-offset: 2px;
 }

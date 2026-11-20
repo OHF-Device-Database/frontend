@@ -22,11 +22,15 @@ const remember = (bar: Element) => {
 	bar.setAttribute(DEFAULT, String(index));
 };
 
+const isSection = (tab: Element) =>
+	tab.getAttribute("href")?.startsWith("#") === true;
+
 const mark = (bar: Element, current: Element | undefined) => {
 	for (const tab of tabsOf(bar)) {
 		if (tab === current) {
-			tab.setAttribute("aria-current", "location");
-		} else if (tab.getAttribute("href")?.startsWith("#") === true) {
+			// a section of this page is a `location`, another page is a `page`
+			tab.setAttribute("aria-current", isSection(tab) ? "location" : "page");
+		} else {
 			tab.removeAttribute("aria-current");
 		}
 	}
@@ -36,7 +40,7 @@ const mark = (bar: Element, current: Element | undefined) => {
 const syncToAddress = () => {
 	for (const bar of document.querySelectorAll(".ui-tabs")) {
 		const tabs = [...tabsOf(bar)];
-		if (!tabs.some((tab) => tab.getAttribute("href")?.startsWith("#"))) {
+		if (!tabs.some(isSection)) {
 			continue;
 		}
 
@@ -45,7 +49,13 @@ const syncToAddress = () => {
 		const match =
 			location.hash === ""
 				? undefined
-				: tabs.find((tab) => tab.getAttribute("href") === location.hash);
+				: // `hash` is encoded the same way on both, so `#café` matches
+					tabs.find(
+						(tab) =>
+							isSection(tab) &&
+							tab instanceof HTMLAnchorElement &&
+							tab.hash === location.hash,
+					);
 		// no section in the address, or one this bar doesn't have:
 		// back to the tab the server marked
 		mark(bar, match ?? tabs[Number(bar.getAttribute(DEFAULT))]);
@@ -69,11 +79,7 @@ document.addEventListener("click", (event) => {
 
 	const tab = event.target.closest(".ui-tabs .ui-tab");
 	const bar = tab?.closest(".ui-tabs");
-	if (
-		tab != null &&
-		bar != null &&
-		tab.getAttribute("href")?.startsWith("#") === true
-	) {
+	if (tab != null && bar != null && isSection(tab)) {
 		remember(bar);
 		mark(bar, tab);
 	}
