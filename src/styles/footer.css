@@ -3,7 +3,8 @@
  * dark surface with a faint warm glow rising from the bottom edge. The OHF
  * badge and line sit at the top, the theme switch and the language picker at
  * the end, then the copyright and the links on one row. A small vacuum robot
- * is parked on the bottom edge. Figma draws these with raw colours.
+ * is parked on the bottom edge and a flower in outline grows from it. Figma
+ * draws these with raw colours.
  */
 .appfoot {
 	--appfoot-muted: #82827d;
@@ -121,30 +122,29 @@
 	padding: 0;
 	list-style: none;
 }
-.appfoot-row a,
-.appfoot-analytics a {
+.appfoot-row a {
 	color: var(--appfoot-muted);
 	text-decoration: none;
 }
-.appfoot-row a:hover,
-.appfoot-analytics a:hover {
+.appfoot-row a:hover {
 	color: #f6f7f3;
-}
-.appfoot-analytics a {
-	text-decoration: underline;
-	text-underline-offset: 2px;
-}
-.appfoot-analytics {
-	width: 100%;
-	margin: 0;
-	color: var(--appfoot-muted);
-	font-size: var(--ohf-font-size-13);
-	line-height: var(--ohf-line-height-20);
 }
 .appfoot a:focus-visible {
 	outline: var(--ohf-border-width-focus) solid var(--ohf-color-border-focus);
 	outline-offset: 2px;
 	border-radius: var(--ohf-radius-sm);
+}
+/* a flower drawn in outline, growing from the bottom edge in the middle.
+   it sits behind the content */
+.appfoot-flower {
+	position: absolute;
+	bottom: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	pointer-events: none;
+}
+.appfoot-inner {
+	position: relative;
 }
 /* parked on the bottom edge, about a third of the way along, facing the start */
 .appfoot-vacuum {
@@ -198,9 +198,12 @@
 		justify-content: space-between;
 		gap: var(--ohf-space-8) var(--ohf-space-16);
 	}
-	.appfoot-legal,
-	.appfoot-analytics {
+	.appfoot-legal {
 		text-align: center;
+	}
+	/* the centred content would sit on top of it */
+	.appfoot-flower {
+		display: none;
 	}
 	.appfoot-vacuum {
 		bottom: 1px;

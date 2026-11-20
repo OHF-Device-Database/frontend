@@ -1,30 +1,22 @@
 ---
 import { iconMonitor, iconMoon, iconSun } from "@openhomefoundation/icons";
 
+import Flower from "../assets/footer-flower.svg";
 import Vacuum from "../assets/footer-vacuum.svg";
 import OhfBadge from "../assets/ohf-badge.svg";
 
 import LanguagePicker from "./LanguagePicker.astro";
-import Message from "./Message.astro";
 import SegmentedControl from "./ui/SegmentedControl.astro";
 
 import { m } from "../paraglide/messages.js";
 import { localizeHref } from "../paraglide/runtime.js";
 
 const OHF_URL = "https://www.openhomefoundation.org/";
-
-const analyticsLink = {
-	href: "https://www.openhomefoundation.org/blog/making-our-web-analytics-open-source-with-plausible/",
-	rel: "noopener",
-};
-const dashboardLink = {
-	href: "https://plausible.openhomefoundation.org/device-database-preview.openhomefoundation.org",
-	rel: "noopener",
-};
 ---
 
 {/* dark in both themes, so everything inside takes the dark tokens */}
 <footer class="appfoot" data-theme="dark">
+	<Flower class="appfoot-flower" width="200" height="325" aria-hidden="true" />
 	<div class="appfoot-inner">
 		<a class="appfoot-ohf" href={OHF_URL}>
 			<OhfBadge width="48" height="52" aria-hidden="true" />
@@ -69,16 +61,6 @@ const dashboardLink = {
 					</ul>
 				</nav>
 			</div>
-			<p class="appfoot-analytics">
-				<Message message={m.footer_analytics}>
-					<fragment slot="analyticsLink">
-						{(children: unknown[]) => <a {...analyticsLink}>{children}</a>}
-					</fragment>
-					<fragment slot="dashboardLink">
-						{(children: unknown[]) => <a {...dashboardLink}>{children}</a>}
-					</fragment>
-				</Message>
-			</p>
 		</div>
 	</div>
 	<Vacuum class="appfoot-vacuum" width="82" height="30" aria-hidden="true" />
