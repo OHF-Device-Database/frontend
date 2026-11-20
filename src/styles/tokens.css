@@ -152,7 +152,10 @@
 	--transition: 180ms cubic-bezier(0.2, 0, 0.2, 1);
 
 	--nav-bg: var(--surface);
-	--nav-h: 72px;
+	/* the page shell, from the Figma layout: a 64px header and the page edge
+     to edge with a 24px gutter, 16px on a phone (see base.css) */
+	--nav-h: 64px;
+	--page-gutter: 24px;
 
 	color-scheme: light;
 
