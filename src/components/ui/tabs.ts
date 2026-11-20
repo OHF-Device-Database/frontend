@@ -6,41 +6,81 @@
  *
  * one listener on the document covers every tab bar, and pages swapped in later
  */
-const mark = (tab: Element) => {
-	for (const other of tab.closest(".ui-tabs")?.querySelectorAll(".ui-tab") ??
-		[]) {
-		if (other === tab) {
-			other.setAttribute("aria-current", "location");
-		} else {
-			other.removeAttribute("aria-current");
+const DEFAULT = "data-ui-tab-default";
+
+const tabsOf = (bar: Element) => bar.querySelectorAll(".ui-tab");
+
+/** remembers which tab the server marked, once, so it can be restored */
+const remember = (bar: Element) => {
+	if (bar.hasAttribute(DEFAULT)) {
+		return;
+	}
+
+	const index = [...tabsOf(bar)].findIndex((tab) =>
+		tab.hasAttribute("aria-current"),
+	);
+	bar.setAttribute(DEFAULT, String(index));
+};
+
+const mark = (bar: Element, current: Element | undefined) => {
+	for (const tab of tabsOf(bar)) {
+		if (tab === current) {
+			tab.setAttribute("aria-current", "location");
+		} else if (tab.getAttribute("href")?.startsWith("#") === true) {
+			tab.removeAttribute("aria-current");
 		}
+	}
+};
+
+/** lines every tab bar up with the section in the address */
+const syncToAddress = () => {
+	for (const bar of document.querySelectorAll(".ui-tabs")) {
+		const tabs = [...tabsOf(bar)];
+		if (!tabs.some((tab) => tab.getAttribute("href")?.startsWith("#"))) {
+			continue;
+		}
+
+		remember(bar);
+
+		const match =
+			location.hash === ""
+				? undefined
+				: tabs.find((tab) => tab.getAttribute("href") === location.hash);
+		// no section in the address, or one this bar doesn't have:
+		// back to the tab the server marked
+		mark(bar, match ?? tabs[Number(bar.getAttribute(DEFAULT))]);
 	}
 };
 
 document.addEventListener("click", (event) => {
-	const target = event.target;
-	if (!(target instanceof Element)) {
+	// only a plain click moves this page. with a modifier key or another
+	// mouse button the link opens somewhere else
+	if (
+		event.defaultPrevented ||
+		event.button !== 0 ||
+		event.metaKey ||
+		event.ctrlKey ||
+		event.shiftKey ||
+		event.altKey ||
+		!(event.target instanceof Element)
+	) {
 		return;
 	}
 
-	const tab = target.closest(".ui-tabs .ui-tab");
-	if (tab?.getAttribute("href")?.startsWith("#") === true) {
-		mark(tab);
+	const tab = event.target.closest(".ui-tabs .ui-tab");
+	const bar = tab?.closest(".ui-tabs");
+	if (
+		tab != null &&
+		bar != null &&
+		tab.getAttribute("href")?.startsWith("#") === true
+	) {
+		remember(bar);
+		mark(bar, tab);
 	}
 });
 
-// a page opened with a section in the address starts on that tab
-const syncToAddress = () => {
-	if (location.hash === "") {
-		return;
-	}
-
-	for (const tab of document.querySelectorAll(".ui-tabs .ui-tab")) {
-		if (tab.getAttribute("href") === location.hash) {
-			mark(tab);
-		}
-	}
-};
-
 syncToAddress();
 window.addEventListener("hashchange", syncToAddress);
+window.addEventListener("popstate", syncToAddress);
+// the client router swaps pages in without a `hashchange`
+document.addEventListener("astro:page-load", syncToAddress);

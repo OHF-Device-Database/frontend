@@ -10,16 +10,12 @@
  * The fill is the raised surface under a faint warm tint, with a soft glow
  * inside the edge. Figma draws these with raw colours, there are no tokens.
  */
-.ui-sheet-anchor {
-	display: inline-block;
-	/* stays as wide as the trigger when a grid or flex parent would stretch it */
-	width: fit-content;
-}
-.ui-sheet {
-	--ui-sheet-top: 56px;
-	--ui-sheet-end: 22px;
-	--ui-sheet-bottom: 18px;
-	--ui-sheet-start: auto;
+/*
+ * the fill's colours live on the theme boundaries, like the tokens, so a sheet
+ * takes them from its nearest `data-theme` and not from one further out
+ */
+:root,
+[data-theme="light"] {
 	--ui-sheet-tint: linear-gradient(
 		121.5deg,
 		rgb(209 202 194 / 30%) 10.558%,
@@ -30,6 +26,43 @@
 		inset 2.5px 0.6px 0 0 rgb(255 255 255 / 20%), inset 3.8px 2.5px 25px 0 #fff,
 		inset 0 0 69px 0 #fff;
 	--ui-sheet-border: 0.5px solid rgb(0 0 0 / 10%);
+}
+[data-theme="dark"] {
+	--ui-sheet-tint: linear-gradient(
+		122.6deg,
+		rgb(28 26 25 / 30%) 10.558%,
+		rgb(14 14 14 / 30%) 111.12%
+	);
+	--ui-sheet-glow:
+		inset 2.5px 0.6px 0 0 rgb(38 38 38 / 20%),
+		inset 3.8px 2.5px 33px 0 rgb(38 38 38 / 40%),
+		inset 0 0 40px 0 rgb(38 38 38 / 70%);
+	--ui-sheet-border: 1px solid rgb(255 255 255 / 12%);
+}
+@media (prefers-color-scheme: dark) {
+	[data-theme="auto"] {
+		--ui-sheet-tint: linear-gradient(
+			122.6deg,
+			rgb(28 26 25 / 30%) 10.558%,
+			rgb(14 14 14 / 30%) 111.12%
+		);
+		--ui-sheet-glow:
+			inset 2.5px 0.6px 0 0 rgb(38 38 38 / 20%),
+			inset 3.8px 2.5px 33px 0 rgb(38 38 38 / 40%),
+			inset 0 0 40px 0 rgb(38 38 38 / 70%);
+		--ui-sheet-border: 1px solid rgb(255 255 255 / 12%);
+	}
+}
+.ui-sheet-anchor {
+	display: inline-block;
+	/* stays as wide as the trigger when a grid or flex parent would stretch it */
+	width: fit-content;
+}
+.ui-sheet {
+	--ui-sheet-top: 56px;
+	--ui-sheet-end: 22px;
+	--ui-sheet-bottom: 18px;
+	--ui-sheet-start: auto;
 
 	position-area: bottom span-left;
 	/* without room under the trigger it takes its place under the page header */
@@ -39,7 +72,11 @@
 	/* fills the space under the trigger, down to the bottom margin */
 	align-self: stretch;
 	height: auto;
-	min-height: min(480px, calc(100dvh - var(--ohf-space-32)));
+	/* never taller than the room the screen fallback leaves */
+	min-height: min(
+		480px,
+		calc(100dvh - var(--ui-sheet-top) - var(--ui-sheet-bottom))
+	);
 	max-width: none;
 	max-height: none;
 	margin: var(--ohf-space-8) 0 var(--ui-sheet-bottom);
@@ -52,18 +89,6 @@
 		0 0 5px 0 rgb(0 0 0 / 17%);
 	color: var(--ohf-color-text-default);
 	overflow: auto;
-}
-[data-theme="dark"] .ui-sheet {
-	--ui-sheet-tint: linear-gradient(
-		122.6deg,
-		rgb(28 26 25 / 30%) 10.558%,
-		rgb(14 14 14 / 30%) 111.12%
-	);
-	--ui-sheet-glow:
-		inset 2.5px 0.6px 0 0 rgb(38 38 38 / 20%),
-		inset 3.8px 2.5px 33px 0 rgb(38 38 38 / 40%),
-		inset 0 0 40px 0 rgb(38 38 38 / 70%);
-	--ui-sheet-border: 1px solid rgb(255 255 255 / 12%);
 }
 @position-try --ui-sheet-screen {
 	position-area: none;
