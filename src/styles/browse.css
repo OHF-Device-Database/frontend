@@ -12,7 +12,7 @@
      toolbar's row and leaving a gap above the first result. Free space goes to the
      bottom instead. (No-op on desktop, where the 1fr row already absorbs the slack.) */
 	align-content: start;
-	min-height: calc(100vh - 72px);
+	min-height: calc(100vh - var(--nav-h));
 }
 .browse-grid > .browse-toolbar {
 	grid-column: 1 / -1;

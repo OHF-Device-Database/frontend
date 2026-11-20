@@ -59,10 +59,10 @@ button {
 	font-family: inherit;
 }
 
+/* the page runs edge to edge, only the gutter keeps it off the screen edge */
 .container {
-	max-width: 1344px;
 	margin: 0 auto;
-	--container-x: 16px;
+	--container-x: var(--page-gutter);
 	padding-left: var(--container-x);
 	padding-right: var(--container-x);
 	width: 100%;
@@ -70,20 +70,13 @@ button {
 .container-narrow {
 	max-width: var(--container-narrow);
 	margin: 0 auto;
-	--container-x: 16px;
+	--container-x: var(--page-gutter);
 	padding-left: var(--container-x);
 	padding-right: var(--container-x);
 	width: 100%;
 }
-@media (min-width: 768px) {
-	.container,
-	.container-narrow {
-		--container-x: 24px;
-	}
-}
-@media (min-width: 1024px) {
-	.container,
-	.container-narrow {
-		--container-x: 32px;
+@media (max-width: 767px) {
+	:root {
+		--page-gutter: 16px;
 	}
 }

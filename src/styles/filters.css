@@ -7,8 +7,8 @@
 
 .browse-filters {
 	position: sticky;
-	top: 72px;
-	max-height: calc(100vh - 72px);
+	top: var(--nav-h);
+	max-height: calc(100vh - var(--nav-h));
 	overflow-y: auto;
 	display: block;
 	min-width: 0;
