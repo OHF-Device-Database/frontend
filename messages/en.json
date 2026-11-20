@@ -14,6 +14,8 @@
 	"nav_home": "Home",
 	"nav_explore": "Explore",
 	"nav_categories": "Categories",
+	"nav_categories_empty": "No categories found",
+	"nav_menu_back": "Back to menu",
 	"nav_contribute": "Contribute",
 	"nav_menu": "Menu",
 	"nav_theme_label": "Theme",

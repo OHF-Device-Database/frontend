@@ -169,6 +169,13 @@
 	gap: var(--ohf-space-8);
 }
 .ui-sheet-nav .ui-sheet-link {
+	/* for the button form */
+	padding: 0;
+	border: 0;
+	background: transparent;
+	font-family: inherit;
+	text-align: start;
+	cursor: pointer;
 	color: var(--ohf-color-text-default);
 	font-size: var(--ohf-font-size-24);
 	font-weight: var(--ohf-font-weight-medium);

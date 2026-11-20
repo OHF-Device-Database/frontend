@@ -1,10 +1,13 @@
 ---
 import {
+	iconArrowLeft,
 	iconChevronDown,
 	iconEqual,
 	iconMonitor,
 	iconMoon,
+	iconSearch,
 	iconSun,
+	iconX,
 } from "@openhomefoundation/icons";
 
 import AccountMenu from "./AccountMenu.astro";
@@ -13,8 +16,6 @@ import Message from "./Message.astro";
 import SearchBox from "./SearchBox.astro";
 import Button from "./ui/Button.astro";
 import Icon from "./ui/Icon.astro";
-import Menu from "./ui/Menu.astro";
-import MenuItem from "./ui/MenuItem.astro";
 import SegmentedControl from "./ui/SegmentedControl.astro";
 import Sheet from "./ui/Sheet.astro";
 import SheetNav from "./ui/SheetNav.astro";
@@ -49,7 +50,7 @@ const categories = DeviceCategoryTopLevelId.options
 	}))
 	.toSorted((a, b) => a.label.localeCompare(b.label));
 
-const links = [
+const pageLinks = [
 	{ href: localizeHref("/"), label: m.nav_home() },
 	{ href: localizeHref("/browse"), label: m.footer_browse() },
 	{ href: localizeHref("/how-it-works"), label: m.footer_how_it_works() },
@@ -60,6 +61,17 @@ const links = [
 	{ href: localizeHref("/about"), label: m.footer_about() },
 	{ href: localizeHref("/surveys"), label: m.surveys_title() },
 ].map((link) => ({ ...link, current: link.href === Astro.url.pathname }));
+
+// on a phone the header has no Categories menu, so the list opens in the sheet
+const links = [
+	...pageLinks.slice(0, 2),
+	{
+		label: m.nav_categories(),
+		class: "appnav-phone-only",
+		attrs: { "data-appnav-view": "categories" },
+	},
+	...pageLinks.slice(2),
+];
 ---
 
 <div class="preview-banner">
@@ -100,22 +112,47 @@ const links = [
 				>
 					{m.nav_explore()}
 				</a>
-				<Menu id="appnav-categories" label={m.nav_categories()}>
+				<div class="appnav-categories-anchor">
 					<button
-						slot="trigger"
 						type="button"
 						class="appnav-link"
 						popovertarget="appnav-categories"
 					>
 						{m.nav_categories()}
-						<Icon icon={iconChevronDown} size={12} />
+						<Icon icon={iconChevronDown} />
 					</button>
-					{
-						categories.map((category) => (
-							<MenuItem href={category.href}>{category.label}</MenuItem>
-						))
-					}
-				</Menu>
+					<div
+						popover
+						id="appnav-categories"
+						class="appnav-categories"
+						role="dialog"
+						aria-label={m.nav_categories()}
+					>
+						<label class="appnav-categories-search">
+							<Icon icon={iconSearch} size={20} />
+							<input
+								type="search"
+								placeholder={m.search_placeholder()}
+								aria-label={m.browse_modal_search_categories()}
+								autocomplete="off"
+								data-appnav-categories-filter
+							/>
+						</label>
+						<hr />
+						<ul class="appnav-categories-list">
+							{
+								categories.map((category) => (
+									<li>
+										<a href={category.href}>{category.label}</a>
+									</li>
+								))
+							}
+						</ul>
+						<p class="appnav-categories-empty" hidden>
+							{m.nav_categories_empty()}
+						</p>
+					</div>
+				</div>
 			</nav>
 		</div>
 		{
@@ -128,17 +165,20 @@ const links = [
 		<div class="appnav-right">
 			<AccountMenu />
 			<Sheet id="appnav-menu" label={m.nav_menu()}>
-				<Button
+				<button
 					slot="trigger"
-					variant="tonal"
-					size="lg"
-					shape="pill"
-					icon={iconEqual}
-					iconPlacement="only"
-					label={m.nav_menu()}
-					class="appnav-menu-button"
+					type="button"
+					class="ui-button appnav-menu-button"
+					data-variant="tonal"
+					data-size="lg"
+					data-shape="pill"
+					data-icon-only
+					aria-label={m.nav_menu()}
 					popovertarget="appnav-menu"
-				/>
+				>
+					<Icon icon={iconEqual} class="appnav-menu-open" />
+					<Icon icon={iconX} class="appnav-menu-close" />
+				</button>
 				<SheetNav label={m.nav_main_label()} links={links} />
 				<hr class="ui-sheet-separator" />
 				<div class="appnav-settings">
@@ -154,6 +194,23 @@ const links = [
 						]}
 					/>
 					<LanguagePicker />
+				</div>
+				<div class="appnav-menu-categories">
+					<Button
+						icon={iconArrowLeft}
+						iconPlacement="only"
+						label={m.nav_menu_back()}
+						size="sm"
+						shape="pill"
+						data-appnav-view="main"
+					/>
+					<nav aria-label={m.nav_categories()}>
+						{
+							categories.map((category) => (
+								<a href={category.href}>{category.label}</a>
+							))
+						}
+					</nav>
 				</div>
 				<Fragment slot="footer">
 					<Button
@@ -218,6 +275,80 @@ const links = [
 			demoState()?.setTheme?.(input.value);
 		}
 	});
+
+	// the menu shows its main view or the list of categories
+	document.addEventListener("click", (event) => {
+		const control =
+			event.target instanceof Element
+				? event.target.closest<HTMLElement>("[data-appnav-view]")
+				: null;
+		const menu = document.getElementById("appnav-menu");
+		if (control === null || menu === null) {
+			return;
+		}
+
+		if (control.dataset["appnavView"] === "categories") {
+			menu.dataset["view"] = "categories";
+		} else {
+			delete menu.dataset["view"];
+		}
+	});
+
+	// the Categories menu in the header narrows as you type
+	document.addEventListener("input", (event) => {
+		const input = event.target;
+		if (
+			!(input instanceof HTMLInputElement) ||
+			!input.matches("[data-appnav-categories-filter]")
+		) {
+			return;
+		}
+
+		const panel = input.closest(".appnav-categories");
+		const term = input.value.trim().toLocaleLowerCase();
+		let shown = 0;
+		for (const item of panel?.querySelectorAll("li") ?? []) {
+			const match = (item.textContent ?? "").toLocaleLowerCase().includes(term);
+			item.hidden = !match;
+			shown += match ? 1 : 0;
+		}
+
+		const empty = panel?.querySelector<HTMLElement>(".appnav-categories-empty");
+		if (empty) {
+			empty.hidden = shown > 0;
+		}
+	});
+
+	// each popover starts fresh: the full list, and the menu on its main view
+	document.addEventListener(
+		"toggle",
+		(event) => {
+			const popover = event.target;
+			if (
+				!(popover instanceof HTMLElement) ||
+				!(event instanceof ToggleEvent) ||
+				event.newState !== "open"
+			) {
+				return;
+			}
+
+			if (popover.id === "appnav-menu") {
+				delete popover.dataset["view"];
+			}
+
+			if (popover.id === "appnav-categories") {
+				const input = popover.querySelector<HTMLInputElement>(
+					"[data-appnav-categories-filter]",
+				);
+				if (input) {
+					input.value = "";
+					input.dispatchEvent(new Event("input", { bubbles: true }));
+					input.focus();
+				}
+			}
+		},
+		true,
+	);
 
 	document.addEventListener("astro:page-load", () => {
 		syncTheme();
