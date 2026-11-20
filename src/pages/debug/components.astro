@@ -480,18 +480,17 @@ const sizes = ["xs", "sm", "md", "lg", "xl", "compact"] as const;
 			{
 				themes.map((theme) => (
 					<div class="ui-showcase" data-theme={theme}>
-						<div class="ui-showcase-row">
+						<Sheet id={`${theme}-main-menu`} label="Menu">
 							<Button
+								slot="trigger"
 								variant="tonal"
 								size="lg"
 								shape="pill"
 								icon={iconEqual}
 								iconPlacement="only"
 								label="Menu"
-								data-modal-open={`${theme}-main-menu`}
+								popovertarget={`${theme}-main-menu`}
 							/>
-						</div>
-						<Sheet id={`${theme}-main-menu`} label="Menu">
 							<SheetNav
 								label="Main"
 								links={[

@@ -1,23 +1,29 @@
 /*
- * Sheet, from the "Menu" panel that opens under the menu button: 458px wide,
- * 8px under the button and 22px from the end on desktop, edge to edge with
- * 16px margins on a phone. `--ui-sheet-top` is set when it opens (dialog.ts),
- * the values here are the design's own and apply when there is no header. A raised panel with an outline, an 8px radius and 32px
- * padding. Content is 24px apart and the footer sits at the bottom.
- * A native <dialog>, so focus trapping and Escape come from the browser.
+ * Sheet, from the "Menu" panel that drops down under the menu button: 458px
+ * wide, 8px under the button, lined up with its end edge and reaching down to
+ * 18px from the bottom of the screen. On a phone it spans the screen with 16px
+ * margins. A raised panel with an outline, an 8px radius and 32px padding.
+ * Content is 24px apart and the footer sits at the bottom.
+ * A native popover anchored to its trigger, like Menu: the page behind is not
+ * dimmed, and a click outside, Escape or the trigger closes it.
  */
+.ui-sheet-anchor {
+	display: inline-block;
+	/* stays as wide as the trigger when a grid or flex parent would stretch it */
+	width: fit-content;
+}
 .ui-sheet {
-	--ui-sheet-top: 56px;
-	--ui-sheet-edge: 22px;
-
-	position: fixed;
-	inset: var(--ui-sheet-top) var(--ui-sheet-edge) 18px auto;
+	position-area: bottom span-left;
+	position-try-fallbacks: flip-block;
 	box-sizing: border-box;
-	width: min(458px, calc(100vw - var(--ui-sheet-edge) * 2));
+	width: min(458px, calc(100vw - 44px));
+	/* fills the space under the trigger, down to the bottom margin */
+	align-self: stretch;
 	height: auto;
+	min-height: min(480px, calc(100dvh - var(--ohf-space-32)));
 	max-width: none;
 	max-height: none;
-	margin: 0;
+	margin: var(--ohf-space-8) 0 18px;
 	padding: var(--ohf-space-32);
 	border: var(--ohf-border-width-default) solid var(--ohf-color-border-default);
 	border-radius: var(--ohf-radius-l);
@@ -26,17 +32,14 @@
 	color: var(--ohf-color-text-default);
 	overflow: auto;
 }
-.ui-sheet[open] {
+.ui-sheet:popover-open {
 	display: flex;
 	flex-direction: column;
 	gap: var(--ohf-space-24);
 	animation: ui-sheet-in var(--ohf-duration-normal) var(--ohf-easing-out);
 }
 .ui-sheet[data-side="start"] {
-	inset-inline: var(--ui-sheet-edge) auto;
-}
-.ui-sheet::backdrop {
-	background: var(--ohf-color-bg-overlay);
+	position-area: bottom span-right;
 }
 @keyframes ui-sheet-in {
 	from {
@@ -45,19 +48,33 @@
 	}
 }
 @media (prefers-reduced-motion: reduce) {
-	.ui-sheet[open] {
+	.ui-sheet:popover-open {
 		animation: none;
 	}
 }
 @media (max-width: 600px) {
 	.ui-sheet,
 	.ui-sheet[data-side="start"] {
-		--ui-sheet-top: 64px;
-		--ui-sheet-edge: 16px;
-
-		inset-block-end: 16px;
+		position-area: bottom span-all;
+		justify-self: stretch;
 		width: auto;
-		inset-inline: var(--ui-sheet-edge);
+		margin: var(--ohf-space-8) var(--ohf-space-16) var(--ohf-space-16);
+	}
+}
+/* without anchor positioning the sheet sits under the nav, at the end */
+@supports not (position-area: bottom) {
+	.ui-sheet {
+		inset: 56px 22px 18px auto;
+		margin: 0;
+	}
+	.ui-sheet[data-side="start"] {
+		inset-inline: 22px auto;
+	}
+	@media (max-width: 600px) {
+		.ui-sheet,
+		.ui-sheet[data-side="start"] {
+			inset: 64px 16px 16px;
+		}
 	}
 }
 .ui-sheet-footer {
