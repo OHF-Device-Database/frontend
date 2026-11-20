@@ -11,6 +11,13 @@ const LANGUAGES = ["de", "en", "es", "nl", "sv"] as const satisfies Locale[];
 const TRANSLATE_URL =
 	"https://app.lokalise.com/public/743837856a6c57e1405707.10709861/";
 
+interface Props {
+	/** the menu's id. needed when a page has more than one picker */
+	id?: string;
+}
+
+const { id = "langpicker-menu" } = Astro.props;
+
 const current = getLocale();
 const nameIn = (locale: Locale, displayLocale: Locale) => {
 	const name = new Intl.DisplayNames([displayLocale], { type: "language" }).of(
@@ -33,7 +40,7 @@ const icon = PresentationRenderPresetRoleIcon.withSize(16);
 	<button
 		type="button"
 		class="langpicker-trigger"
-		popovertarget="langpicker-menu"
+		popovertarget={id}
 		aria-label={`${m.nav_language_label()}: ${nameIn(current, current)}`}
 		translate="no"
 	>
@@ -43,7 +50,7 @@ const icon = PresentationRenderPresetRoleIcon.withSize(16);
 		<Fragment set:html={render(generic("chevronDown"), icon)} />
 	</button>
 	<nav
-		id="langpicker-menu"
+		id={id}
 		class="langpicker-menu"
 		popover
 		aria-label={m.nav_language_label()}
