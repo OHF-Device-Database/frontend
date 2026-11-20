@@ -256,10 +256,16 @@ const links = [
 			return;
 		}
 
+		// the control that was clicked is hidden by the switch, so focus moves
+		// to its counterpart in the view that is now showing
 		if (control.dataset["appnavView"] === "categories") {
 			menu.dataset["view"] = "categories";
+			menu.querySelector<HTMLElement>('[data-appnav-view="main"]')?.focus();
 		} else {
 			delete menu.dataset["view"];
+			menu
+				.querySelector<HTMLElement>('[data-appnav-view="categories"]')
+				?.focus();
 		}
 	});
 
