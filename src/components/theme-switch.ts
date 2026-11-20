@@ -12,9 +12,7 @@ const demoState = () =>
 
 const SELECTOR = '[data-theme-switch] input[type="radio"]';
 
-// the page may be cached for everyone, so the chosen theme is filled in here
-const sync = () => {
-	const theme = demoState()?.getTheme?.() ?? "auto";
+const show = (theme: string) => {
 	for (const input of document.querySelectorAll<HTMLInputElement>(SELECTOR)) {
 		input.checked = input.value === theme;
 	}
@@ -24,8 +22,15 @@ document.addEventListener("change", (event) => {
 	const input = event.target;
 	if (input instanceof HTMLInputElement && input.matches(SELECTOR)) {
 		demoState()?.setTheme?.(input.value);
-		sync();
+		// from the choice itself, not the saved one: saving can fail, and the
+		// theme on screen has changed either way
+		show(input.value);
 	}
 });
+
+// the page may be cached for everyone, so the saved theme is filled in here
+const sync = () => {
+	show(demoState()?.getTheme?.() ?? "auto");
+};
 
 document.addEventListener("astro:page-load", sync);

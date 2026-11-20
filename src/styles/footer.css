@@ -7,7 +7,9 @@
  * draws these with raw colours.
  */
 .appfoot {
-	--appfoot-muted: #82827d;
+	/* lighter than the #82827d drawn in Figma, which falls short of 4.5:1 on
+     this background. this holds at least 4.77:1 across the glow */
+	--appfoot-muted: #a3a39d;
 
 	position: relative;
 	padding: 30px 22px 30px 30px;
@@ -100,6 +102,12 @@
 	position-area: top span-left;
 	position-try-fallbacks: flip-inline;
 	margin: 0 0 var(--ohf-space-4);
+}
+/* without anchor positioning it sits above the footer's last rows, at the end */
+@supports not (position-area: bottom) {
+	.appfoot-settings .langpicker-menu {
+		inset: auto 22px 96px auto;
+	}
 }
 .appfoot-row {
 	display: flex;
