@@ -3,6 +3,22 @@
  * (rounded, 32px, 11px labels) and the theme picker (pill, 36px, icons).
  * Radio inputs do the work, so it needs no script.
  */
+/*
+ * the line round the selected segment: a soft dark ring on light, the control
+ * border on dark. set on the theme boundaries so the nearest `data-theme` wins
+ */
+:root,
+[data-theme="light"] {
+	--ui-segmented-ring: 0 0 0 1px rgb(61 59 53 / 16%);
+}
+[data-theme="dark"] {
+	--ui-segmented-ring: inset 0 0 0 1px var(--ohf-color-border-control);
+}
+@media (prefers-color-scheme: dark) {
+	[data-theme="auto"] {
+		--ui-segmented-ring: inset 0 0 0 1px var(--ohf-color-border-control);
+	}
+}
 .ui-segmented {
 	display: inline-flex;
 	align-items: stretch;
@@ -47,10 +63,15 @@
 .ui-segmented-option:has(.ui-segmented-input:checked) {
 	background: var(--ohf-color-bg-surface-raised);
 	box-shadow:
-		0 2px 3px 0 var(--ohf-color-alpha-7-2),
-		0 0 0 1px var(--ohf-color-alpha-12),
-		0 1px 1px 0 var(--ohf-color-alpha-7-2);
+		0 2px 3px 0 rgb(61 59 53 / 8%),
+		var(--ui-segmented-ring),
+		0 1px 1px 0 rgb(0 0 0 / 5%);
 	color: var(--ohf-color-text-default);
+}
+/* icons keep one colour, selected or not, and a 1.5px line */
+.ui-segmented-option .ui-icon {
+	color: var(--ohf-color-text-subtle);
+	stroke-width: 1.5;
 }
 .ui-segmented-option:has(.ui-segmented-input:focus-visible) {
 	outline: var(--ohf-border-width-focus) solid var(--ohf-color-border-focus);

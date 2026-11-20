@@ -312,6 +312,15 @@
 	background: var(--ohf-color-bg-surface-sunken);
 	color: var(--ohf-color-text-default);
 }
+/* its icons are subtle with a 1.5px line, and the chevron is small */
+.appnav-settings .langpicker-trigger svg {
+	color: var(--ohf-color-text-subtle);
+	stroke-width: 1.5;
+}
+.appnav-settings .langpicker-trigger svg:last-child {
+	width: 12px;
+	height: 12px;
+}
 .appnav-settings .langpicker-long {
 	display: inline;
 }
