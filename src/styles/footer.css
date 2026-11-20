@@ -83,6 +83,9 @@
 	color: #fff;
 	letter-spacing: -0.14px;
 }
+.appfoot-settings .langpicker-trigger:focus-visible {
+	box-shadow: 0 0 0 2px #f6f7f3;
+}
 .appfoot-settings .langpicker-trigger svg {
 	color: var(--ohf-color-text-subtle);
 	stroke-width: 1.5;
