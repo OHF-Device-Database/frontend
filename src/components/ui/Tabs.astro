@@ -1,5 +1,6 @@
 ---
 type Tab = {
+	/** a page, or `#section` for a part of this page */
 	href: string;
 	label: string;
 	current?: boolean;
@@ -21,10 +22,20 @@ const { label, tabs, class: className } = Astro.props;
 			<a
 				class="ui-tab"
 				href={tab.href}
-				aria-current={tab.current === true ? "page" : undefined}
+				aria-current={
+					tab.current === true
+						? tab.href.startsWith("#")
+							? "location"
+							: "page"
+						: undefined
+				}
 			>
 				{tab.label}
 			</a>
 		))
 	}
 </nav>
+
+<script>
+	import "./tabs";
+</script>

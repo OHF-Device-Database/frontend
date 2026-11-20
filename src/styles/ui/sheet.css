@@ -1,7 +1,8 @@
 /*
  * Sheet, from the "Menu" panel that opens under the menu button: 458px wide,
- * 56px from the top and 22px from the end on desktop, edge to edge with 16px
- * margins on a phone. A raised panel with an outline, an 8px radius and 32px
+ * 8px under the button and 22px from the end on desktop, edge to edge with
+ * 16px margins on a phone. `--ui-sheet-top` is set when it opens (dialog.ts),
+ * the values here are the design's own and apply when there is no header. A raised panel with an outline, an 8px radius and 32px
  * padding. Content is 24px apart and the footer sits at the bottom.
  * A native <dialog>, so focus trapping and Escape come from the browser.
  */
