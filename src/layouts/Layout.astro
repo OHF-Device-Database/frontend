@@ -90,10 +90,6 @@ const featureAttributes = featureDataset(features());
 						"data-view",
 						state.view === "grid" ? "grid" : "list",
 					);
-					document.documentElement.setAttribute(
-						"data-preview-banner",
-						state.previewBanner === "off" ? "off" : "on",
-					);
 				}
 				var state = read();
 				apply(state);
@@ -117,14 +113,6 @@ const featureAttributes = featureDataset(features());
 					},
 					getView: function () {
 						return read().view === "grid" ? "grid" : "list";
-					},
-					dismissPreviewBanner: function () {
-						var s = read();
-						s.previewBanner = "off";
-						try {
-							localStorage.setItem(KEY, JSON.stringify(s));
-						} catch (e) {}
-						apply(s);
 					},
 					setView: function (view) {
 						var s = read();
@@ -189,11 +177,6 @@ const featureAttributes = featureDataset(features());
 				}
 
 				document.addEventListener("astro:before-preparation", function () {
-					var banner = document.querySelector(".preview-banner");
-					var offset = banner
-						? Math.max(0, banner.getBoundingClientRect().bottom)
-						: 0;
-					bar.style.top = offset + "px";
 					bar.classList.remove("is-done");
 					// force reflow so the removal of "is-done" takes effect before adding "is-loading"
 					// https://gist.github.com/paulirish/5d52fb081b3570c81e3a

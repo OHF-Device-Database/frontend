@@ -352,51 +352,6 @@ html[data-feature-account="on"]:not([data-github-session]) .appnav-new-here {
 	text-underline-offset: 2px;
 }
 
-.preview-banner {
-	background: var(--fg);
-	color: var(--fg-on-primary);
-}
-html[data-preview-banner="off"] .preview-banner {
-	display: none;
-}
-.preview-banner-inner {
-	display: flex;
-	align-items: center;
-	gap: var(--space-4);
-	padding-top: var(--space-3);
-	padding-bottom: var(--space-3);
-}
-.preview-banner-text {
-	margin: 0;
-	font-size: var(--fs-13);
-	line-height: 1.45;
-}
-.preview-banner-text a {
-	color: inherit;
-	font-weight: var(--fw-medium);
-	text-decoration: underline;
-	text-underline-offset: 2px;
-}
-.preview-banner-close {
-	flex-shrink: 0;
-	margin-left: auto;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 28px;
-	height: 28px;
-	padding: 0;
-	border: 0;
-	border-radius: var(--radius-pill);
-	background: transparent;
-	color: inherit;
-	cursor: pointer;
-	opacity: 0.8;
-}
-.preview-banner-close:hover {
-	opacity: 1;
-	background: color-mix(in srgb, currentColor 14%, transparent);
-}
 @media (max-width: 899px) {
 	.appnav-inner {
 		grid-template-columns: auto minmax(0, 1fr) auto;

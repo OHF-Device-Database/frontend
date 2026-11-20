@@ -29,8 +29,7 @@ import {
 } from "../types/browse";
 import { DeviceCategoryTopLevelId } from "../types/category";
 import { LOGO_MARK_SVG } from "../utilities/logo";
-import { device, generic, render } from "../utilities/presentation";
-import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/preset";
+import { device } from "../utilities/presentation";
 
 interface Props {
 	page: string;
@@ -73,27 +72,6 @@ const links = [
 	...pageLinks.slice(2),
 ];
 ---
-
-<div class="preview-banner">
-	<div class="container preview-banner-inner">
-		<p class="preview-banner-text">
-			{m.nav_preview_banner_text()}
-			<a href={GITHUB_URL} target="_blank" rel="noopener noreferrer"
-				>{m.nav_preview_banner_learn_more()}</a
-			>
-		</p>
-		<button
-			type="button"
-			class="preview-banner-close"
-			aria-label={m.nav_preview_banner_dismiss()}
-			data-preview-banner-close
-		>
-			<Fragment
-				set:html={render(generic("x"), PresentationRenderPresetRoleIcon)}
-			/>
-		</button>
-	</div>
-</div>
 
 <header class="appnav" data-appnav>
 	<div class="container appnav-inner">
@@ -245,7 +223,6 @@ const links = [
 	type DemoState = {
 		getTheme?: () => string;
 		setTheme?: (theme: string) => void;
-		dismissPreviewBanner?: () => void;
 	};
 	const demoState = () =>
 		(window as unknown as { DemoState?: DemoState }).DemoState;
@@ -259,14 +236,6 @@ const links = [
 		for (const input of themeInputs()) {
 			input.checked = input.value === theme;
 		}
-	};
-
-	const bindBanner = () => {
-		document
-			.querySelector<HTMLButtonElement>("[data-preview-banner-close]")
-			?.addEventListener("click", () => {
-				demoState()?.dismissPreviewBanner?.();
-			});
 	};
 
 	document.addEventListener("change", (event) => {
@@ -350,8 +319,5 @@ const links = [
 		true,
 	);
 
-	document.addEventListener("astro:page-load", () => {
-		syncTheme();
-		bindBanner();
-	});
+	document.addEventListener("astro:page-load", syncTheme);
 </script>
