@@ -1,85 +1,171 @@
+/*
+ * The header, from the Figma header frame: 64px high with a hairline under it.
+ * The mark and the main links at the start, search in the middle, Contribute
+ * and the menu button at the end. On a phone it is the mark, search and the
+ * menu button, and the links and Contribute live in the menu.
+ */
 .appnav {
-	--logo-h: 32px;
 	position: sticky;
 	top: 0;
 	z-index: 20;
 	height: var(--nav-h);
 	background: var(--nav-bg);
-	border-bottom: 1px solid transparent;
-	transition: border-color 0.15s ease;
-}
-.appnav.is-scrolled {
-	border-bottom-color: var(--border);
+	border-bottom: 0.5px solid var(--ohf-color-border-control);
 }
 .appnav-inner {
 	height: 100%;
 	display: grid;
-	grid-template-columns: minmax(180px, 260px) minmax(0, 1fr) minmax(0, 1fr);
-	align-content: center;
-	align-items: end;
-	gap: var(--space-5);
+	/* equal sides keep the search in the middle of the page */
+	grid-template-columns: minmax(0, 1fr) minmax(0, 362px) minmax(0, 1fr);
+	align-items: center;
+	gap: var(--ohf-space-16);
 }
 .appnav-left {
 	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
+	align-items: center;
+	gap: var(--ohf-space-16);
+	min-width: 0;
 }
 .appnav-right {
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
-	gap: var(--space-3);
-	/* Logo height, so the picker centers on the logo. */
-	min-height: var(--logo-h);
-}
-.appnav .searchbox-header {
-	justify-self: center;
-	width: min(560px, 100%);
-	max-width: 100%;
+	gap: var(--ohf-space-8);
+	min-width: 0;
 }
 .brand {
+	flex: none;
 	display: inline-flex;
 	align-items: center;
-	gap: var(--space-3);
-	color: var(--fg);
-	font-family: var(--font-display);
-	font-weight: 600;
+	width: 40px;
+	height: 40px;
+	color: var(--ohf-color-text-default);
 	text-decoration: none;
 	-webkit-user-select: none;
 	user-select: none;
 	-webkit-touch-callout: none;
 	touch-action: manipulation;
 }
-.brand:hover {
-	text-decoration: none;
-	color: var(--fg);
+.brand:hover,
+.brand:visited {
+	color: var(--ohf-color-text-default);
 }
-.brand-logo {
+.brand:focus-visible,
+.appnav-link:focus-visible {
+	outline: var(--ohf-border-width-focus) solid var(--ohf-color-border-focus);
+	outline-offset: 2px;
+	border-radius: var(--ohf-radius-md);
+}
+.brand-mark {
 	display: block;
-	height: var(--logo-h);
-	width: auto;
-	color: var(--fg);
+	width: 32px;
+	height: 32px;
 }
 
-.preview-label,
-.preview-label:visited,
-.preview-label:hover {
-	color: var(--fg-muted);
+.appnav-links {
+	display: flex;
+	align-items: center;
+	gap: var(--ohf-space-16);
 }
-.preview-label {
+/* a link or the Categories button: 14/20 medium, subtle until hovered */
+.appnav-link {
 	display: inline-flex;
 	align-items: center;
-	gap: var(--space-1);
-	font-size: var(--fs-12);
-	font-weight: var(--fw-bold);
-	line-height: 1;
-	text-transform: uppercase;
+	gap: var(--ohf-space-8);
+	padding: var(--ohf-space-8);
+	border: 0;
+	background: transparent;
+	color: var(--ohf-color-text-subtle);
+	font-family: inherit;
+	font-size: var(--ohf-font-size-14);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-20);
+	letter-spacing: -0.14px;
 	white-space: nowrap;
 	text-decoration: none;
+	cursor: pointer;
+	transition: color var(--ohf-duration-fast) var(--ohf-easing-standard);
 }
-.preview-label:hover {
+.appnav-link:visited {
+	color: var(--ohf-color-text-subtle);
+}
+.appnav-link:hover,
+.appnav-link[aria-current],
+.appnav-link:has(+ :popover-open) {
+	color: var(--ohf-color-text-default);
+	text-decoration: none;
+}
+
+/* search: a 40px pill on a faint fill */
+.appnav .searchbox-header {
+	width: 100%;
+	max-width: 100%;
+}
+.appnav .searchbox-header .searchbox-input {
+	height: 40px;
+	border-color: var(--ohf-color-alpha-9);
+	border-radius: var(--ohf-radius-pill);
+	background: var(--ohf-color-alpha-7-2);
+}
+.appnav .searchbox-header .searchbox-input:focus-within {
+	border-color: var(--ohf-color-border-strong);
+}
+.appnav .searchbox-header .searchbox-input input {
+	background: transparent;
+}
+
+/* the menu button is 56px wide, 64px on a phone */
+.appnav .ui-button.appnav-menu-button[data-icon-only] {
+	width: 56px;
+	padding: 0;
+}
+
+/* inside the menu */
+.appnav-settings {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px;
+}
+.appnav-settings .langpicker-trigger {
+	height: 36px;
+	padding: 0 var(--ohf-space-16) 0 var(--ohf-space-12);
+	border: var(--ohf-border-width-default) solid var(--ohf-color-border-control);
+	border-radius: var(--ohf-radius-pill);
+	background: var(--ohf-color-bg-surface-sunken);
+	color: var(--ohf-color-text-default);
+}
+.appnav-settings .langpicker-long {
+	display: inline;
+}
+.appnav-settings .langpicker-short {
+	display: none;
+}
+.appnav-new-here {
+	display: none;
+	margin: 0;
+	color: var(--ohf-color-text-subtle);
+	font-size: var(--ohf-font-size-13);
+	line-height: 1.5;
+	text-align: center;
+}
+/* only for a visitor who can sign in and has not */
+html[data-feature-account="on"]:not([data-github-session]) .appnav-new-here {
+	display: block;
+}
+.appnav-new-here button {
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: var(--ohf-color-text-default);
+	font: inherit;
+	cursor: pointer;
+}
+.appnav-new-here button:hover {
 	text-decoration: underline;
+	text-underline-offset: 2px;
 }
+
 .preview-banner {
 	background: var(--fg);
 	color: var(--fg-on-primary);
@@ -126,41 +212,25 @@ html[data-preview-banner="off"] .preview-banner {
 	background: color-mix(in srgb, currentColor 14%, transparent);
 }
 @media (max-width: 899px) {
-	:root {
-		/* Tallest case: label + logo + search */
-		--nav-h: 116px;
-	}
-	.appnav {
-		/* Size to content so the home page isn't left with empty space */
-		height: auto;
-	}
 	.appnav-inner {
-		grid-template-columns: 1fr auto;
-		grid-template-areas:
-			"logo badge"
-			"search search";
-		gap: 0 var(--space-3);
-		/* Only add vertical room — keep .container's left/right padding so the logo and
-       search aren't flush against the screen edges. */
-		padding-top: var(--space-3);
-		padding-bottom: var(--space-3);
+		grid-template-columns: auto minmax(0, 1fr) auto;
+		gap: var(--ohf-space-8);
 	}
-	.appnav-left {
-		grid-area: logo;
-	}
-	.appnav-right {
-		grid-area: badge;
-	}
-	.appnav-inner > device-search {
-		grid-area: search;
-		margin-top: var(--space-3);
-	}
-	.appnav-search-empty {
+	.appnav-links,
+	.appnav .account-trigger {
 		display: none;
 	}
-	.appnav .searchbox-header {
-		width: 100%;
+	.appnav .ui-button.appnav-menu-button[data-icon-only] {
+		width: 64px;
+	}
+	/* Contribute is hidden here, so the sign-in panel has no button to hang
+     from. it sits under the header, opened from the menu */
+	.appnav .account-popover {
+		position-area: none;
+		inset: calc(var(--nav-h) + var(--ohf-space-8)) var(--page-gutter) auto;
+		justify-self: auto;
+		width: auto;
 		max-width: none;
-		justify-self: stretch;
+		margin: 0;
 	}
 }

@@ -1,12 +1,34 @@
 ---
+import {
+	iconChevronDown,
+	iconEqual,
+	iconMonitor,
+	iconMoon,
+	iconSun,
+} from "@openhomefoundation/icons";
+
 import AccountMenu from "./AccountMenu.astro";
 import LanguagePicker from "./LanguagePicker.astro";
+import Message from "./Message.astro";
 import SearchBox from "./SearchBox.astro";
+import Button from "./ui/Button.astro";
+import Icon from "./ui/Icon.astro";
+import Menu from "./ui/Menu.astro";
+import MenuItem from "./ui/MenuItem.astro";
+import SegmentedControl from "./ui/SegmentedControl.astro";
+import Sheet from "./ui/Sheet.astro";
+import SheetNav from "./ui/SheetNav.astro";
 
 import { m } from "../paraglide/messages.js";
 import { localizeHref } from "../paraglide/runtime.js";
-import { LOGO_SVG } from "../utilities/logo";
-import { generic, render } from "../utilities/presentation";
+import {
+	browseFiltersFromSearchParams,
+	browseFiltersToHref,
+	withCategoryToggled,
+} from "../types/browse";
+import { DeviceCategoryTopLevelId } from "../types/category";
+import { LOGO_MARK_SVG } from "../utilities/logo";
+import { device, generic, render } from "../utilities/presentation";
 import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/preset";
 
 interface Props {
@@ -16,16 +38,36 @@ interface Props {
 
 const { page } = Astro.props;
 const showSearch = page !== "home";
+
+const GITHUB_URL = "https://github.com/OHF-Device-Database";
+
+const noFilters = browseFiltersFromSearchParams(new URLSearchParams());
+const categories = DeviceCategoryTopLevelId.options
+	.map((id) => ({
+		label: device.category(id).label,
+		href: localizeHref(browseFiltersToHref(withCategoryToggled(noFilters, id))),
+	}))
+	.toSorted((a, b) => a.label.localeCompare(b.label));
+
+const links = [
+	{ href: localizeHref("/"), label: m.nav_home() },
+	{ href: localizeHref("/browse"), label: m.footer_browse() },
+	{ href: localizeHref("/how-it-works"), label: m.footer_how_it_works() },
+	{
+		href: localizeHref("/editorial-stance"),
+		label: m.footer_editorial_stance(),
+	},
+	{ href: localizeHref("/about"), label: m.footer_about() },
+	{ href: localizeHref("/surveys"), label: m.surveys_title() },
+].map((link) => ({ ...link, current: link.href === Astro.url.pathname }));
 ---
 
 <div class="preview-banner">
 	<div class="container preview-banner-inner">
 		<p class="preview-banner-text">
 			{m.nav_preview_banner_text()}
-			<a
-				href="https://github.com/OHF-Device-Database"
-				target="_blank"
-				rel="noopener noreferrer">{m.nav_preview_banner_learn_more()}</a
+			<a href={GITHUB_URL} target="_blank" rel="noopener noreferrer"
+				>{m.nav_preview_banner_learn_more()}</a
 			>
 		</p>
 		<button
@@ -45,25 +87,36 @@ const showSearch = page !== "home";
 	<div class="container appnav-inner">
 		<div class="appnav-left">
 			<a
-				class="preview-label"
-				href="https://github.com/OHF-Device-Database"
-				target="_blank"
-				rel="noopener noreferrer"
-			>
-				<Fragment
-					set:html={render(
-						generic("warning"),
-						PresentationRenderPresetRoleIcon.withSize(12),
-					)}
-				/>
-				{m.nav_preview_badge()}
-			</a>
-			<a
 				href={localizeHref("/")}
 				class="brand"
 				aria-label={m.nav_brand_home()}
-				set:html={LOGO_SVG}
+				set:html={LOGO_MARK_SVG}
 			/>
+			<nav class="appnav-links" aria-label={m.nav_main_label()}>
+				<a
+					class="appnav-link"
+					href={localizeHref("/browse")}
+					aria-current={page === "browse" ? "page" : undefined}
+				>
+					{m.nav_explore()}
+				</a>
+				<Menu id="appnav-categories" label={m.nav_categories()}>
+					<button
+						slot="trigger"
+						type="button"
+						class="appnav-link"
+						popovertarget="appnav-categories"
+					>
+						{m.nav_categories()}
+						<Icon icon={iconChevronDown} size={12} />
+					</button>
+					{
+						categories.map((category) => (
+							<MenuItem href={category.href}>{category.label}</MenuItem>
+						))
+					}
+				</Menu>
+			</nav>
 		</div>
 		{
 			showSearch ? (
@@ -73,40 +126,101 @@ const showSearch = page !== "home";
 			)
 		}
 		<div class="appnav-right">
-			<LanguagePicker />
 			<AccountMenu />
+			<Sheet id="appnav-menu" label={m.nav_menu()}>
+				<Button
+					slot="trigger"
+					variant="tonal"
+					size="lg"
+					shape="pill"
+					icon={iconEqual}
+					iconPlacement="only"
+					label={m.nav_menu()}
+					class="appnav-menu-button"
+					popovertarget="appnav-menu"
+				/>
+				<SheetNav label={m.nav_main_label()} links={links} />
+				<hr class="ui-sheet-separator" />
+				<div class="appnav-settings">
+					<SegmentedControl
+						name="appnav-theme"
+						label={m.nav_theme_label()}
+						shape="pill"
+						value="auto"
+						options={[
+							{ value: "auto", label: m.nav_theme_auto(), icon: iconMonitor },
+							{ value: "light", label: m.nav_theme_light(), icon: iconSun },
+							{ value: "dark", label: m.nav_theme_dark(), icon: iconMoon },
+						]}
+					/>
+					<LanguagePicker />
+				</div>
+				<Fragment slot="footer">
+					<Button
+						size="xl"
+						shape="pill"
+						href={GITHUB_URL}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						GitHub
+					</Button>
+					<p class="appnav-new-here">
+						<Message message={m.nav_new_here}>
+							<fragment slot="signInLink">
+								{
+									(children: unknown[]) => (
+										<button type="button" popovertarget="account-sign-in">
+											{children}
+										</button>
+									)
+								}
+							</fragment>
+						</Message>
+					</p>
+				</Fragment>
+			</Sheet>
 		</div>
 	</div>
 </header>
 
 <script>
-	const sync = () => {
-		const nav = document.querySelector("[data-appnav]");
-		if (nav) nav.classList.toggle("is-scrolled", window.scrollY > 0);
+	type DemoState = {
+		getTheme?: () => string;
+		setTheme?: (theme: string) => void;
+		dismissPreviewBanner?: () => void;
 	};
+	const demoState = () =>
+		(window as unknown as { DemoState?: DemoState }).DemoState;
 
-	let bound = false;
-	const bind = () => {
-		if (bound) return;
-		bound = true;
-		sync();
-		window.addEventListener("scroll", sync, { passive: true });
+	const themeInputs = () =>
+		document.querySelectorAll<HTMLInputElement>('input[name="appnav-theme"]');
+
+	// the page may be cached for everyone, so the chosen theme is filled in here
+	const syncTheme = () => {
+		const theme = demoState()?.getTheme?.() ?? "auto";
+		for (const input of themeInputs()) {
+			input.checked = input.value === theme;
+		}
 	};
 
 	const bindBanner = () => {
 		document
 			.querySelector<HTMLButtonElement>("[data-preview-banner-close]")
 			?.addEventListener("click", () => {
-				(
-					window as unknown as {
-						DemoState?: { dismissPreviewBanner?: () => void };
-					}
-				).DemoState?.dismissPreviewBanner?.();
+				demoState()?.dismissPreviewBanner?.();
 			});
 	};
 
+	document.addEventListener("change", (event) => {
+		const input = event.target;
+		if (input instanceof HTMLInputElement && input.name === "appnav-theme") {
+			demoState()?.setTheme?.(input.value);
+		}
+	});
+
 	document.addEventListener("astro:page-load", () => {
-		bind();
+		syncTheme();
 		bindBanner();
 	});
 </script>

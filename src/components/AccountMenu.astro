@@ -6,8 +6,6 @@ import Message from "./Message.astro";
 import { GITHUB_AUTHORIZE_PATH } from "../io/vendor/github/routes";
 import { m } from "../paraglide/messages.js";
 import { localizeHref } from "../paraglide/runtime.js";
-import { generic, render } from "../utilities/presentation";
-import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/preset";
 
 // TODO: point to /terms and /privacy once the legal copy is written
 const termsLink = { href: localizeHref("/") };
@@ -21,17 +19,13 @@ const signInHref = `${GITHUB_AUTHORIZE_PATH}?${new URLSearchParams({
 <div class="account">
 	<button
 		type="button"
-		class="account-trigger"
+		class="ui-button account-trigger"
+		data-variant="primary"
+		data-size="lg"
+		data-shape="pill"
 		popovertarget="account-sign-in"
-		aria-label={m.account_sign_in()}
 	>
-		<Fragment
-			set:html={render(
-				generic("logIn"),
-				PresentationRenderPresetRoleIcon.withSize(18),
-			)}
-		/>
-		<span class="account-trigger-label">{m.account_sign_in()}</span>
+		{m.nav_contribute()}
 	</button>
 	<div id="account-sign-in" class="account-popover" popover>
 		<p class="account-popover-title">{m.account_sign_in_required()}</p>
