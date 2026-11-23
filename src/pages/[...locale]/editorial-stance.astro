@@ -1,4 +1,6 @@
 ---
+import Speakers from "../../assets/editorial-speakers.svg";
+
 import Layout from "../../layouts/Layout.astro";
 
 import { m } from "../../paraglide/messages.js";
@@ -8,24 +10,32 @@ export const getStaticPaths = localeStaticPaths;
 ---
 
 <Layout page="page" title={m.editorial_title()}>
-	<div class="container-narrow content-page">
-		<section class="content-section content-intro">
-			<h1>{m.editorial_title()}</h1>
-			<p class="content-lede">{m.editorial_lede()}</p>
-			<p class="content-prose">{m.editorial_intro()}</p>
-		</section>
+	<div class="stance">
+		<header class="stance-intro">
+			<Speakers
+				class="stance-art"
+				width="272"
+				height="272"
+				aria-hidden="true"
+			/>
+			<p class="stance-eyebrow">{m.editorial_title()}</p>
+			<h1>{m.editorial_lede()}</h1>
+			<p class="stance-lede">{m.editorial_intro()}</p>
+		</header>
 
-		<section class="content-section">
-			<p class="content-prose" set:html={m.editorial_body_1()} />
-			<p class="content-prose">{m.editorial_body_2()}</p>
-			<p class="content-prose">{m.editorial_body_3()}</p>
-		</section>
+		<div class="stance-body">
+			<section class="stance-section">
+				<p set:html={m.editorial_body_1()} />
+				<p>{m.editorial_body_2()}</p>
+				<p>{m.editorial_body_3()}</p>
+			</section>
 
-		<section class="content-section">
-			<h2>{m.editorial_voice_title()}</h2>
-			<p class="content-prose" set:html={m.editorial_voice_body_1()} />
-			<p class="content-prose">{m.editorial_voice_body_2()}</p>
-			<p class="content-prose">{m.editorial_voice_body_3()}</p>
-		</section>
+			<section class="stance-section">
+				<h2>{m.editorial_voice_title()}</h2>
+				<p set:html={m.editorial_voice_body_1()} />
+				<p>{m.editorial_voice_body_2()}</p>
+				<p>{m.editorial_voice_body_3()}</p>
+			</section>
+		</div>
 	</div>
 </Layout>
