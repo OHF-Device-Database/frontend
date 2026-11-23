@@ -21,17 +21,18 @@
 	padding-top: var(--ohf-space-96);
 	text-align: center;
 }
-/* the faces take the page colour so the lines behind them stay hidden */
+/* on dark the faces take the page colour so the lines behind them stay
+   hidden. on light the house is black with white lines, as in Figma */
 .hiw-art {
 	display: block;
 	max-width: 100%;
-	color: var(--ohf-color-text-default);
+	color: var(--hiw-art-line);
 }
 .hiw-art-face {
-	fill: var(--surface);
+	fill: var(--hiw-art-face);
 }
 .hiw-art-dot {
-	fill: var(--hiw-art-dot);
+	fill: #3f3c38;
 }
 .hiw-eyebrow {
 	margin: 0 0 var(--ohf-space-24);
@@ -107,21 +108,24 @@
 	font-size: var(--ohf-font-size-14);
 	line-height: 1.5;
 }
-/* the number's faint fill and the drawing's unlit dots, per theme. set on the
+/* the number's faint fill and the drawing's colours, per theme. set on the
    theme boundaries so the nearest `data-theme` wins */
 :root,
 [data-theme="light"] {
 	--hiw-step-num-bg: rgb(0 0 0 / 6%);
-	--hiw-art-dot: #d2d0cb;
+	--hiw-art-face: #000;
+	--hiw-art-line: #fff;
 }
 [data-theme="dark"] {
 	--hiw-step-num-bg: rgb(255 255 255 / 8%);
-	--hiw-art-dot: #3f3c38;
+	--hiw-art-face: var(--surface);
+	--hiw-art-line: var(--ohf-color-text-default);
 }
 @media (prefers-color-scheme: dark) {
 	[data-theme="auto"] {
 		--hiw-step-num-bg: rgb(255 255 255 / 8%);
-		--hiw-art-dot: #3f3c38;
+		--hiw-art-face: var(--surface);
+		--hiw-art-line: var(--ohf-color-text-default);
 	}
 }
 
@@ -132,10 +136,10 @@
 }
 .hiw-section h2 {
 	margin: 0 0 var(--ohf-space-40);
-	font-size: var(--ohf-font-size-32);
+	font-size: var(--ohf-font-size-28);
 	font-weight: var(--ohf-font-weight-medium);
-	line-height: var(--ohf-line-height-40);
-	letter-spacing: -0.96px;
+	line-height: var(--ohf-line-height-36);
+	letter-spacing: 0;
 }
 .hiw-section p {
 	margin: 0 0 var(--ohf-space-24);
