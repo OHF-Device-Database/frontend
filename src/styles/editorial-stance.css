@@ -1,0 +1,101 @@
+/*
+ * The "Editorial stance" page, from the Figma frame of the same name. A centred
+ * intro with the stance as a large heading, a hairline across the page, then
+ * the reading sections in a column 680px wide.
+ */
+.stance {
+	padding-bottom: 225px;
+	color: var(--ohf-color-text-default);
+}
+.stance-intro {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 135px var(--page-gutter) 118px;
+	text-align: center;
+}
+.stance-eyebrow {
+	margin: 0 0 var(--ohf-space-24);
+	color: var(--ohf-color-text-subtle);
+	font-size: var(--ohf-font-size-14);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-20);
+	letter-spacing: -0.14px;
+}
+.stance-intro h1 {
+	max-width: 752px;
+	margin: 0 0 var(--ohf-space-40);
+	font-size: var(--ohf-font-size-48);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-48);
+	letter-spacing: -1.44px;
+}
+.stance-lede {
+	max-width: 680px;
+	margin: 0;
+	color: var(--ohf-color-text-subtle);
+	font-size: var(--ohf-font-size-15);
+	line-height: var(--ohf-line-height-24);
+}
+
+.stance-body {
+	display: flex;
+	flex-direction: column;
+	gap: 88px;
+	padding: 119px var(--page-gutter) 0;
+	border-top: var(--ohf-border-width-default) solid
+		var(--ohf-color-border-subtle);
+}
+.stance-section {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 680px;
+	margin: 0 auto;
+}
+.stance-section h2 {
+	margin: 0 0 var(--ohf-space-40);
+	font-size: var(--ohf-font-size-32);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-40);
+	letter-spacing: -0.96px;
+}
+.stance-section p {
+	margin: 0 0 var(--ohf-space-24);
+	color: var(--ohf-color-text-subtle);
+	font-size: var(--ohf-font-size-15);
+	line-height: var(--ohf-line-height-24);
+}
+.stance-section p:last-child {
+	margin-bottom: 0;
+}
+/* the stressed word reads in the text colour, upright */
+.stance-section em {
+	color: var(--ohf-color-text-default);
+	font-style: normal;
+}
+
+@media (max-width: 767px) {
+	.stance {
+		padding-bottom: var(--ohf-space-64);
+	}
+	.stance-intro {
+		padding-top: var(--ohf-space-64);
+		padding-bottom: var(--ohf-space-64);
+	}
+	.stance-intro h1 {
+		margin-bottom: var(--ohf-space-24);
+		font-size: var(--ohf-font-size-32);
+		line-height: var(--ohf-line-height-40);
+		letter-spacing: -0.96px;
+	}
+	.stance-body {
+		gap: var(--ohf-space-64);
+		padding-top: var(--ohf-space-64);
+	}
+	.stance-section h2 {
+		margin-bottom: var(--ohf-space-24);
+		font-size: var(--ohf-font-size-24);
+		line-height: var(--ohf-line-height-32);
+		letter-spacing: -0.48px;
+	}
+}
