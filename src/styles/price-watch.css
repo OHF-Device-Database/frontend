@@ -8,6 +8,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: var(--ohf-space-24);
+	container-type: inline-size;
 }
 
 .price-watch .price-watch-intro h2 {
@@ -203,8 +204,9 @@ price-watch-links {
 	text-decoration-color: currentColor;
 }
 
-/* on a phone the domain moves under the name and the arrow loses its fill */
-@media (max-width: 767px) {
+/* in a narrow column (a phone, or next to the sidebar on a tablet) the domain
+   moves under the name and the arrow loses its fill */
+@container (max-width: 480px) {
 	.price-watch-link {
 		grid-template-columns: 32px minmax(0, 1fr) auto;
 		grid-template-rows: auto auto;

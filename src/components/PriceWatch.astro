@@ -41,7 +41,7 @@ const links: Record<string, PriceWatchLink[]> = Object.fromEntries(
 
 const flagUrls = import.meta.glob<string>("../assets/flags/*.svg", {
 	eager: true,
-	query: "?url",
+	query: "?url&no-inline",
 	import: "default",
 });
 const flags: Record<string, string> = Object.fromEntries(
