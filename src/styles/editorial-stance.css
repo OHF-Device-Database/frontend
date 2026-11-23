@@ -4,15 +4,52 @@
  * the reading sections in a column 680px wide.
  */
 .stance {
-	padding-bottom: 225px;
+	padding-bottom: 188px;
 	color: var(--ohf-color-text-default);
 }
 .stance-intro {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding: 135px var(--page-gutter) 118px;
+	padding: 68px var(--page-gutter) var(--ohf-space-64);
 	text-align: center;
+}
+/* speakers drawn in outline. the faces stay dark in both themes, and the
+   ladders step back on light. set on the theme boundaries so the nearest
+   `data-theme` wins */
+:root,
+[data-theme="light"] {
+	--stance-art-face: #010101;
+	--stance-art-line: #dedfe7;
+	--stance-art-ladder: #98989b;
+}
+[data-theme="dark"] {
+	--stance-art-face: #1f1f1e;
+	--stance-art-line: #e7e5de;
+	--stance-art-ladder: #e7e5de;
+}
+@media (prefers-color-scheme: dark) {
+	[data-theme="auto"] {
+		--stance-art-face: #1f1f1e;
+		--stance-art-line: #e7e5de;
+		--stance-art-ladder: #e7e5de;
+	}
+}
+.stance-art {
+	display: block;
+	max-width: 100%;
+	margin-bottom: var(--ohf-space-32);
+}
+.stance-art .f {
+	fill: var(--stance-art-face);
+	stroke: var(--stance-art-face);
+	stroke-width: 0.6;
+}
+.stance-art .l {
+	stroke: var(--stance-art-line);
+}
+.stance-art .l2 {
+	stroke: var(--stance-art-ladder);
 }
 .stance-eyebrow {
 	margin: 0 0 var(--ohf-space-24);
@@ -25,10 +62,10 @@
 .stance-intro h1 {
 	max-width: 752px;
 	margin: 0 0 var(--ohf-space-40);
-	font-size: var(--ohf-font-size-48);
+	font-size: var(--ohf-font-size-32);
 	font-weight: var(--ohf-font-weight-medium);
-	line-height: var(--ohf-line-height-48);
-	letter-spacing: -1.44px;
+	line-height: var(--ohf-line-height-40);
+	letter-spacing: -0.96px;
 }
 .stance-lede {
 	max-width: 680px;
@@ -41,8 +78,8 @@
 .stance-body {
 	display: flex;
 	flex-direction: column;
-	gap: 88px;
-	padding: 119px var(--page-gutter) 0;
+	gap: var(--ohf-space-64);
+	padding: var(--ohf-space-64) var(--page-gutter) 0;
 	border-top: var(--ohf-border-width-default) solid
 		var(--ohf-color-border-subtle);
 }
@@ -54,10 +91,10 @@
 }
 .stance-section h2 {
 	margin: 0 0 var(--ohf-space-40);
-	font-size: var(--ohf-font-size-32);
+	font-size: var(--ohf-font-size-28);
 	font-weight: var(--ohf-font-weight-medium);
-	line-height: var(--ohf-line-height-40);
-	letter-spacing: -0.96px;
+	line-height: var(--ohf-line-height-36);
+	letter-spacing: 0;
 }
 .stance-section p {
 	margin: 0 0 var(--ohf-space-24);
@@ -74,28 +111,40 @@
 	font-style: normal;
 }
 
+/* from the phone frames */
 @media (max-width: 767px) {
 	.stance {
 		padding-bottom: var(--ohf-space-64);
 	}
 	.stance-intro {
-		padding-top: var(--ohf-space-64);
-		padding-bottom: var(--ohf-space-64);
+		padding: 51px 36px 28px;
+	}
+	.stance-art {
+		width: 200px;
+		height: 200px;
+		margin-bottom: 28px;
 	}
 	.stance-intro h1 {
 		margin-bottom: var(--ohf-space-24);
-		font-size: var(--ohf-font-size-32);
-		line-height: var(--ohf-line-height-40);
-		letter-spacing: -0.96px;
+		font-size: var(--ohf-font-size-24);
+		line-height: var(--ohf-line-height-28);
+		letter-spacing: -0.72px;
+	}
+	.stance-lede,
+	.stance-section p {
+		font-size: var(--ohf-font-size-13);
+		line-height: var(--ohf-line-height-20);
+	}
+	.stance-section p {
+		margin-bottom: var(--ohf-space-20);
 	}
 	.stance-body {
-		gap: var(--ohf-space-64);
-		padding-top: var(--ohf-space-64);
+		gap: 42px;
+		padding-top: 42px;
 	}
 	.stance-section h2 {
 		margin-bottom: var(--ohf-space-24);
-		font-size: var(--ohf-font-size-24);
-		line-height: var(--ohf-line-height-32);
-		letter-spacing: -0.48px;
+		font-size: var(--ohf-font-size-20);
+		line-height: var(--ohf-line-height-28);
 	}
 }
