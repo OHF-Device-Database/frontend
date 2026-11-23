@@ -1,9 +1,12 @@
 ---
 type Link = {
-	href: string;
 	label: string;
-	current?: boolean;
-};
+	class?: string;
+} & (
+	| { href: string; current?: boolean }
+	/** no `href`: a button, with these attributes, for an action in the sheet */
+	| { href?: never; attrs: Record<string, string> }
+);
 
 interface Props {
 	/** accessible name of the navigation */
@@ -16,14 +19,24 @@ const { label, links } = Astro.props;
 
 <nav aria-label={label} class="ui-sheet-nav">
 	{
-		links.map((link) => (
-			<a
-				class="ui-sheet-link"
-				href={link.href}
-				aria-current={link.current === true ? "page" : undefined}
-			>
-				{link.label}
-			</a>
-		))
+		links.map((link) =>
+			typeof link.href === "string" ? (
+				<a
+					class:list={["ui-sheet-link", link.class]}
+					href={link.href}
+					aria-current={link.current === true ? "page" : undefined}
+				>
+					{link.label}
+				</a>
+			) : (
+				<button
+					type="button"
+					class:list={["ui-sheet-link", link.class]}
+					{...link.attrs}
+				>
+					{link.label}
+				</button>
+			),
+		)
 	}
 </nav>
