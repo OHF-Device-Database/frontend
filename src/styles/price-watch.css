@@ -1,0 +1,231 @@
+/*
+ * Price watch, from the "Where to buy" block of the details page in Figma.
+ * Heading 20/28 medium, lead 14/21, a 36px pill select with the flag of the
+ * country, 48px rows split by dividers, notes 12/16. Every site shows a globe
+ * in a bordered tile until we ship site logos.
+ */
+.price-watch {
+	display: flex;
+	flex-direction: column;
+	gap: var(--ohf-space-24);
+}
+
+.price-watch .price-watch-intro h2 {
+	margin: 0 0 var(--ohf-space-12);
+	color: var(--ohf-color-text-default);
+	font-family: inherit;
+	font-size: var(--ohf-font-size-20);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-28);
+	letter-spacing: 0;
+}
+.price-watch .price-watch-intro p {
+	margin: 0;
+	max-width: 62ch;
+	color: var(--ohf-color-text-subtle);
+	font-size: var(--ohf-font-size-14);
+	line-height: 1.5;
+}
+
+price-watch-links {
+	display: flex;
+	flex-direction: column;
+	gap: var(--ohf-space-24);
+}
+
+.price-watch-country {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--ohf-space-8) var(--ohf-space-24);
+}
+.price-watch-label {
+	color: var(--ohf-color-text-subtle);
+	font-size: var(--ohf-font-size-14);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-20);
+}
+
+/* the native select fills the pill, the flag and chevron sit on top of it */
+.price-watch-select {
+	position: relative;
+	display: inline-flex;
+	min-width: 203px;
+	max-width: 100%;
+}
+.price-watch-select select {
+	flex: 1;
+	min-width: 0;
+	height: 36px;
+	margin: 0;
+	padding: 0 var(--ohf-space-40) 0 var(--ohf-space-20);
+	border: var(--ohf-border-width-default) solid var(--ohf-color-border-default);
+	border-radius: var(--ohf-radius-pill);
+	background: var(--ohf-color-bg-surface-raised);
+	color: var(--ohf-color-text-default);
+	font: inherit;
+	font-size: var(--ohf-font-size-14);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-20);
+	appearance: none;
+	cursor: pointer;
+	outline: 0;
+	transition:
+		border-color var(--ohf-duration-fast) var(--ohf-easing-standard),
+		box-shadow var(--ohf-duration-fast) var(--ohf-easing-standard);
+}
+.price-watch-select select:hover {
+	border-color: var(--ohf-color-border-control);
+}
+.price-watch-select select:focus-visible {
+	box-shadow:
+		0 0 0 2px var(--ohf-color-bg-canvas),
+		0 0 0 4px var(--ohf-color-border-focus);
+}
+.price-watch-flag:not([hidden]) + select {
+	padding-left: calc(var(--ohf-space-6) + 24px + var(--ohf-space-8));
+}
+.price-watch-flag {
+	position: absolute;
+	top: 50%;
+	left: var(--ohf-space-6);
+	width: 24px;
+	height: 24px;
+	border-radius: var(--ohf-radius-full);
+	/* keeps white flags like japan visible */
+	box-shadow: 0 0 0 1px var(--ohf-color-border-default);
+	object-fit: cover;
+	transform: translateY(-50%);
+	pointer-events: none;
+}
+.price-watch-chevron {
+	position: absolute;
+	top: 50%;
+	right: var(--ohf-space-12);
+	color: var(--ohf-color-icon-subtle);
+	transform: translateY(-50%);
+	pointer-events: none;
+}
+
+.price-watch-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.price-watch-list li {
+	border-bottom: var(--ohf-border-width-default) solid
+		var(--ohf-color-border-default);
+}
+.price-watch-link {
+	display: grid;
+	grid-template-columns: 32px minmax(0, 200px) minmax(0, 1fr) auto;
+	align-items: center;
+	gap: var(--ohf-space-16);
+	padding: var(--ohf-space-8) 0;
+	color: var(--ohf-color-text-default);
+	font-size: var(--ohf-font-size-13);
+	line-height: var(--ohf-line-height-20);
+	text-decoration: none;
+}
+.price-watch-link:hover,
+.price-watch-link:visited {
+	color: var(--ohf-color-text-default);
+	text-decoration: none;
+}
+.price-watch-link:focus-visible {
+	outline: var(--ohf-border-width-focus) solid var(--ohf-color-border-focus);
+	outline-offset: 2px;
+	border-radius: var(--ohf-radius-l);
+}
+.price-watch-logo {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	width: 32px;
+	height: 32px;
+	border: var(--ohf-border-width-default) solid var(--ohf-color-border-default);
+	border-radius: var(--ohf-radius-l);
+	background: var(--ohf-color-bg-surface-raised);
+	color: var(--ohf-color-icon-subtle);
+}
+.price-watch-link-name {
+	overflow: hidden;
+	font-weight: var(--ohf-font-weight-medium);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.price-watch-link-domain {
+	overflow: hidden;
+	color: var(--ohf-color-text-subtle);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.price-watch-link-icon {
+	display: inline-flex;
+	align-items: center;
+	height: 32px;
+	padding: 0 var(--ohf-space-14);
+	border-radius: var(--ohf-radius-pill);
+	background: var(--ohf-color-alpha-7-2);
+	color: var(--ohf-color-icon-subtle);
+	transition: background-color var(--ohf-duration-fast)
+		var(--ohf-easing-standard);
+}
+.price-watch-link:hover .price-watch-link-icon {
+	background: var(--ohf-color-alpha-12);
+}
+.price-watch-link:hover .price-watch-link-name {
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.price-watch-notes {
+	display: flex;
+	flex-direction: column;
+	gap: var(--ohf-space-16);
+}
+.price-watch .price-watch-notes p {
+	margin: 0;
+	max-width: 514px;
+	color: var(--ohf-color-text-subtle);
+	font-size: var(--ohf-font-size-12);
+	line-height: var(--ohf-line-height-16);
+}
+.price-watch-notes a {
+	color: var(--ohf-color-text-default);
+	text-decoration: underline;
+	text-decoration-color: var(--ohf-color-border-strong);
+	text-underline-offset: 2px;
+}
+.price-watch-notes a:hover {
+	color: var(--ohf-color-text-default);
+	text-decoration-color: currentColor;
+}
+
+/* on a phone the domain moves under the name and the arrow loses its fill */
+@media (max-width: 767px) {
+	.price-watch-link {
+		grid-template-columns: 32px minmax(0, 1fr) auto;
+		grid-template-rows: auto auto;
+		column-gap: var(--ohf-space-16);
+		row-gap: 0;
+		padding: var(--ohf-space-12) 0;
+	}
+	.price-watch-logo {
+		grid-row: span 2;
+	}
+	.price-watch-link-name {
+		grid-column: 2;
+	}
+	.price-watch-link-domain {
+		grid-column: 2;
+		grid-row: 2;
+	}
+	.price-watch-link-icon {
+		grid-column: 3;
+		grid-row: 1 / span 2;
+		padding: 0 var(--ohf-space-8);
+		background: none;
+	}
+}
