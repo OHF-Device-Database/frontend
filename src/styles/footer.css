@@ -1,83 +1,225 @@
+/*
+ * The footer, from the Figma "Footer" component. It is dark in both themes: a
+ * dark surface with a faint warm glow rising from the bottom edge. The OHF
+ * badge and line sit at the top, the theme switch and the language picker at
+ * the end, then the copyright and the links on one row. A small vacuum robot
+ * is parked on the bottom edge and a flower in outline grows from it. Figma
+ * draws these with raw colours.
+ */
 .appfoot {
-	border-top: 1px solid var(--border);
+	/* lighter than the #82827d drawn in Figma, which falls short of 4.5:1 on
+     this background. this holds at least 4.77:1 across the glow */
+	--appfoot-muted: #a3a39d;
+
+	position: relative;
+	padding: 30px 22px 30px 30px;
+	border-top: 1px solid rgb(255 255 255 / 12%);
+	background:
+		linear-gradient(to top, rgb(255 142 55 / 9.2%) 0%, transparent 74.822%),
+		#2b2b2a;
+	color: #f6f7f3;
+	overflow: hidden;
 }
-.appfoot.appfoot-flush {
-	margin-top: 0;
-	border-top: 0;
+.appfoot-inner {
+	display: flex;
+	flex-direction: column;
+	gap: 106px;
+}
+.appfoot .appfoot-ohf {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--ohf-space-16);
+	/* breaks the line after "Foundation" */
+	max-width: 260px;
+	text-wrap: wrap;
+	color: #f6f7f3;
+	font-size: var(--ohf-font-size-20);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-28);
+	text-decoration: none;
+}
+.appfoot-ohf svg {
+	display: block;
+	flex: none;
+}
+.appfoot-bottom {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 26px;
+}
+.appfoot-settings {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--ohf-space-8);
+}
+/* both controls are 32px pills on a faint white fill */
+.appfoot-settings .ui-segmented,
+.appfoot-settings .langpicker-trigger {
+	height: 32px;
+	border: 1px solid rgb(255 255 255 / 16%);
+	border-radius: var(--ohf-radius-pill);
+	background: rgb(255 255 255 / 6%);
+}
+.appfoot-settings .ui-segmented {
+	padding: 0 3px;
+	align-items: center;
+}
+.appfoot-settings .ui-segmented-option {
+	height: 28px;
+}
+.appfoot-settings .ui-segmented-option:has(.ui-segmented-input:checked) {
+	background: rgb(255 255 255 / 8%);
+	box-shadow:
+		0 2px 3px 0 rgb(61 59 53 / 8%),
+		inset 0 0 0 1px rgb(255 255 255 / 16%),
+		0 1px 1px 0 rgb(0 0 0 / 5%);
+}
+.appfoot-settings .langpicker-trigger {
+	padding: 0 var(--ohf-space-16) 0 var(--ohf-space-12);
+	color: #fff;
+	letter-spacing: -0.14px;
+}
+.appfoot-settings .langpicker-trigger:focus-visible {
+	box-shadow: 0 0 0 2px #f6f7f3;
+}
+.appfoot-settings .langpicker-trigger svg {
+	color: var(--ohf-color-text-subtle);
+	stroke-width: 1.5;
+}
+.appfoot-settings .langpicker-trigger svg:last-child {
+	width: 12px;
+	height: 12px;
+}
+.appfoot-settings .langpicker-long {
+	display: inline;
+}
+.appfoot-settings .langpicker-short {
+	display: none;
+}
+/* at the foot of the page the language menu opens upward */
+.appfoot-settings .langpicker-menu {
+	position-area: top span-left;
+	position-try-fallbacks: flip-inline;
+	margin: 0 0 var(--ohf-space-4);
+}
+/* without anchor positioning it sits above the footer's last rows, at the end */
+@supports not (position-area: bottom) {
+	.appfoot-settings .langpicker-menu {
+		inset: auto 22px 96px auto;
+	}
 }
 .appfoot-row {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	flex-wrap: wrap;
-	gap: var(--space-4);
-	/* Vertical only — keep .container's horizontal padding so the content isn't
-     flush against the edges. */
-	padding-top: var(--space-4);
-	padding-bottom: var(--space-4);
+	gap: var(--ohf-space-24);
+	width: 100%;
+	color: var(--appfoot-muted);
+	font-size: var(--ohf-font-size-14);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: 1.35;
+}
+.appfoot-legal {
+	margin: 0;
 }
 .appfoot-links {
-	list-style: none;
+	display: flex;
+	gap: var(--ohf-space-24);
 	margin: 0;
 	padding: 0;
-	display: flex;
-	flex-wrap: wrap;
-	gap: var(--space-5);
+	list-style: none;
 }
-.appfoot a {
-	color: var(--fg-muted);
+.appfoot-row a {
+	color: var(--appfoot-muted);
+	text-decoration: none;
 }
-.appfoot-links a {
-	font-size: var(--fs-14);
+.appfoot-row a:hover {
+	color: #f6f7f3;
 }
-.appfoot a:hover {
-	color: var(--fg);
+.appfoot a:focus-visible {
+	outline: var(--ohf-border-width-focus) solid var(--ohf-color-border-focus);
+	outline-offset: 2px;
+	border-radius: var(--ohf-radius-sm);
 }
-.appfoot-legal-inline {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--space-2);
-	font-size: var(--fs-13);
-	color: var(--fg-muted);
+/* a flower drawn in outline, growing from the bottom edge in the middle.
+   it sits behind the content */
+.appfoot-flower {
+	position: absolute;
+	bottom: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	pointer-events: none;
 }
-.appfoot-analytics {
-	padding-bottom: var(--space-4);
+.appfoot-inner {
+	position: relative;
 }
-.appfoot-analytics p {
-	margin: 0;
-	font-size: var(--fs-13);
-	color: var(--fg-muted);
+/* parked on the bottom edge, about a third of the way along, facing the start */
+.appfoot-vacuum {
+	position: absolute;
+	bottom: 2px;
+	left: 31.8%;
+	transform: scaleX(-1);
+	pointer-events: none;
 }
-.appfoot-ohf-logo {
-	display: inline-flex;
-	align-items: center;
-}
-.appfoot-ohf-logo svg {
-	display: block;
-	width: auto;
-	height: 18px;
-}
-.appfoot-ohf-logo .ohf-logo-light {
-	display: inline-flex;
-}
-.appfoot-ohf-logo .ohf-logo-dark {
-	display: none;
-}
-:root[data-resolved-theme="dark"] .appfoot-ohf-logo .ohf-logo-light {
-	display: none;
-}
-:root[data-resolved-theme="dark"] .appfoot-ohf-logo .ohf-logo-dark {
-	display: inline-flex;
-}
+
 @media (max-width: 767px) {
-	.appfoot-row {
-		flex-direction: column;
-		align-items: flex-start;
-		gap: var(--space-5);
+	.appfoot {
+		padding: 30px var(--ohf-space-24) 40px;
 	}
-	/* Stack the links so they don't wrap into a ragged 3 + 1. */
+	.appfoot-inner {
+		gap: var(--ohf-space-80, 80px);
+	}
+	.appfoot .appfoot-ohf {
+		align-items: center;
+		align-self: center;
+		font-size: var(--ohf-font-size-18);
+		line-height: var(--ohf-line-height-24);
+		letter-spacing: -0.54px;
+		text-align: center;
+	}
+	.appfoot-bottom {
+		align-items: center;
+	}
+	.appfoot-settings {
+		justify-content: center;
+	}
+	.appfoot-settings .ui-segmented,
+	.appfoot-settings .langpicker-trigger {
+		height: 28px;
+	}
+	.appfoot-settings .ui-segmented-option {
+		height: 24px;
+	}
+	/* the links first, spread across the width, then the copyright */
+	.appfoot-row {
+		flex-direction: column-reverse;
+		gap: var(--ohf-space-16);
+		font-size: var(--ohf-font-size-13);
+		line-height: var(--ohf-line-height-20);
+	}
+	.appfoot-row nav {
+		width: 100%;
+	}
 	.appfoot-links {
-		flex-direction: column;
-		gap: var(--space-3);
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: var(--ohf-space-8) var(--ohf-space-16);
+	}
+	.appfoot-legal {
+		text-align: center;
+	}
+	/* the centred content would sit on top of it */
+	.appfoot-flower {
+		display: none;
+	}
+	.appfoot-vacuum {
+		bottom: 1px;
+		left: auto;
+		right: 33px;
+		width: 66px;
+		height: 24px;
 	}
 }

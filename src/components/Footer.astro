@@ -1,65 +1,71 @@
 ---
-import ohfLogoDark from "../assets/ohf-logo-dark.svg?raw";
-import ohfLogoLight from "../assets/ohf-logo-light.svg?raw";
+import { iconMonitor, iconMoon, iconSun } from "@openhomefoundation/icons";
 
-import Message from "./Message.astro";
+import Flower from "../assets/footer-flower.svg";
+import Vacuum from "../assets/footer-vacuum.svg";
+import OhfBadge from "../assets/ohf-badge.svg";
+
+import LanguagePicker from "./LanguagePicker.astro";
+import SegmentedControl from "./ui/SegmentedControl.astro";
 
 import { m } from "../paraglide/messages.js";
 import { localizeHref } from "../paraglide/runtime.js";
 
-interface Props {
-	flush?: boolean;
-}
-
-const { flush = false } = Astro.props;
-
-const analyticsLink = {
-	href: "https://www.openhomefoundation.org/blog/making-our-web-analytics-open-source-with-plausible/",
-	rel: "noopener",
-};
-const dashboardLink = {
-	href: "https://plausible.openhomefoundation.org/device-database-preview.openhomefoundation.org",
-	rel: "noopener",
-};
+const OHF_URL = "https://www.openhomefoundation.org/";
 ---
 
-<footer class={"appfoot" + (flush ? " appfoot-flush" : "")}>
-	<div class="container appfoot-row">
-		<ul class="appfoot-links">
-			<li>
-				<a href={localizeHref("/how-it-works")}>{m.footer_how_it_works()}</a>
-			</li>
-			<li>
-				<a href={localizeHref("/editorial-stance")}>
-					{m.footer_editorial_stance()}
-				</a>
-			</li>
-			<li><a href={localizeHref("/about")}>{m.footer_about()}</a></li>
-			<li><a href={localizeHref("/surveys")}>{m.surveys_title()}</a></li>
-		</ul>
-		<span class="appfoot-legal-inline">
-			<span class="appfoot-ohf-logo" aria-hidden="true">
-				<span class="ohf-logo-light" set:html={ohfLogoLight} />
-				<span class="ohf-logo-dark" set:html={ohfLogoDark} />
-			</span>
-			<span>
-				<a
-					href="https://www.openhomefoundation.org/"
-					set:text={m.footer_copyright({ year: "2026" })}
-				/> · <a href={localizeHref("/imprint")}>{m.footer_imprint()}</a>
-			</span>
-		</span>
+{/* dark in both themes, so everything inside takes the dark tokens */}
+<footer class="appfoot" data-theme="dark">
+	<Flower class="appfoot-flower" width="200" height="325" aria-hidden="true" />
+	<div class="appfoot-inner">
+		<a class="appfoot-ohf" href={OHF_URL}>
+			<OhfBadge width="48" height="52" aria-hidden="true" />
+			<span>{m.footer_ohf_initiative()}</span>
+		</a>
+		<div class="appfoot-bottom">
+			<div class="appfoot-settings">
+				<div data-theme-switch>
+					<SegmentedControl
+						name="appfoot-theme"
+						label={m.nav_theme_label()}
+						shape="pill"
+						value="auto"
+						options={[
+							{ value: "auto", label: m.nav_theme_auto(), icon: iconMonitor },
+							{ value: "light", label: m.nav_theme_light(), icon: iconSun },
+							{ value: "dark", label: m.nav_theme_dark(), icon: iconMoon },
+						]}
+					/>
+				</div>
+				<LanguagePicker id="appfoot-language" />
+			</div>
+			<div class="appfoot-row">
+				<p class="appfoot-legal">
+					<a href={OHF_URL} set:text={m.footer_copyright({ year: "2026" })} /> ·
+					<a href={localizeHref("/imprint")}>{m.footer_imprint()}</a>
+				</p>
+				<nav aria-label={m.footer_links_label()}>
+					<ul class="appfoot-links">
+						<li>
+							<a href={localizeHref("/how-it-works")}>
+								{m.footer_how_it_works()}
+							</a>
+						</li>
+						<li>
+							<a href={localizeHref("/editorial-stance")}>
+								{m.footer_editorial_stance()}
+							</a>
+						</li>
+						<li><a href={localizeHref("/about")}>{m.footer_about()}</a></li>
+						<li><a href={localizeHref("/surveys")}>{m.surveys_title()}</a></li>
+					</ul>
+				</nav>
+			</div>
+		</div>
 	</div>
-	<div class="container appfoot-analytics">
-		<p>
-			<Message message={m.footer_analytics}>
-				<fragment slot="analyticsLink">
-					{(children: unknown[]) => <a {...analyticsLink}>{children}</a>}
-				</fragment>
-				<fragment slot="dashboardLink">
-					{(children: unknown[]) => <a {...dashboardLink}>{children}</a>}
-				</fragment>
-			</Message>
-		</p>
-	</div>
+	<Vacuum class="appfoot-vacuum" width="82" height="30" aria-hidden="true" />
 </footer>
+
+<script>
+	import "./theme-switch";
+</script>
