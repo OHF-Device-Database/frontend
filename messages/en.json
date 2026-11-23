@@ -107,7 +107,7 @@
 	"version_history_current": "Current",
 	"version_history_installs": "{count} active installs",
 	"about_title": "About",
-	"about_heading": "About the Device Database",
+	"about_heading": "The Device Database",
 	"about_lede": "The Device Database is a project of the Open Home Foundation, the non-profit stewards of Home Assistant, ESPHome, Music Assistant, and friends.",
 	"about_body": "It is built and maintained in the open. Manufacturer specs say what a device should do. We record what it actually does, drawn from anonymized data the community shares, and kept editorially neutral.",
 	"about_read": "Read about {#link}how it works{/link} to see exactly what is shared, and how it is protected.",

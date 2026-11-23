@@ -1,0 +1,199 @@
+/*
+ * The "About" page, from the Figma frame of the same name. A narrow centred
+ * column of text with drawings of devices taken apart scattered round it, each
+ * in a framed card. The lower cards fade into the page.
+ */
+.about {
+	position: relative;
+	min-height: 1036px;
+	overflow: hidden;
+	color: var(--ohf-color-text-default);
+}
+.about-body {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	box-sizing: content-box;
+	max-width: 420px;
+	margin: 0 auto;
+	padding: 267px var(--page-gutter) var(--ohf-space-96);
+	text-align: center;
+}
+.about-eyebrow {
+	margin: 0 0 var(--ohf-space-16);
+	color: var(--ohf-color-text-subtle);
+	font-size: var(--ohf-font-size-14);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-20);
+	letter-spacing: -0.14px;
+}
+.about-body h1 {
+	margin: 0 0 var(--ohf-space-32);
+	font-size: var(--ohf-font-size-36);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-44);
+	letter-spacing: -0.36px;
+}
+.about-body p {
+	margin: 0 0 21px;
+	color: var(--ohf-color-text-subtle);
+	font-size: var(--ohf-font-size-14);
+	line-height: 1.5;
+}
+.about-body p:last-of-type {
+	margin-bottom: 0;
+}
+.about-link {
+	color: var(--ohf-color-text-default);
+	text-decoration: underline;
+	text-decoration-color: var(--ohf-color-border-control);
+	text-underline-offset: 3px;
+}
+.about-link:hover {
+	text-decoration-color: currentcolor;
+}
+/* the OHF badge as it is, one drawing per theme */
+.about-ohf {
+	display: block;
+	margin-top: var(--ohf-space-32);
+	border-radius: var(--ohf-radius-sm);
+}
+.about-ohf img {
+	display: block;
+	width: 284px;
+	max-width: 100%;
+	height: auto;
+}
+.about-ohf .about-ohf-dark,
+html[data-resolved-theme="dark"] .about-ohf .about-ohf-light {
+	display: none;
+}
+html[data-resolved-theme="dark"] .about-ohf .about-ohf-dark {
+	display: block;
+}
+.about-ohf:focus-visible {
+	outline: var(--ohf-border-width-focus) solid var(--ohf-color-border-focus);
+	outline-offset: 4px;
+}
+
+/* placed as in the 1728px frame: left and right ones hug their edge, the two
+   in the middle keep their share of the width */
+.about-figures {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+}
+.about-figure {
+	position: absolute;
+	display: grid;
+	place-items: center;
+	box-sizing: border-box;
+	width: 274px;
+	height: 310px;
+	border: var(--ohf-border-width-default) solid var(--ohf-color-border-control);
+	background: var(--ohf-color-bg-surface-sunken);
+}
+.about-figure svg {
+	max-width: 100%;
+	height: auto;
+}
+.about-art-face {
+	fill: var(--ohf-color-bg-surface-raised);
+}
+.about-figure-label {
+	position: absolute;
+	bottom: var(--ohf-space-16);
+	left: var(--ohf-space-16);
+	color: var(--ohf-color-text-subtle);
+	font-family: var(--ohf-font-family-mono);
+	font-size: var(--ohf-font-size-11);
+	line-height: 1;
+	text-transform: uppercase;
+}
+.about-figure[data-figure="bulb"] {
+	top: 30px;
+	left: 22px;
+}
+.about-figure[data-figure="speaker"] {
+	top: 57px;
+	left: 65.8%;
+}
+.about-figure[data-figure="motion"] {
+	top: 510px;
+	right: 22px;
+}
+.about-figure[data-figure="thermo"] {
+	top: 692px;
+	left: 22px;
+}
+.about-figure[data-figure="switch"] {
+	top: 790px;
+	left: 49.5%;
+}
+/* the lower half fades into the page */
+.about-figures::after {
+	content: "";
+	position: absolute;
+	inset: auto 0 0;
+	height: 565px;
+	background: linear-gradient(to top, var(--surface), transparent);
+}
+
+/* narrower than the frame, the cards would run under the text: they line up
+   under it instead */
+@media (max-width: 1279px) {
+	.about {
+		display: flex;
+		flex-direction: column-reverse;
+		min-height: 0;
+	}
+	.about-body {
+		padding-top: var(--ohf-space-96);
+		padding-bottom: var(--ohf-space-64);
+	}
+	.about-figures {
+		position: relative;
+		inset: auto;
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: var(--ohf-space-16);
+		padding: 0 var(--page-gutter);
+	}
+	.about-figure,
+	.about-figure[data-figure] {
+		position: relative;
+		inset: auto;
+		width: auto;
+		height: auto;
+		aspect-ratio: 274 / 310;
+		padding: var(--ohf-space-24);
+	}
+	.about-figure svg {
+		max-height: 100%;
+		width: auto;
+	}
+	.about-figure[data-figure="switch"] {
+		display: none;
+	}
+	.about-figures::after {
+		height: 45%;
+	}
+}
+@media (max-width: 767px) {
+	.about-body {
+		padding-top: var(--ohf-space-64);
+		padding-bottom: var(--ohf-space-40);
+	}
+	.about-body h1 {
+		font-size: var(--ohf-font-size-32);
+		line-height: var(--ohf-line-height-40);
+	}
+	.about-figures {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+	.about-figure[data-figure="motion"],
+	.about-figure[data-figure="thermo"] {
+		display: none;
+	}
+}
