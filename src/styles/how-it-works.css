@@ -21,21 +21,59 @@
 	padding-top: var(--ohf-space-96);
 	text-align: center;
 }
-/* on dark the faces take the page colour so the lines behind them stay
-   hidden. on light the house is black with white lines, as in Figma */
+/* an exploded house: the walls and roof lift off a foundation of data
+   points, some of which light up. faces take the page colour so the lines
+   behind them stay hidden */
 .hiw-art {
 	display: block;
 	max-width: 100%;
-	color: var(--hiw-art-line);
+	height: auto;
 }
-.hiw-art-face {
-	fill: var(--hiw-art-face);
+.hiw-art path {
+	fill: var(--ohf-color-bg-canvas);
+	stroke: var(--ohf-color-text-default);
+	stroke-width: 1.15;
+	stroke-linejoin: round;
+	stroke-linecap: round;
+	vector-effect: non-scaling-stroke;
 }
-.hiw-art-dot {
-	fill: var(--ohf-color-warm-grey-700);
+.hiw-art .ln {
+	fill: none;
 }
-.hiw-art-accent {
+.hiw-art .dt {
+	fill: var(--hiw-art-dot);
+}
+.hiw-art .on {
 	fill: var(--ohf-color-bg-accent-default);
+	opacity: 0;
+	animation: hiw-art-on 9s ease-in-out infinite;
+}
+@keyframes hiw-art-on {
+	0%,
+	36% {
+		opacity: 0;
+	}
+	44%,
+	66% {
+		opacity: 1;
+	}
+	74%,
+	100% {
+		opacity: 0;
+	}
+}
+/* without motion the house stays open with its points lit */
+@media (prefers-reduced-motion: reduce) {
+	.hiw-art .walls {
+		transform: translateY(-42px);
+	}
+	.hiw-art .roof {
+		transform: translateY(-62px);
+	}
+	.hiw-art .on {
+		animation: none;
+		opacity: 1;
+	}
 }
 .hiw-eyebrow {
 	margin: 0 0 var(--ohf-space-24);
@@ -111,24 +149,21 @@
 	font-size: var(--ohf-font-size-14);
 	line-height: var(--ohf-line-height-20);
 }
-/* the number's faint fill and the drawing's colours, per theme. set on the
+/* the number's faint fill and the drawing's idle points, per theme. set on the
    theme boundaries so the nearest `data-theme` wins */
 :root,
 [data-theme="light"] {
 	--hiw-step-num-bg: var(--ohf-color-black-alpha-6);
-	--hiw-art-face: var(--ohf-color-black);
-	--hiw-art-line: var(--ohf-color-white);
+	--hiw-art-dot: var(--ohf-color-warm-grey-400);
 }
 [data-theme="dark"] {
 	--hiw-step-num-bg: var(--ohf-color-white-alpha-8);
-	--hiw-art-face: var(--ohf-color-bg-canvas);
-	--hiw-art-line: var(--ohf-color-text-default);
+	--hiw-art-dot: var(--ohf-color-warm-grey-700);
 }
 @media (prefers-color-scheme: dark) {
 	[data-theme="auto"] {
 		--hiw-step-num-bg: var(--ohf-color-white-alpha-8);
-		--hiw-art-face: var(--ohf-color-bg-canvas);
-		--hiw-art-line: var(--ohf-color-text-default);
+		--hiw-art-dot: var(--ohf-color-warm-grey-700);
 	}
 }
 
