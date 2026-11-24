@@ -534,6 +534,10 @@ html[data-page="home"] .appnav {
 	opacity: 0.4;
 	transition: opacity 0.25s;
 }
+/* the site's visited link colour would win over the plain class */
+.home-browse:visited {
+	color: var(--home-text-subtle);
+}
 .home-browse:hover {
 	color: var(--home-text);
 	text-decoration: none;
@@ -597,6 +601,9 @@ html[data-page="home"] .appnav {
 		opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
 		color 0.6s ease;
 }
+/* the site's visited link colour would win over the plain class, and leave
+   a visited row dark on the cobalt */
+.home-cat:visited,
 .home-cat:hover {
 	color: var(--home-text);
 	text-decoration: none;
