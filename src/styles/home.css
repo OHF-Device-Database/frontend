@@ -896,22 +896,10 @@ html.home-exiting .appfoot {
 		transform: none;
 		transition: none;
 	}
-	/* the reels cannot be dragged */
-	.home-reel {
-		touch-action: auto;
-		cursor: default;
-	}
-	/* and the drawings stay whole, on hover and in the blue state */
-	.home-card:hover,
-	.home-gallery.is-blueprint .home-card {
-		--e: 0;
-	}
-	.home-card-face,
-	.home-card-face::before,
-	.home-art .pt,
-	.home-art .pt.fade,
-	.home-art .pt.fout {
-		transition: none;
+	/* no card reels at all. even standing still they change their drawings
+	   as the list scrolls, and that is motion too */
+	.home-gallery {
+		display: none;
 	}
 	.home-cats.is-rolo .home-cat.is-tick .home-cat-name {
 		animation: none;

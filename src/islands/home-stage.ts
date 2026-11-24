@@ -38,6 +38,9 @@ import type { HomeCardSpec, HomePalette } from "../utilities/home-art.js";
  *
  * Leaving for another page plays the prototype's exit: the page clears and
  * the reels spin up again while the next page loads.
+ *
+ * With reduced motion there are no reels at all. Even standing still they
+ * would change their drawings as the list scrolls.
  */
 
 /** seconds the first reel spins for */
@@ -211,8 +214,6 @@ const start = (host: HTMLElement): (() => void) => {
 	const abort = new AbortController();
 	const { signal } = abort;
 	const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-	const drift = reduce ? 0 : DRIFT;
-	const react = reduce ? 0 : 1;
 
 	const header = document.querySelector<HTMLElement>(".appnav");
 	const dock = document.querySelector<HTMLElement>("[data-appnav-search-dock]");
@@ -231,7 +232,7 @@ const start = (host: HTMLElement): (() => void) => {
 	// the drawings, fetched once and shown by every card with `<use>`
 	const sprite = host.querySelector<HTMLElement>(".home-sprite");
 	const artUrl = host.getAttribute("art");
-	if (sprite !== null && artUrl !== null) {
+	if (!reduce && sprite !== null && artUrl !== null) {
 		fetch(artUrl, { signal })
 			.then((response) => (response.ok ? response.text() : ""))
 			.then((svg) => {
@@ -288,7 +289,10 @@ const start = (host: HTMLElement): (() => void) => {
 		};
 	};
 
-	const reels: Reel[] = [...stage.querySelectorAll<HTMLElement>(".home-reel")]
+	// none with reduced motion, where the gallery is not shown
+	const reels: Reel[] = (
+		reduce ? [] : [...stage.querySelectorAll<HTMLElement>(".home-reel")]
+	)
 		.slice(0, HOME_OPENING.length)
 		.map((el, i) => ({
 			el,
@@ -344,7 +348,8 @@ const start = (host: HTMLElement): (() => void) => {
 	};
 
 	const layout = (): void => {
-		H = gallery.clientHeight;
+		// the gallery fills the screen, and is not there with reduced motion
+		H = reduce ? window.innerHeight : gallery.clientHeight;
 		gallery.style.perspective = `${Math.round(Math.max(900, H * 1.7))}px`;
 		const dpr = window.devicePixelRatio || 1;
 		snap = (value) => Math.round(value * dpr) / dpr;
@@ -451,7 +456,7 @@ const start = (host: HTMLElement): (() => void) => {
 			reel.driftLive = false;
 			reel.flingPos = 0;
 			reel.flingV = 0;
-			reel.start = target - reel.dir * (reel.A + drift * reel.D);
+			reel.start = target - reel.dir * (reel.A + DRIFT * reel.D);
 		}
 	};
 
@@ -475,7 +480,7 @@ const start = (host: HTMLElement): (() => void) => {
 				continue;
 			}
 			const onScreen = card.y > -card.h && card.y < H;
-			if (!onScreen || reduce) {
+			if (!onScreen) {
 				render(card, next);
 				continue;
 			}
@@ -924,14 +929,14 @@ const start = (host: HTMLElement): (() => void) => {
 			const landed = t >= reel.D;
 			const spin = spinIn(t, reel.A, reel.D);
 			if (!landed) {
-				reel.driftPos = drift * t;
+				reel.driftPos = DRIFT * t;
 			} else {
 				if (!reel.driftLive) {
-					reel.driftPos = drift * reel.D;
+					reel.driftPos = DRIFT * reel.D;
 					reel.driftLive = true;
 				}
 				reel.hoverMul += (reel.hoverTarget - reel.hoverMul) * ease(4, dt);
-				reel.driftPos += drift * reel.hoverMul * focusMul * sectionMul * dt;
+				reel.driftPos += DRIFT * reel.hoverMul * focusMul * sectionMul * dt;
 			}
 			// a fling slows to nothing as the page turns blue, and is spent
 			// once it has
@@ -944,7 +949,7 @@ const start = (host: HTMLElement): (() => void) => {
 				}
 			}
 			// the scroll pulls each reel along at its own rate
-			reel.flingPos -= dy * (PARALLAX[reel.i] ?? 0) * react;
+			reel.flingPos -= dy * (PARALLAX[reel.i] ?? 0);
 
 			// leaving: each reel kicks off a beat after its neighbour and speeds
 			// up like a slot machine
@@ -1041,8 +1046,8 @@ const start = (host: HTMLElement): (() => void) => {
 		el.addEventListener(
 			"pointerdown",
 			(event) => {
-				// blue, or reduced motion: the reels stay where they are
-				if (blue || reduce) {
+				// blue: the reels stay where they are
+				if (blue) {
 					return;
 				}
 				reel.dragging = true;
