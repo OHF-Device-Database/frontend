@@ -137,7 +137,11 @@ const links = [
 			showSearch ? (
 				<SearchBox size="header" />
 			) : (
-				<div class="appnav-search-empty" />
+				// on the landing page the search starts in the hero and docks here
+				// once that one has scrolled away
+				<div class="appnav-search-dock" data-appnav-search-dock inert>
+					<SearchBox size="header" />
+				</div>
 			)
 		}
 		<div class="appnav-right">

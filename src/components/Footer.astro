@@ -12,7 +12,29 @@ import { m } from "../paraglide/messages.js";
 import { localizeHref } from "../paraglide/runtime.js";
 
 const OHF_URL = "https://www.openhomefoundation.org/";
+
+interface Props {
+	/** a stair of colour bands from the page into the footer */
+	steps?: boolean;
+}
+
+const { steps = false } = Astro.props;
+
+// the top band is the closest to the page colour
+const STEPS = [14, 29, 43, 57, 71, 86];
 ---
+
+{
+	steps && (
+		<div class="appfoot-steps" aria-hidden="true">
+			<div class="appfoot-steps-bands">
+				{STEPS.map((percent) => (
+					<i style={`--p:${percent}%`} />
+				))}
+			</div>
+		</div>
+	)
+}
 
 {/* dark in both themes, so everything inside takes the dark tokens */}
 <footer class="appfoot" data-theme="dark">

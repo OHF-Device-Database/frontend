@@ -20,6 +20,30 @@
 	color: #f6f7f3;
 	overflow: hidden;
 }
+/* landing page only: bands that step from the page colour into the footer.
+   they open one by one as the footer scrolls into view, the heights are set
+   by `src/islands/home-stage.ts` */
+.appfoot-steps {
+	position: relative;
+	height: 0;
+	pointer-events: none;
+}
+.appfoot-steps-bands {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	display: flex;
+	flex-direction: column;
+}
+.appfoot-steps i {
+	display: block;
+	height: 0;
+	background: color-mix(in srgb, #2b2b2a var(--p), var(--home-shade));
+}
+.appfoot-steps + .appfoot {
+	border-top-color: transparent;
+}
 .appfoot-inner {
 	display: flex;
 	flex-direction: column;

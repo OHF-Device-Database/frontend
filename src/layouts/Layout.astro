@@ -26,6 +26,7 @@ const featureAttributes = featureDataset(features());
 	lang={getLocale()}
 	data-brand="ddb"
 	data-theme="auto"
+	data-page={page}
 	transition:animate="none"
 	{...featureAttributes}
 >
@@ -167,7 +168,7 @@ const featureAttributes = featureDataset(features());
 			<main class="app-main">
 				<slot />
 			</main>
-			<Footer />
+			<Footer steps={page === "home"} />
 		</div>
 		<script is:inline>
 			(function () {

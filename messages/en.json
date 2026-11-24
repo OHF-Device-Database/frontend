@@ -4,6 +4,7 @@
 	"home_lede": "Real-world data from millions of Home Assistant installations",
 	"home_search_placeholder": "Search",
 	"home_browse_all": "Browse all {count} devices →",
+	"home_categories_title": "Explore categories",
 	"site_title": "Device Database",
 	"nav_preview_banner_text": "You are viewing a preview edition of the Device Database. Data may be incomplete or change at any time.",
 	"nav_preview_banner_learn_more": "Learn more",

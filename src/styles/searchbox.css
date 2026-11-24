@@ -1,17 +1,24 @@
+/* the landing page's search: a 52px pill, lifted off the cards behind it */
 .searchbox-hero {
 	width: 100%;
-	max-width: 640px;
 	margin: 0 auto;
 }
 .searchbox-hero .searchbox-input {
-	height: 56px;
-	padding: 0 var(--space-5);
-	gap: var(--space-4);
-	border-radius: var(--radius-4);
-	box-shadow: var(--shadow-1);
+	height: 52px;
+	padding: 0 var(--ohf-space-20);
+	gap: var(--ohf-space-12);
+	border-color: var(--ohf-color-border-control);
+	border-radius: var(--ohf-radius-pill);
+	background: color-mix(
+		in srgb,
+		var(--ohf-color-bg-surface-raised) 86%,
+		transparent
+	);
+	box-shadow: 0 14px 36px -22px rgb(0 0 0 / 16%);
 }
 .searchbox-hero .searchbox-input input {
-	font-size: var(--fs-18);
+	background: transparent;
+	font-size: var(--ohf-font-size-16);
 }
 
 .searchbox-header {
