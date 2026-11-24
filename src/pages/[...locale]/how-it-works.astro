@@ -1,4 +1,6 @@
 ---
+import House from "../../assets/how-it-works-house.svg";
+
 import Message from "../../components/Message.astro";
 import Layout from "../../layouts/Layout.astro";
 
@@ -23,7 +25,7 @@ const ext = render(
 const countries = priceWatchCountries(getLocale());
 
 const suggestLink = {
-	class: "content-link",
+	class: "hiw-link",
 	href: priceWatchSuggestUrl,
 	target: "_blank",
 	rel: "noopener",
@@ -37,78 +39,79 @@ const flags = import.meta.glob<string>("../../assets/flags/*.svg", {
 ---
 
 <Layout page="page" title={m.hiw_title()}>
-	<div class="content-page">
-		<section class="content-section content-intro">
-			<div class="container-narrow">
-				<div class="content-eyebrow">{m.hiw_eyebrow()}</div>
-				<h1>{m.hiw_title()}</h1>
-				<p class="content-lede" set:html={m.hiw_lede()} />
-			</div>
-		</section>
+	<div class="hiw">
+		<header class="hiw-intro hiw-measure">
+			<House class="hiw-art" width="178" height="246" aria-hidden="true" />
+			<p class="hiw-eyebrow">{m.hiw_title()}</p>
+			<h1>{m.hiw_heading()}</h1>
+			<p class="hiw-lede" set:html={m.hiw_lede()} />
+		</header>
 
-		<section class="content-section">
-			<div class="container-narrow">
-				<div class="steps">
-					<div class="step">
-						<div class="step-num">1</div>
-						<h3>{m.hiw_step_1_title()}</h3>
-						<p>
-							{m.hiw_step_1_body()}
-							<a
-								class="content-link"
-								href="https://www.home-assistant.io/blog/2026/02/02/about-device-database/#now-its-over-to-you"
-								target="_blank"
-								rel="noopener">{m.hiw_step_1_link()}<span set:html={ext} /></a
-							>
-						</p>
-					</div>
-					<div class="step">
-						<div class="step-num">2</div>
-						<h3>{m.hiw_step_2_title()}</h3>
-						<p>{m.hiw_step_2_body()}</p>
-					</div>
-					<div class="step">
-						<div class="step-num">3</div>
-						<h3>{m.hiw_step_3_title()}</h3>
-						<p>{m.hiw_step_3_body()}</p>
-					</div>
+		<ol class="hiw-steps" role="list">
+			<li class="hiw-step">
+				<span class="hiw-step-num">1</span>
+				<div>
+					<h2>{m.hiw_step_1_title()}</h2>
+					<p>
+						{m.hiw_step_1_body()}
+						<a
+							class="hiw-link"
+							href="https://www.home-assistant.io/blog/2026/02/02/about-device-database/#now-its-over-to-you"
+							target="_blank"
+							rel="noopener">{m.hiw_step_1_link()}<span set:html={ext} /></a
+						>
+					</p>
 				</div>
-			</div>
-		</section>
+			</li>
+			<li class="hiw-step">
+				<span class="hiw-step-num">2</span>
+				<div>
+					<h2>{m.hiw_step_2_title()}</h2>
+					<p>{m.hiw_step_2_body()}</p>
+				</div>
+			</li>
+			<li class="hiw-step">
+				<span class="hiw-step-num">3</span>
+				<div>
+					<h2>{m.hiw_step_3_title()}</h2>
+					<p>{m.hiw_step_3_body()}</p>
+				</div>
+			</li>
+		</ol>
 
-		<section class="content-section">
-			<div class="container-narrow">
+		<section class="hiw-section">
+			<div class="hiw-measure">
 				<h2>{m.hiw_entry_title()}</h2>
-				<p class="content-prose">{m.hiw_entry_body_1()}</p>
-				<p class="content-prose">{m.hiw_entry_body_2()}</p>
+				<p>{m.hiw_entry_body_1()}</p>
+				<p>{m.hiw_entry_body_2()}</p>
 			</div>
 		</section>
 
-		<section class="content-section">
-			<div class="container-narrow">
+		<section class="hiw-section">
+			<div class="hiw-measure">
 				<h2>{m.hiw_contribute_title()}</h2>
-				<p class="content-prose">
+				<p>
 					{m.hiw_contribute_prefix()}
 					<a
-						class="content-link"
+						class="hiw-link"
 						href="https://www.home-assistant.io/blog/2026/02/02/about-device-database/#now-its-over-to-you"
 						target="_blank"
 						rel="noopener">{m.hiw_contribute_link()}<span set:html={ext} /></a
 					>{m.hiw_contribute_suffix()}
 				</p>
-				<p class="content-prose">
+				<p>
 					{m.hiw_contribute_roadmap_prefix()}
 					<a
-						class="content-link"
+						class="hiw-link"
 						href="https://github.com/orgs/OpenHomeFoundation/projects/8/views/1"
 						target="_blank"
 						rel="noopener"
 						>{m.hiw_contribute_roadmap_link()}<span set:html={ext} /></a
 					>{m.hiw_contribute_roadmap_suffix()}
 				</p>
-				<p class="content-prose">
+				<p>
 					<a
-						class="content-link"
+						class="hiw-link"
 						href="https://github.com/orgs/OHF-Device-Database/discussions"
 						target="_blank"
 						rel="noopener"
@@ -119,11 +122,11 @@ const flags = import.meta.glob<string>("../../assets/flags/*.svg", {
 			</div>
 		</section>
 
-		<section class="content-section" id="price-comparison-sites">
-			<div class="container-narrow">
+		<section class="hiw-section" id="price-comparison-sites">
+			<div class="hiw-measure">
 				<h2>{m.hiw_wtb_title()}</h2>
-				<p class="content-prose">{m.hiw_wtb_body()}</p>
-				<p class="content-prose">
+				<p>{m.hiw_wtb_body()}</p>
+				<p>
 					<Message message={m.hiw_wtb_suggest}>
 						<fragment slot="link">
 							{(children: unknown[]) => <a {...suggestLink}>{children}</a>}

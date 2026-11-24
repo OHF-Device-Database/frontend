@@ -119,7 +119,7 @@
 	"surveys_report_title": "{label} survey report",
 	"surveys_open_report": "Open full report",
 	"hiw_title": "How it works",
-	"hiw_eyebrow": "About",
+	"hiw_heading": "Community shared data",
 	"hiw_lede": "Manufacturer specs say what a device <strong>should</strong> do. The Device Database tracks what it <strong>actually</strong> does, built from anonymized real-world data shared by the community.",
 	"hiw_step_1_title": "Community shares anonymized data",
 	"hiw_step_1_body": "Home Assistant users opt in to share what devices they run and how those devices behave. No personal data, no identifiers, no addresses.",

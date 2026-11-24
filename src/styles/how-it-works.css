@@ -1,0 +1,307 @@
+/*
+ * The "How it works" page, from the Figma frame of the same name. A centred
+ * intro under a line drawing of a house, three numbered step cards, then
+ * reading sections 680px wide, each under a hairline across the page.
+ */
+.hiw {
+	padding-bottom: var(--ohf-space-160);
+	color: var(--ohf-color-text-default);
+}
+.hiw-measure {
+	box-sizing: content-box;
+	max-width: 680px;
+	margin: 0 auto;
+	padding: 0 var(--page-gutter);
+}
+
+.hiw-intro {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding-top: var(--ohf-space-96);
+	text-align: center;
+}
+/* an exploded house: the walls and roof lift off a foundation of data
+   points, some of which light up. faces take the page colour so the lines
+   behind them stay hidden */
+.hiw-art {
+	display: block;
+	max-width: 100%;
+	height: auto;
+}
+.hiw-art path {
+	fill: var(--ohf-color-bg-canvas);
+	stroke: var(--ohf-color-text-default);
+	stroke-width: 1.15;
+	stroke-linejoin: round;
+	stroke-linecap: round;
+	vector-effect: non-scaling-stroke;
+}
+.hiw-art .ln {
+	fill: none;
+}
+.hiw-art .dt {
+	fill: var(--hiw-art-dot);
+}
+.hiw-art .on {
+	fill: var(--ohf-color-bg-accent-default);
+	opacity: 0;
+	animation: hiw-art-on 9s ease-in-out infinite;
+}
+@keyframes hiw-art-on {
+	0%,
+	36% {
+		opacity: 0;
+	}
+	44%,
+	66% {
+		opacity: 1;
+	}
+	74%,
+	100% {
+		opacity: 0;
+	}
+}
+/* without motion the house stays open with its points lit */
+@media (prefers-reduced-motion: reduce) {
+	.hiw-art .walls {
+		transform: translateY(-42px);
+	}
+	.hiw-art .roof {
+		transform: translateY(-62px);
+	}
+	.hiw-art .on {
+		animation: none;
+		opacity: 1;
+	}
+}
+.hiw-eyebrow {
+	margin: 0 0 var(--ohf-space-24);
+	color: var(--ohf-color-text-subtle);
+	font-size: var(--ohf-font-size-14);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-20);
+	letter-spacing: -0.14px;
+}
+.hiw-intro h1 {
+	max-width: 540px;
+	margin: 0 0 var(--ohf-space-40);
+	font-size: var(--ohf-font-size-40);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-44);
+	letter-spacing: -1.2px;
+}
+.hiw-lede {
+	margin: 0;
+	color: var(--ohf-color-text-subtle);
+	font-size: var(--ohf-font-size-15);
+	line-height: var(--ohf-line-height-24);
+}
+.hiw-lede strong {
+	color: var(--ohf-color-text-default);
+	font-weight: inherit;
+}
+
+.hiw-steps {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--ohf-space-16);
+	box-sizing: content-box;
+	max-width: 1249px;
+	margin: var(--ohf-space-112) auto;
+	padding: 0 var(--page-gutter);
+	list-style: none;
+}
+.hiw-step {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: var(--ohf-space-40);
+	min-height: 247px;
+	box-sizing: border-box;
+	padding: var(--ohf-space-24);
+	border: var(--ohf-border-width-default) solid var(--ohf-color-border-subtle);
+	border-radius: var(--ohf-radius-container);
+	background: var(--ohf-color-bg-surface-raised);
+}
+.hiw-step-num {
+	display: grid;
+	place-items: center;
+	width: 30px;
+	height: 30px;
+	border-radius: var(--ohf-radius-pill);
+	background: var(--hiw-step-num-bg);
+	font-family: var(--ohf-font-family-mono);
+	font-size: var(--ohf-font-size-14);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: 1;
+}
+.hiw-step h2 {
+	margin: 0 0 var(--ohf-space-12);
+	font-size: var(--ohf-font-size-16);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-24);
+	letter-spacing: 0;
+}
+.hiw-step p {
+	margin: 0;
+	color: var(--ohf-color-text-subtle);
+	font-size: var(--ohf-font-size-14);
+	line-height: var(--ohf-line-height-20);
+}
+/* the number's faint fill and the drawing's idle points, per theme. set on the
+   theme boundaries so the nearest `data-theme` wins */
+:root,
+[data-theme="light"] {
+	--hiw-step-num-bg: var(--ohf-color-black-alpha-6);
+	--hiw-art-dot: var(--ohf-color-warm-grey-400);
+}
+[data-theme="dark"] {
+	--hiw-step-num-bg: var(--ohf-color-white-alpha-8);
+	--hiw-art-dot: var(--ohf-color-warm-grey-700);
+}
+@media (prefers-color-scheme: dark) {
+	[data-theme="auto"] {
+		--hiw-step-num-bg: var(--ohf-color-white-alpha-8);
+		--hiw-art-dot: var(--ohf-color-warm-grey-700);
+	}
+}
+
+.hiw-section {
+	padding: var(--ohf-space-128) 0 var(--ohf-space-64);
+	border-top: var(--ohf-border-width-default) solid
+		var(--ohf-color-border-subtle);
+}
+.hiw-section h2 {
+	margin: 0 0 var(--ohf-space-40);
+	font-size: var(--ohf-font-size-28);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-36);
+	letter-spacing: 0;
+}
+.hiw-section p {
+	margin: 0 0 var(--ohf-space-24);
+	color: var(--ohf-color-text-subtle);
+	font-size: var(--ohf-font-size-15);
+	line-height: var(--ohf-line-height-24);
+}
+.hiw-section p:last-child {
+	margin-bottom: 0;
+}
+/* links read as text, marked by an underline */
+.hiw-link {
+	color: var(--ohf-color-text-default);
+	text-decoration: underline;
+	text-decoration-color: var(--ohf-color-border-control);
+	text-underline-offset: 3px;
+}
+.hiw-link:hover {
+	text-decoration-color: currentcolor;
+}
+.hiw-link:focus-visible,
+.price-sites-row dd a:focus-visible {
+	outline: var(--ohf-border-width-focus) solid var(--ohf-color-border-focus);
+	outline-offset: 2px;
+	border-radius: var(--ohf-radius-sm);
+}
+/* a word joiner keeps the icon on the line of the last word */
+.hiw-link > span {
+	white-space: nowrap;
+}
+.hiw-link > span::before {
+	content: "\2060";
+}
+.hiw-link svg {
+	display: inline-block;
+	margin-left: var(--ohf-space-4);
+	vertical-align: -2px;
+}
+
+/* price comparison sites, one country per row with its sites stacked */
+.price-sites {
+	display: grid;
+	margin: var(--ohf-space-40) 0 0;
+}
+.price-sites-row {
+	display: grid;
+	grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
+	gap: var(--ohf-space-8) var(--ohf-space-24);
+	align-items: baseline;
+	padding: var(--ohf-space-16) 0;
+	border-top: var(--ohf-border-width-default) solid
+		var(--ohf-color-border-subtle);
+	font-size: var(--ohf-font-size-14);
+	line-height: var(--ohf-line-height-20);
+}
+.price-sites-row dt {
+	font-weight: var(--ohf-font-weight-medium);
+}
+.price-sites-flag {
+	display: inline-block;
+	margin-right: var(--ohf-space-8);
+	vertical-align: -2px;
+	border-radius: 2px;
+	/* keeps white flags like japan visible */
+	box-shadow: 0 0 0 1px var(--ohf-color-border-default);
+}
+.price-sites-row dd {
+	display: flex;
+	flex-direction: column;
+	gap: var(--ohf-space-6);
+	margin: 0;
+}
+.price-sites-row dd a {
+	display: inline-flex;
+	align-items: baseline;
+	gap: var(--ohf-space-6);
+	color: var(--ohf-color-text-default);
+	text-decoration: none;
+}
+.price-sites-row dd a:hover {
+	text-decoration: underline;
+}
+.price-sites-domain {
+	color: var(--ohf-color-text-subtle);
+	font-family: var(--ohf-font-family-mono);
+	font-size: var(--ohf-font-size-12);
+}
+
+@media (max-width: 899px) {
+	.hiw-steps {
+		grid-template-columns: minmax(0, 1fr);
+		max-width: 680px;
+		margin: var(--ohf-space-64) auto;
+	}
+	.hiw-step {
+		min-height: 0;
+	}
+}
+@media (max-width: 767px) {
+	.hiw {
+		padding-bottom: var(--ohf-space-64);
+	}
+	.hiw-intro {
+		padding-top: var(--ohf-space-40);
+	}
+	.hiw-intro h1 {
+		margin-bottom: var(--ohf-space-24);
+		font-size: var(--ohf-font-size-32);
+		line-height: var(--ohf-line-height-40);
+		letter-spacing: -0.96px;
+	}
+	.hiw-section {
+		padding: var(--ohf-space-64) 0 var(--ohf-space-40);
+	}
+	.hiw-section h2 {
+		margin-bottom: var(--ohf-space-24);
+		font-size: var(--ohf-font-size-24);
+		line-height: var(--ohf-line-height-32);
+		letter-spacing: -0.48px;
+	}
+}
+/* --ohf-breakpoint-sm */
+@media (max-width: 640px) {
+	.price-sites-row {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
