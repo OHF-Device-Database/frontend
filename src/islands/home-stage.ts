@@ -20,6 +20,7 @@ import {
 	spinIn,
 	spinStagger,
 	stepToward,
+	switchSlack,
 } from "../utilities/home-motion.js";
 import type { HomeCardSpec, HomePalette } from "../utilities/home-art.js";
 
@@ -844,9 +845,13 @@ const start = (host: HTMLElement): (() => void) => {
 			footer?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY;
 		const enterLine = viewport * 0.3;
 		const listTop = trackRect.top + viewport * 0.1;
-		if (!entered && listTop < enterLine) {
+		// the top of the page is never blue. on a short screen the list starts
+		// close to its line there, and the slack shrinks to fit
+		const atTop = scrollY <= 0;
+		const slack = switchSlack(listTop + scrollY, enterLine);
+		if (!entered && !atTop && listTop < enterLine) {
 			entered = true;
-		} else if (entered && listTop > enterLine + 160) {
+		} else if (entered && (atTop || listTop > enterLine + slack)) {
 			entered = false;
 		}
 		const leaving =

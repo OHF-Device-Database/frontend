@@ -57,6 +57,15 @@ export const stepToward = (
 ): number => clamp01(value + (Math.sign(target - value) * dt) / duration);
 
 /**
+ * how far back over its line the list scrolls before the page leaves the
+ * blue state. `rest` is where the list's top sits with the page at its top.
+ * the slack is shorter where that is close to the line, so that scrolling
+ * back up always leaves the blue state before the top
+ */
+export const switchSlack = (rest: number, line: number): number =>
+	Math.min(160, Math.max(0, (rest - line) * 0.6));
+
+/**
  * the height of footer band `index`, counted from the footer up. each band
  * opens after the one below it, which makes a stair and not a fade
  */

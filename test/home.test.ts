@@ -20,6 +20,7 @@ import {
 	spinIn,
 	spinStagger,
 	stepToward,
+	switchSlack,
 } from "../src/utilities/home-motion";
 
 const drawingFile = (drawing: string): string => {
@@ -119,6 +120,17 @@ describe("home motion", () => {
 		expect(stepToward(0.9, 1, 0.11, 0.55)).toBe(1);
 		expect(stepToward(0.1, 0, 0.11, 0.55)).toBe(0);
 		expect(stepToward(1, 1, 0.11, 0.55)).toBe(1);
+	});
+
+	it("lets the page leave the blue state before the top on any screen", () => {
+		// a tall screen: the list starts far below its line
+		expect(switchSlack(900, 300)).toBe(160);
+		// a short one: 768px high, the list's top rests at 389 and its line is at 230
+		const slack = switchSlack(389, 230);
+		expect(slack).toBeCloseTo(95.4);
+		expect(230 + slack).toBeLessThan(389);
+		// the list starts on or above its line
+		expect(switchSlack(200, 230)).toBe(0);
 	});
 
 	it("opens the footer bands one after the other, from the footer up", () => {
