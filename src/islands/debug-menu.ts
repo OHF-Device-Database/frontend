@@ -131,7 +131,8 @@ export class DebugMenu extends LitElement {
 					<code class="debug-row-name">${name}</code>
 				</span>
 				<input
-					class="debug-switch"
+					class="ui-switch"
+					data-size="md"
 					type="checkbox"
 					role="switch"
 					.checked=${this._features[name]}
@@ -159,7 +160,9 @@ export class DebugMenu extends LitElement {
 				<footer class="debug-foot">
 					<button
 						type="button"
-						class="debug-action debug-share"
+						class="ui-button debug-share"
+						data-variant="ghost"
+						data-size="sm"
 						title=${link}
 						@click=${this._share}
 						${ref(this._shareButton)}
@@ -180,7 +183,9 @@ export class DebugMenu extends LitElement {
 					</div>
 					<button
 						type="button"
-						class="debug-action"
+						class="ui-button"
+						data-variant="ghost"
+						data-size="sm"
 						?disabled=${enabled.length === 0}
 						@click=${this._reset}
 					>

@@ -5,18 +5,18 @@ import Layout from "../../layouts/Layout.astro";
 <Layout title="Debug">
 	<meta name="robots" content="noindex, nofollow" slot="head" />
 
-	<div class="container-narrow content-page">
-		<section class="content-section content-intro">
+	<div class="debug-page">
+		<header class="debug-page-header">
 			<h1>Debug</h1>
-			<p class="content-lede">
+			<p>
 				Features that are deployed but not on by default. Changes apply to pages
-				you open next.
+				you open next. The UI components are on <a href="/debug/components"
+					>their own page</a
+				>.
 			</p>
-		</section>
+		</header>
 
-		<section class="content-section">
-			<debug-menu></debug-menu>
-		</section>
+		<debug-menu></debug-menu>
 	</div>
 </Layout>
 
