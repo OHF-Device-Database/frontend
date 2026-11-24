@@ -39,7 +39,7 @@ const titleId = `${id}-title`;
 	aria-labelledby={title ? titleId : undefined}
 	aria-label={title ? undefined : label}
 >
-	<header class="ui-modal-header">
+	<div class="ui-modal-header">
 		{
 			title && (
 				<h2 class="ui-modal-title" id={titleId}>
@@ -54,7 +54,7 @@ const titleId = `${id}-title`;
 			label={closeLabel}
 			data-modal-close
 		/>
-	</header>
+	</div>
 	<div class="ui-modal-body">
 		<slot />
 	</div>
