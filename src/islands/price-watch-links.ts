@@ -1,10 +1,9 @@
+import { iconArrowUpRight, iconGlobe } from "@openhomefoundation/icons";
+import { renderIcon } from "@openhomefoundation/icons/lit";
 import { html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators.js";
-import { unsafeHTML } from "lit/directives/unsafe-html.js";
 
 import { defineElementOnce } from "../utilities/define-element.js";
-import * as presentation from "../utilities/presentation";
-import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/preset.js";
 import {
 	guessPriceWatchCountry,
 	PRICE_WATCH_STORAGE_KEY,
@@ -15,11 +14,6 @@ export interface PriceWatchLink {
 	domain: string;
 	href: string;
 }
-
-const ext = presentation.render(
-	presentation.generic("open"),
-	PresentationRenderPresetRoleIcon.withSize(14),
-);
 
 const read = () => {
 	try {
@@ -53,6 +47,8 @@ const guess = () => {
  */
 export class PriceWatchLinks extends LitElement {
 	@property({ type: Object }) links: Record<string, PriceWatchLink[]> = {};
+	/** flag image url per country code */
+	@property({ type: Object }) flags: Record<string, string> = {};
 
 	@state() private _country: string | undefined;
 
@@ -78,7 +74,21 @@ export class PriceWatchLinks extends LitElement {
 		const select = this.querySelector("select");
 		if (typeof country !== "undefined" && select !== null) {
 			select.value = country;
-			this._country = country;
+			this._select(country);
+		}
+	}
+
+	private _select(country: string): void {
+		this._country = country;
+
+		// the flag sits in the server-rendered select, outside the lit template
+		const flag = this.querySelector<HTMLImageElement>(".price-watch-flag");
+		const src = this.flags[country];
+		if (flag !== null) {
+			if (typeof src === "string") {
+				flag.src = src;
+			}
+			flag.hidden = typeof src !== "string";
 		}
 	}
 
@@ -86,8 +96,8 @@ export class PriceWatchLinks extends LitElement {
 		if (!(e.target instanceof HTMLSelectElement)) {
 			return;
 		}
-		this._country = e.target.value;
-		write(this._country);
+		this._select(e.target.value);
+		write(e.target.value);
 	};
 
 	override render() {
@@ -110,9 +120,14 @@ export class PriceWatchLinks extends LitElement {
 								target="_blank"
 								rel="noopener noreferrer nofollow"
 							>
+								<span class="price-watch-logo">
+									${renderIcon(iconGlobe, { size: 16, strokeWidth: 1.5 })}
+								</span>
 								<span class="price-watch-link-name">${link.name}</span>
 								<span class="price-watch-link-domain">${link.domain}</span>
-								<span class="price-watch-link-icon">${unsafeHTML(ext)}</span>
+								<span class="price-watch-link-icon">
+									${renderIcon(iconArrowUpRight, { size: 16, strokeWidth: 1.5 })}
+								</span>
 							</a>
 						</li>
 					`,

@@ -1,10 +1,11 @@
 ---
+import { iconChevronDown } from "@openhomefoundation/icons";
+
 import Message from "./Message.astro";
+import Icon from "./ui/Icon.astro";
 
 import { m } from "../paraglide/messages.js";
 import { getLocale, localizeHref } from "../paraglide/runtime.js";
-import { generic, render } from "../utilities/presentation";
-import { PresentationRenderPresetRoleIcon } from "../utilities/presentation/preset";
 import {
 	priceWatchCountries,
 	priceWatcherDomain,
@@ -37,50 +38,63 @@ const links: Record<string, PriceWatchLink[]> = Object.fromEntries(
 		})),
 	]),
 );
+
+const flagUrls = import.meta.glob<string>("../assets/flags/*.svg", {
+	eager: true,
+	query: "?url&no-inline",
+	import: "default",
+});
+const flags: Record<string, string> = Object.fromEntries(
+	countries.flatMap((country) => {
+		const url = flagUrls[`../assets/flags/${country.code}.svg`];
+		return typeof url === "string" ? [[country.code, url]] : [];
+	}),
+);
 ---
 
 <section class="article-section price-watch">
-	<h2>{m.device_wtb_title()}</h2>
-	<p>{m.device_wtb_lead()}</p>
+	<header class="price-watch-intro">
+		<h2>{m.device_wtb_title()}</h2>
+		<p>{m.device_wtb_lead()}</p>
+	</header>
 
 	<!-- Wraps select so the price-watch-links island can detect the selected country -->
-	<price-watch-links links={JSON.stringify(links)}>
-		<label class="price-watch-label" for="price-watch-country">
-			{m.device_wtb_country()}
-		</label>
-		<div class="select">
-			<select id="price-watch-country">
-				<option value="" disabled selected>{m.device_wtb_choose()}</option>
-				{
-					countries.map((country) => (
-						<option value={country.code}>{country.name}</option>
-					))
-				}
-			</select>
-			<span
-				class="select-chevron"
-				aria-hidden="true"
-				set:html={render(
-					generic("chevronDown"),
-					PresentationRenderPresetRoleIcon,
-				)}
-			/>
+	<price-watch-links
+		links={JSON.stringify(links)}
+		flags={JSON.stringify(flags)}
+	>
+		<div class="price-watch-country">
+			<label class="price-watch-label" for="price-watch-country">
+				{m.device_wtb_country()}
+			</label>
+			<div class="price-watch-select">
+				<img class="price-watch-flag" alt="" width="24" height="24" hidden />
+				<select id="price-watch-country">
+					<option value="" disabled selected>{m.device_wtb_choose()}</option>
+					{
+						countries.map((country) => (
+							<option value={country.code}>{country.name}</option>
+						))
+					}
+				</select>
+				<Icon icon={iconChevronDown} class="price-watch-chevron" />
+			</div>
 		</div>
 	</price-watch-links>
 
-	<p class="price-watch-note">
-		{m.device_wtb_location()}
-	</p>
-	<p class="price-watch-note">
-		<Message message={m.device_wtb_selection}>
-			<fragment slot="link">
-				{(children: unknown[]) => <a {...suggestLink}>{children}</a>}
-			</fragment>
-		</Message>
-	</p>
-	<p class="price-watch-note">
-		<a href={`${localizeHref("/how-it-works")}#price-comparison-sites`}
-			>{m.device_wtb_all_sites()}</a
-		>
-	</p>
+	<div class="price-watch-notes">
+		<p>{m.device_wtb_location()}</p>
+		<p>
+			<Message message={m.device_wtb_selection}>
+				<fragment slot="link">
+					{(children: unknown[]) => <a {...suggestLink}>{children}</a>}
+				</fragment>
+			</Message>
+		</p>
+		<p>
+			<a href={`${localizeHref("/how-it-works")}#price-comparison-sites`}
+				>{m.device_wtb_all_sites()}</a
+			>
+		</p>
+	</div>
 </section>
