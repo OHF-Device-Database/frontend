@@ -15,6 +15,7 @@ import {
 import {
 	detent,
 	footerStep,
+	HOME_MOTION,
 	rowOpacity,
 	rowParting,
 	spinIn,
@@ -22,6 +23,12 @@ import {
 	stepToward,
 	switchSlack,
 } from "../src/utilities/home-motion";
+import {
+	HOME_KNOB_NAMES,
+	HOME_KNOBS,
+	homeMotionFromParams,
+	homeMotionToParams,
+} from "../src/utilities/home-tuning";
 
 const drawingFile = (drawing: string): string => {
 	const group = drawing.split("-")[0] ?? drawing;
@@ -142,5 +149,48 @@ describe("home motion", () => {
 		expect(part[0]).toBe(18);
 		expect(part[1]).toBeGreaterThan(part[2] ?? 0);
 		expect(part[5]).toBe(0);
+	});
+});
+
+describe("home tuning", () => {
+	it("has a slider for every setting, with the design's value on a step", () => {
+		expect([...HOME_KNOB_NAMES].sort()).toEqual(
+			Object.keys(HOME_MOTION).sort(),
+		);
+		for (const name of HOME_KNOB_NAMES) {
+			const { min, max, step } = HOME_KNOBS[name];
+			const value = HOME_MOTION[name];
+			expect(value).toBeGreaterThanOrEqual(min);
+			expect(value).toBeLessThanOrEqual(max);
+			const steps = (value - min) / step;
+			expect(steps).toBeCloseTo(Math.round(steps));
+		}
+	});
+
+	it("reads the design's settings from an address that asks for nothing", () => {
+		expect(homeMotionFromParams(new URLSearchParams())).toEqual(HOME_MOTION);
+		expect(
+			homeMotionFromParams(new URLSearchParams("spin=&speed=fast&q=hue")),
+		).toEqual(HOME_MOTION);
+	});
+
+	it("reads settings from an address and keeps them in range", () => {
+		expect(
+			homeMotionFromParams(new URLSearchParams("spin=1.6&tilt=0.5")),
+		).toEqual({ ...HOME_MOTION, spin: 1.6, tilt: 0.5 });
+		expect(
+			homeMotionFromParams(new URLSearchParams("spin=99&blur=-3")),
+		).toEqual({ ...HOME_MOTION, spin: HOME_KNOBS.spin.max, blur: 0 });
+	});
+
+	it("writes only the settings that differ from the design's", () => {
+		const params = new URLSearchParams("q=hue&curve=0.2");
+		homeMotionToParams({ ...HOME_MOTION, speed: 3.2000001, blur: 0 }, params);
+		expect(params.toString()).toBe("q=hue&speed=3.2&blur=0");
+		expect(homeMotionFromParams(params)).toEqual({
+			...HOME_MOTION,
+			speed: 3.2,
+			blur: 0,
+		});
 	});
 });

@@ -3,6 +3,32 @@
  * so it can be tested. The figures are the design handoff's.
  */
 
+/** the opening spin's settings */
+export type HomeMotion = {
+	/** seconds the first reel spins for */
+	spin: number;
+	/** seconds from one reel landing to the next */
+	stagger: number;
+	/** a reel starts at this many screen heights a second */
+	speed: number;
+	/** how far back the stage starts tilted, as a share of the design's */
+	tilt: number;
+	/** how far a fast reel bends into a drum, as a share of the design's */
+	curve: number;
+	/** how much a fast reel blurs, as a share of the design's */
+	blur: number;
+};
+
+/** the design's values */
+export const HOME_MOTION: HomeMotion = {
+	spin: 2.4,
+	stagger: 0.34,
+	speed: 5.2,
+	tilt: 1,
+	curve: 1,
+	blur: 1,
+};
+
 export const clamp01 = (x: number): number => (x < 0 ? 0 : x > 1 ? 1 : x);
 
 export const smooth = (x: number): number => x * x * (3 - 2 * x);

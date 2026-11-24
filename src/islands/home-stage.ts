@@ -1,4 +1,5 @@
 import { defineElementOnce } from "../utilities/define-element.js";
+import { feature } from "../utilities/feature.js";
 import {
 	HOME_CATEGORY_DRAWINGS,
 	HOME_DRAWINGS,
@@ -13,6 +14,7 @@ import {
 	detent,
 	ease,
 	footerStep,
+	HOME_MOTION,
 	mod,
 	rowOpacity,
 	rowParting,
@@ -22,7 +24,9 @@ import {
 	stepToward,
 	switchSlack,
 } from "../utilities/home-motion.js";
+import { homeMotionFromParams } from "../utilities/home-tuning.js";
 import type { HomeCardSpec, HomePalette } from "../utilities/home-art.js";
+import type { HomeMotion } from "../utilities/home-motion.js";
 
 /*
  * The landing page's motion, after the design handoff's home prototype.
@@ -44,11 +48,6 @@ import type { HomeCardSpec, HomePalette } from "../utilities/home-art.js";
  * would change their drawings as the list scrolls.
  */
 
-/** seconds the first reel spins for */
-const SPIN = 2.4;
-const STAGGER = 0.34;
-/** a reel starts at this many screen heights a second */
-const SPEED = 5.2;
 /** px a second, once landed */
 const DRIFT = 16;
 /** card width over the reel's width */
@@ -215,6 +214,8 @@ const start = (host: HTMLElement): (() => void) => {
 	const abort = new AbortController();
 	const { signal } = abort;
 	const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+	/** the opening spin's settings */
+	const motion: HomeMotion = { ...HOME_MOTION };
 
 	const header = document.querySelector<HTMLElement>(".appnav");
 	const dock = document.querySelector<HTMLElement>("[data-appnav-search-dock]");
@@ -441,15 +442,15 @@ const start = (host: HTMLElement): (() => void) => {
 		const visible = reels
 			.filter((reel) => !reel.off)
 			.sort((a, b) => a.el.offsetLeft - b.el.offsetLeft);
-		const stagger = spinStagger(visible.length, STAGGER);
+		const stagger = spinStagger(visible.length, motion.stagger);
 		visible.forEach((reel, order) => {
 			reel.ord = order;
 		});
-		maxD = SPIN + stagger * (visible.length - 1);
+		maxD = motion.spin + stagger * (visible.length - 1);
 		figure = 11;
 		for (const reel of reels) {
-			reel.D = SPIN + reel.ord * stagger;
-			reel.A = (SPEED * H * reel.D) / 4;
+			reel.D = motion.spin + reel.ord * stagger;
+			reel.A = (motion.speed * H * reel.D) / 4;
 			reel.dir = reel.ord % 2 === 1 ? -1 : 1;
 			// the offset that puts the first card where the design has it
 			const target = (LAND[reel.i] ?? 0) * reel.w + reel.pad;
@@ -915,10 +916,12 @@ const start = (host: HTMLElement): (() => void) => {
 		// slow. scrolling never tilts it
 		// and recedes again when the page is left
 		const exit = exiting ? (now - exitAt) / 1000 : 0;
-		const k = Math.max(
-			(1 - clamp01(t / (maxD * 0.95))) ** 3,
-			exiting ? smooth(clamp01(exit / 1.2)) : 0,
-		);
+		const k =
+			motion.tilt *
+			Math.max(
+				(1 - clamp01(t / (maxD * 0.95))) ** 3,
+				exiting ? smooth(clamp01(exit / 1.2)) : 0,
+			);
 		stage.style.transform =
 			k > 0.0005
 				? `translate3d(0,0,${(-280 * k).toFixed(2)}px) rotateX(${(16 * k).toFixed(3)}deg) rotateZ(${(-2.2 * k).toFixed(3)}deg)`
@@ -961,7 +964,7 @@ const start = (host: HTMLElement): (() => void) => {
 			let outV = 0;
 			if (exiting) {
 				const e = clamp01((exit - reel.ord * 0.06) / 1.1);
-				outV = reel.dir * SPEED * H * e ** 3;
+				outV = reel.dir * motion.speed * H * e ** 3;
 				reel.outPos += outV * dt;
 			}
 
@@ -973,12 +976,12 @@ const start = (host: HTMLElement): (() => void) => {
 			const speed =
 				Math.abs(reel.dir * spin.velocity + flingV + outV) / (1.6 * H);
 			// drum curvature, 1 over its radius
-			const kappa = Math.min(1, speed) ** 0.7 / (0.72 * H);
+			const kappa = (motion.curve * Math.min(1, speed) ** 0.7) / (0.72 * H);
 			const fade =
 				clamp01((t - reel.ord * 0.07) / 0.6) *
 				(exiting ? 1 - smooth(clamp01((exit - 0.7) / 0.55)) : 1);
 
-			const q = Math.round(Math.min(14, speed * 7) * 2) / 2;
+			const q = Math.round(Math.min(14, speed * 7) * motion.blur * 2) / 2;
 			if (q !== reel.blurQ) {
 				reel.blurQ = q;
 				reel.blur?.setAttribute("stdDeviation", `0 ${q}`);
@@ -1118,23 +1121,61 @@ const start = (host: HTMLElement): (() => void) => {
 	/* ---------- the reveal: the copy waits for the reels ---------- */
 
 	const timers: number[] = [];
-	if (reduce) {
-		host.classList.add("is-nav-in", "is-revealed", "is-settled");
-	} else {
+	const reveal = (): void => {
+		for (const timer of timers.splice(0)) {
+			window.clearTimeout(timer);
+		}
+		host.classList.remove("is-revealed", "is-settled");
 		timers.push(
 			window.setTimeout(() => {
 				host.classList.add("is-nav-in");
 			}, 150),
 			window.setTimeout(() => {
 				host.classList.add("is-revealed");
-			}, SPIN * 520),
+			}, motion.spin * 520),
 			window.setTimeout(
 				() => {
 					host.classList.add("is-settled");
 				},
-				SPIN * 520 + 2600,
+				motion.spin * 520 + 2600,
 			),
 		);
+	};
+
+	/* ---------- temporary: sliders for the opening spin while it is tuned.
+	   only with the `motion` feature on, from the debug page ---------- */
+
+	/** plays the opening again from the top of the page */
+	const replay = (): void => {
+		window.scrollTo({ top: 0, behavior: "instant" });
+		lastScroll = window.scrollY;
+		for (const card of liveCards()) {
+			paint(card, homeSlotSpec(HOME_OPENING[card.reel.i]?.[card.slot] ?? [1]));
+		}
+		startIntro(performance.now(), false);
+		reveal();
+	};
+	if (!reduce && feature("motion")) {
+		// the address carries the settings, so a link can share them
+		Object.assign(
+			motion,
+			homeMotionFromParams(new URLSearchParams(window.location.search)),
+		);
+		void import("./home-tuning.js")
+			.then(({ mountHomeTuning }) => {
+				if (!signal.aborted) {
+					mountHomeTuning({ motion, replay, signal });
+				}
+			})
+			.catch(() => {
+				// the page runs without the panel
+			});
+	}
+
+	if (reduce) {
+		host.classList.add("is-nav-in", "is-revealed", "is-settled");
+	} else {
+		reveal();
 	}
 
 	/* ---------- leaving: the page clears and the reels spin up again ---------- */
