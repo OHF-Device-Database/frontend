@@ -1,4 +1,9 @@
 ---
+import Bulb from "../../assets/about/bulb.svg";
+import Motion from "../../assets/about/motion.svg";
+import Speaker from "../../assets/about/speaker.svg";
+import Switch from "../../assets/about/switch.svg";
+import Thermo from "../../assets/about/thermo.svg";
 import byOhfDark from "../../assets/by-ohf-dark.svg";
 import byOhfLight from "../../assets/by-ohf-light.svg";
 
@@ -10,20 +15,44 @@ import { localizeHref } from "../../paraglide/runtime.js";
 import { localeStaticPaths } from "../../utilities/locale";
 
 export const getStaticPaths = localeStaticPaths;
+
+// drawings of devices taken apart, scattered round the text
+const figures = [
+	{ name: "bulb", Art: Bulb },
+	{ name: "speaker", Art: Speaker },
+	{ name: "motion", Art: Motion },
+	{ name: "thermo", Art: Thermo },
+	{ name: "switch", Art: Switch },
+];
 ---
 
 <Layout page="page" title={m.about_title()}>
-	<div class="container-narrow content-page">
-		<section class="content-section content-intro">
+	<div class="about">
+		{/* decoration only */}
+		<div class="about-figures" aria-hidden="true">
+			{
+				figures.map(({ name, Art }, index) => (
+					<div class="about-figure" data-figure={name}>
+						<Art />
+						<span class="about-figure-label">Fig. {index + 1}.</span>
+					</div>
+				))
+			}
+		</div>
+
+		<div class="about-body">
+			<p class="about-eyebrow">{m.about_title()}</p>
 			<h1>{m.about_heading()}</h1>
-			<p class="content-lede">{m.about_lede()}</p>
-			<p class="content-prose">{m.about_body()}</p>
-			<p class="content-prose">
+			<p>{m.about_lede()}</p>
+			<p>{m.about_body()}</p>
+			<p>
 				<Message message={m.about_read}>
 					<fragment slot="link">
 						{
 							(children: unknown[]) => (
-								<a href={localizeHref("/how-it-works")}>{children}</a>
+								<a class="about-link" href={localizeHref("/how-it-works")}>
+									{children}
+								</a>
 							)
 						}
 					</fragment>
@@ -31,16 +60,26 @@ export const getStaticPaths = localeStaticPaths;
 			</p>
 
 			<a
-				class="content-ohf"
+				class="about-ohf"
 				href="https://www.openhomefoundation.org/"
 				target="_blank"
 				rel="noopener"
 			>
-				<picture>
-					<source srcset={byOhfDark.src} media="(prefers-color-scheme: dark)" />
-					<img src={byOhfLight.src} alt={m.about_ohf_logo_alt()} />
-				</picture>
+				<img
+					class="about-ohf-light"
+					src={byOhfLight.src}
+					alt={m.about_ohf_logo_alt()}
+					width="284"
+					height="46"
+				/>
+				<img
+					class="about-ohf-dark"
+					src={byOhfDark.src}
+					alt={m.about_ohf_logo_alt()}
+					width="284"
+					height="46"
+				/>
 			</a>
-		</section>
+		</div>
 	</div>
 </Layout>
