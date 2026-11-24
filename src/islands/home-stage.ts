@@ -35,6 +35,9 @@ import type { HomeCardSpec, HomePalette } from "../utilities/home-art.js";
  * the category changes: only its drawing is swapped. And while the page is
  * blue the cards move with the scroll and nothing else. Clicking a card does
  * nothing.
+ *
+ * Leaving for another page plays the prototype's exit: the page clears and
+ * the reels spin up again while the next page loads.
  */
 
 /** seconds the first reel spins for */
@@ -55,6 +58,8 @@ const PARALLAX = [0.42, 0.24, 0.3, 0.48];
 /** px of scroll for each category */
 const ROW_STEP = 64;
 const SWITCH_SECONDS = 0.55;
+/** seconds the reels spin out for before the next page shows */
+const EXIT_SECONDS = 1.45;
 const FOOTER_BANDS = 6;
 const FOOTER_BAND_HEIGHT = 18;
 
@@ -105,6 +110,8 @@ type Reel = {
 	hoverTarget: number;
 	dragging: boolean;
 	lastPalette: HomePalette | undefined;
+	/** how far the reel has run since the page started to leave */
+	outPos: number;
 };
 
 const pick = <T>(items: readonly T[]): T | undefined =>
@@ -236,6 +243,8 @@ const start = (host: HTMLElement): (() => void) => {
 	}
 
 	let H = 0;
+	let exiting = false;
+	let exitAt = 0;
 	let t0 = 0;
 	let last = performance.now();
 	let maxD = 0;
@@ -308,6 +317,7 @@ const start = (host: HTMLElement): (() => void) => {
 			hoverTarget: 1,
 			dragging: false,
 			lastPalette: undefined,
+			outPos: 0,
 		}));
 
 	const makeCard = (reel: Reel, slot: number, lap: number): Card => {
@@ -836,7 +846,12 @@ const start = (host: HTMLElement): (() => void) => {
 
 		// the camera starts receded and tilted and settles flat as the reels
 		// slow. scrolling never tilts it
-		const k = (1 - clamp01(t / (maxD * 0.95))) ** 3;
+		// and recedes again when the page is left
+		const exit = exiting ? (now - exitAt) / 1000 : 0;
+		const k = Math.max(
+			(1 - clamp01(t / (maxD * 0.95))) ** 3,
+			exiting ? smooth(clamp01(exit / 1.2)) : 0,
+		);
 		stage.style.transform =
 			k > 0.0005
 				? `translate3d(0,0,${(-280 * k).toFixed(2)}px) rotateX(${(16 * k).toFixed(3)}deg) rotateZ(${(-2.2 * k).toFixed(3)}deg)`
@@ -871,13 +886,27 @@ const start = (host: HTMLElement): (() => void) => {
 			// the scroll pulls each reel along at its own rate
 			reel.flingPos -= dy * (PARALLAX[reel.i] ?? 0) * react;
 
+			// leaving: each reel kicks off a beat after its neighbour and speeds
+			// up like a slot machine
+			let outV = 0;
+			if (exiting) {
+				const e = clamp01((exit - reel.ord * 0.06) / 1.1);
+				outV = reel.dir * SPEED * H * e ** 3;
+				reel.outPos += outV * dt;
+			}
+
 			const offset =
-				reel.start + reel.dir * (spin.position + reel.driftPos) + reel.flingPos;
+				reel.start +
+				reel.dir * (spin.position + reel.driftPos) +
+				reel.flingPos +
+				reel.outPos;
 			const speed =
-				Math.abs(reel.dir * spin.velocity + reel.flingV) / (1.6 * H);
+				Math.abs(reel.dir * spin.velocity + reel.flingV + outV) / (1.6 * H);
 			// drum curvature, 1 over its radius
 			const kappa = Math.min(1, speed) ** 0.7 / (0.72 * H);
-			const fade = clamp01((t - reel.ord * 0.07) / 0.6);
+			const fade =
+				clamp01((t - reel.ord * 0.07) / 0.6) *
+				(exiting ? 1 - smooth(clamp01((exit - 0.7) / 0.55)) : 1);
 
 			const q = Math.round(Math.min(14, speed * 7) * 2) / 2;
 			if (q !== reel.blurQ) {
@@ -1032,6 +1061,36 @@ const start = (host: HTMLElement): (() => void) => {
 		);
 	}
 
+	/* ---------- leaving: the page clears and the reels spin up again ---------- */
+
+	const startExit = (): Promise<void> => {
+		exiting = true;
+		exitAt = performance.now();
+		for (const reel of reels) {
+			reel.outPos = 0;
+			reel.flingV = 0;
+		}
+		document.documentElement.classList.add("home-exiting");
+		return new Promise((resolve) => {
+			window.setTimeout(resolve, EXIT_SECONDS * 1000);
+		});
+	};
+	// the next page loads while the reels spin out, and shows once both are
+	// done. going back or forward in history stays instant
+	document.addEventListener(
+		"astro:before-preparation",
+		(event) => {
+			if (reduce || exiting || event.navigationType === "traverse") {
+				return;
+			}
+			const load = event.loader;
+			event.loader = async () => {
+				await Promise.all([load(), startExit()]);
+			};
+		},
+		{ signal },
+	);
+
 	let resizeRaf = 0;
 	window.addEventListener(
 		"resize",
@@ -1068,6 +1127,7 @@ const start = (host: HTMLElement): (() => void) => {
 		}
 		setBlue(false);
 		setDock(false);
+		document.documentElement.classList.remove("home-exiting");
 		for (const element of bands) {
 			element.style.height = "";
 		}

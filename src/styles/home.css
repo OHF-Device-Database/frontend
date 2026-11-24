@@ -613,30 +613,6 @@ html[data-page="home"] .appnav {
 	transform: scale(calc(0.985 + var(--o, 1) * 0.015));
 	transform-origin: 50% 60%;
 }
-/* the count shows beside the row in focus */
-.home-cat-count {
-	position: absolute;
-	top: 0.38em;
-	left: 100%;
-	margin-left: 0.5em;
-	color: var(--home-text-subtle);
-	font-family: var(--ohf-font-family-mono);
-	font-size: max(10px, 0.32em);
-	font-variant-numeric: tabular-nums;
-	line-height: 1;
-	letter-spacing: 0.06em;
-	white-space: nowrap;
-	opacity: 0;
-	transform: translateX(-3px);
-	transition:
-		opacity 0.2s ease,
-		transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-.home-cat.is-focus .home-cat-count,
-.home-cat.is-active .home-cat-count {
-	opacity: 1;
-	transform: none;
-}
 .home-cats-spacer {
 	height: calc(var(--home-vh) * 0.8);
 }
@@ -753,6 +729,20 @@ home-stage:defined .home-nav-shade {
 home-stage.is-nav-in .home-nav-shade {
 	opacity: 1;
 	transition: opacity 1s ease;
+}
+
+/* ---------- leaving for another page: the page clears while the reels spin
+   up again */
+html.home-exiting .home-hero,
+html.home-exiting .appnav-search-dock,
+html.home-exiting .appfoot-steps,
+html.home-exiting .appfoot {
+	opacity: 0;
+	transform: translateY(-12px);
+	transition:
+		opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+		transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+	pointer-events: none;
 }
 
 /* ---------- narrower: the reels run the full width and the content floats
@@ -885,9 +875,6 @@ home-stage.is-nav-in .home-nav-shade {
 	}
 	.home-nav-shade {
 		height: 112px;
-	}
-	.home-cat-count {
-		display: none;
 	}
 }
 

@@ -3,7 +3,6 @@ import SearchBox from "../../components/SearchBox.astro";
 import Layout from "../../layouts/Layout.astro";
 
 import { getDeviceCount } from "../../io/device";
-import { getDimensions } from "../../io/dimension";
 import { m } from "../../paraglide/messages.js";
 import { getLocale, localizeHref } from "../../paraglide/runtime.js";
 import {
@@ -24,15 +23,6 @@ Astro.cache.set({
 	tags: ["device-count"],
 });
 
-// the counts are a nicety, the list works without them
-let counts: Record<string, { count: number }> = {};
-try {
-	const { dimensions } = await getDimensions({}, AbortSignal.timeout(3_000));
-	counts = dimensions.categories;
-} catch {
-	counts = {};
-}
-
 const locale = getLocale();
 const noFilters = browseFiltersFromSearchParams(new URLSearchParams());
 const categories = DeviceCategoryTopLevelId.options
@@ -40,7 +30,6 @@ const categories = DeviceCategoryTopLevelId.options
 		id,
 		label: device.category(id).label,
 		href: localizeHref(browseFiltersToHref(withCategoryToggled(noFilters, id))),
-		count: counts[id]?.count,
 	}))
 	.sort((a, b) => a.label.localeCompare(b.label, locale));
 
@@ -125,11 +114,6 @@ const REELS = [0, 1, 2, 3];
 												style={`--i:${index}`}
 											>
 												<span class="home-cat-name">{category.label}</span>
-												{category.count !== undefined && (
-													<span class="home-cat-count">
-														{category.count.toLocaleString(locale)}
-													</span>
-												)}
 											</a>
 										</li>
 									))
