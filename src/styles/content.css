@@ -23,11 +23,6 @@
 		padding-bottom: var(--space-10);
 	}
 }
-.content-eyebrow {
-	color: var(--fg-muted);
-	font-size: var(--fs-14);
-	margin-bottom: var(--space-3);
-}
 .content-intro h1 {
 	margin-bottom: var(--space-4);
 }

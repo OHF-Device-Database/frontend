@@ -4,7 +4,7 @@
  * reading sections 680px wide, each under a hairline across the page.
  */
 .hiw {
-	padding-bottom: 176px;
+	padding-bottom: var(--ohf-space-160);
 	color: var(--ohf-color-text-default);
 }
 .hiw-measure {
@@ -32,7 +32,10 @@
 	fill: var(--hiw-art-face);
 }
 .hiw-art-dot {
-	fill: #3f3c38;
+	fill: var(--ohf-color-warm-grey-700);
+}
+.hiw-art-accent {
+	fill: var(--ohf-color-bg-accent-default);
 }
 .hiw-eyebrow {
 	margin: 0 0 var(--ohf-space-24);
@@ -67,7 +70,7 @@
 	gap: var(--ohf-space-16);
 	box-sizing: content-box;
 	max-width: 1249px;
-	margin: 115px auto;
+	margin: var(--ohf-space-112) auto;
 	padding: 0 var(--page-gutter);
 	list-style: none;
 }
@@ -80,7 +83,7 @@
 	box-sizing: border-box;
 	padding: var(--ohf-space-24);
 	border: var(--ohf-border-width-default) solid var(--ohf-color-border-subtle);
-	border-radius: 16px;
+	border-radius: var(--ohf-radius-container);
 	background: var(--ohf-color-bg-surface-raised);
 }
 .hiw-step-num {
@@ -106,31 +109,31 @@
 	margin: 0;
 	color: var(--ohf-color-text-subtle);
 	font-size: var(--ohf-font-size-14);
-	line-height: 1.5;
+	line-height: var(--ohf-line-height-20);
 }
 /* the number's faint fill and the drawing's colours, per theme. set on the
    theme boundaries so the nearest `data-theme` wins */
 :root,
 [data-theme="light"] {
-	--hiw-step-num-bg: rgb(0 0 0 / 6%);
-	--hiw-art-face: #000;
-	--hiw-art-line: #fff;
+	--hiw-step-num-bg: var(--ohf-color-black-alpha-6);
+	--hiw-art-face: var(--ohf-color-black);
+	--hiw-art-line: var(--ohf-color-white);
 }
 [data-theme="dark"] {
-	--hiw-step-num-bg: rgb(255 255 255 / 8%);
-	--hiw-art-face: var(--surface);
+	--hiw-step-num-bg: var(--ohf-color-white-alpha-8);
+	--hiw-art-face: var(--ohf-color-bg-canvas);
 	--hiw-art-line: var(--ohf-color-text-default);
 }
 @media (prefers-color-scheme: dark) {
 	[data-theme="auto"] {
-		--hiw-step-num-bg: rgb(255 255 255 / 8%);
-		--hiw-art-face: var(--surface);
+		--hiw-step-num-bg: var(--ohf-color-white-alpha-8);
+		--hiw-art-face: var(--ohf-color-bg-canvas);
 		--hiw-art-line: var(--ohf-color-text-default);
 	}
 }
 
 .hiw-section {
-	padding: 127px 0 66px;
+	padding: var(--ohf-space-128) 0 var(--ohf-space-64);
 	border-top: var(--ohf-border-width-default) solid
 		var(--ohf-color-border-subtle);
 }
@@ -159,6 +162,19 @@
 }
 .hiw-link:hover {
 	text-decoration-color: currentcolor;
+}
+.hiw-link:focus-visible,
+.price-sites-row dd a:focus-visible {
+	outline: var(--ohf-border-width-focus) solid var(--ohf-color-border-focus);
+	outline-offset: 2px;
+	border-radius: var(--ohf-radius-sm);
+}
+/* a word joiner keeps the icon on the line of the last word */
+.hiw-link > span {
+	white-space: nowrap;
+}
+.hiw-link > span::before {
+	content: "\2060";
 }
 .hiw-link svg {
 	display: inline-block;
@@ -248,7 +264,8 @@
 		letter-spacing: -0.48px;
 	}
 }
-@media (max-width: 600px) {
+/* --ohf-breakpoint-sm */
+@media (max-width: 640px) {
 	.price-sites-row {
 		grid-template-columns: minmax(0, 1fr);
 	}
