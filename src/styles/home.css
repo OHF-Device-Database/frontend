@@ -149,8 +149,10 @@ html[data-page="home"] .appnav {
 .home-reel.is-dragging {
 	cursor: grabbing;
 }
-/* while the page is blue the cards only move with the scroll */
+/* while the page is blue the cards only move with the scroll, so a touch on
+   them scrolls the page */
 .home-gallery.is-blueprint .home-reel {
+	touch-action: auto;
 	cursor: default;
 }
 .home-reel:nth-child(1) {
@@ -893,9 +895,17 @@ html.home-exiting .appfoot {
 		transform: none;
 		transition: none;
 	}
+	/* the reels cannot be dragged */
+	.home-reel {
+		touch-action: auto;
+		cursor: default;
+	}
+	/* a drawing still comes apart, at once */
 	.home-card-face,
 	.home-card-face::before,
-	.home-art .pt {
+	.home-art .pt,
+	.home-art .pt.fade,
+	.home-art .pt.fout {
 		transition: none;
 	}
 	.home-cats.is-rolo .home-cat.is-tick .home-cat-name {

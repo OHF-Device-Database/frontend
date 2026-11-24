@@ -645,6 +645,8 @@ const start = (host: HTMLElement): (() => void) => {
 		}, 220);
 	};
 	rows.forEach((row, index) => {
+		/** the window lost focus with the row still the active element */
+		let kept = false;
 		row.addEventListener(
 			"pointerenter",
 			(event) => {
@@ -661,12 +663,34 @@ const start = (host: HTMLElement): (() => void) => {
 			() => {
 				hoverRow = index;
 				enter(row, 0, 120);
+				const returning = kept;
+				kept = false;
+				// a row reached with the keyboard can sit outside the part of the
+				// list that shows. bring it to the reading line, where scrolling
+				// would put it. coming back to the window leaves the page alone
+				if (returning || !row.matches(":focus-visible")) {
+					return;
+				}
+				// a frame later, after the browser's own scroll into view
+				requestAnimationFrame(() => {
+					if (signal.aborted || document.activeElement !== row) {
+						return;
+					}
+					window.scrollTo({
+						top:
+							window.scrollY +
+							track.getBoundingClientRect().top +
+							index * ROW_STEP,
+						behavior: reduce ? "instant" : "smooth",
+					});
+				});
 			},
 			{ signal },
 		);
 		row.addEventListener(
 			"blur",
 			() => {
+				kept = document.activeElement === row;
 				if (hoverRow === index) {
 					hoverRow = -1;
 				}
@@ -714,6 +738,13 @@ const start = (host: HTMLElement): (() => void) => {
 		}
 		blue = on;
 		host.classList.toggle("is-blue", on);
+		if (on) {
+			// a drag under way ends here, where it is
+			for (const reel of reels) {
+				reel.dragging = false;
+				reel.el.classList.remove("is-dragging");
+			}
+		}
 		// the header reads in white over the cobalt
 		if (header !== null) {
 			if (on) {
@@ -735,11 +766,34 @@ const start = (host: HTMLElement): (() => void) => {
 	};
 
 	let docked = false;
-	const setDock = (on: boolean): void => {
+	const showDock = (on: boolean): void => {
 		docked = on;
 		if (dock !== null) {
 			dock.classList.toggle("is-shown", on);
 			dock.inert = !on;
+		}
+	};
+	// the hero search and the one in the header stand for one search. what
+	// was typed, and the focus, go with whichever is on screen
+	const heroInput = heroSearch.querySelector("input");
+	const dockInput = dock?.querySelector("input") ?? null;
+	const setDock = (on: boolean): void => {
+		const from = on ? heroInput : dockInput;
+		const to = on ? dockInput : heroInput;
+		if (from === null || to === null) {
+			showDock(on);
+			return;
+		}
+		const focused = document.activeElement === from;
+		if (to.value !== from.value) {
+			to.value = from.value;
+			// the search reads its query from this event
+			to.dispatchEvent(new InputEvent("input", { bubbles: true }));
+		}
+		showDock(on);
+		if (focused) {
+			to.focus({ preventScroll: true });
+			to.setSelectionRange(from.selectionStart, from.selectionEnd);
 		}
 	};
 
@@ -876,10 +930,13 @@ const start = (host: HTMLElement): (() => void) => {
 				reel.hoverMul += (reel.hoverTarget - reel.hoverMul) * ease(4, dt);
 				reel.driftPos += drift * reel.hoverMul * focusMul * sectionMul * dt;
 			}
+			// a fling slows to nothing as the page turns blue, and is spent
+			// once it has
+			const flingV = reel.flingV * sectionMul;
 			if (!reel.dragging) {
-				reel.flingPos += reel.flingV * dt;
+				reel.flingPos += flingV * dt;
 				reel.flingV *= Math.exp(-dt * 2.4);
-				if (Math.abs(reel.flingV) < 0.5) {
+				if (Math.abs(reel.flingV) < 0.5 || sectionMul < 0.001) {
 					reel.flingV = 0;
 				}
 			}
@@ -901,7 +958,7 @@ const start = (host: HTMLElement): (() => void) => {
 				reel.flingPos +
 				reel.outPos;
 			const speed =
-				Math.abs(reel.dir * spin.velocity + reel.flingV + outV) / (1.6 * H);
+				Math.abs(reel.dir * spin.velocity + flingV + outV) / (1.6 * H);
 			// drum curvature, 1 over its radius
 			const kappa = Math.min(1, speed) ** 0.7 / (0.72 * H);
 			const fade =
@@ -981,7 +1038,8 @@ const start = (host: HTMLElement): (() => void) => {
 		el.addEventListener(
 			"pointerdown",
 			(event) => {
-				if (blue) {
+				// blue, or reduced motion: the reels stay where they are
+				if (blue || reduce) {
 					return;
 				}
 				reel.dragging = true;
@@ -1126,7 +1184,7 @@ const start = (host: HTMLElement): (() => void) => {
 			window.clearTimeout(timer);
 		}
 		setBlue(false);
-		setDock(false);
+		showDock(false);
 		document.documentElement.classList.remove("home-exiting");
 		for (const element of bands) {
 			element.style.height = "";
