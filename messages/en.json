@@ -45,6 +45,7 @@
 	"account_connected": "Connected",
 	"account_disconnect_button": "Disconnect",
 	"account_disconnect_label": "Disconnect {provider}",
+	"account_disconnecting": "Disconnecting…",
 	"account_disconnect_title": "Disconnect {provider}?",
 	"account_disconnect_body": "This revokes the Device Database’s access to your {provider} account in all browsers. Your past contributions stay, and you can connect again at any time.",
 	"account_cancel": "Cancel",

@@ -105,7 +105,7 @@ const tabs = [
 										data-account="disconnect"
 										data-provider={provider.id}
 									>
-										{m.account_disconnect_button()}
+										<span data-label>{m.account_disconnect_button()}</span>
 									</Button>
 								</Fragment>
 							</Modal>
@@ -123,7 +123,7 @@ const tabs = [
 							<span class="settings-row-hint">{m.account_sign_out_hint()}</span>
 						</div>
 						<Button size="sm" data-account="sign-out">
-							{m.account_sign_out()}
+							<span data-label>{m.account_sign_out()}</span>
 						</Button>
 					</div>
 				</section>
@@ -142,6 +142,7 @@ const tabs = [
 		isAuthProviderId,
 	} from "../../io/auth/providers.client";
 	import { m } from "../../paraglide/messages.js";
+	import { markBusy } from "../../utilities/busy";
 
 	// the page is prerendered for everyone, so the account is filled in here
 	const fill = (page: HTMLElement) => {
@@ -194,8 +195,14 @@ const tabs = [
 			...page.querySelectorAll<HTMLButtonElement>("[data-account]"),
 		];
 
-		const run = async (action: () => Promise<boolean>) => {
+		// both wait for github to revoke the token, which can take a few seconds
+		const run = async (
+			clicked: HTMLButtonElement,
+			label: string,
+			action: () => Promise<boolean>,
+		) => {
 			buttons.forEach((button) => (button.disabled = true));
+			const restore = markBusy(clicked, label);
 			if (error) error.textContent = "";
 
 			if (await action()) {
@@ -203,6 +210,7 @@ const tabs = [
 				return;
 			}
 
+			restore();
 			buttons.forEach((button) => (button.disabled = false));
 			// the error shows on the page, behind the confirmation
 			page
@@ -216,13 +224,18 @@ const tabs = [
 				switch (button.dataset["account"]) {
 					case "sign-out": {
 						const active = activeSession();
-						if (active) void run(() => active.session.signOut());
+						if (active)
+							void run(button, m.account_signing_out(), () =>
+								active.session.signOut(),
+							);
 						break;
 					}
 					case "disconnect": {
 						const id = button.dataset["provider"];
 						if (isAuthProviderId(id)) {
-							void run(() => AUTH_SESSIONS[id].disconnect());
+							void run(button, m.account_disconnecting(), () =>
+								AUTH_SESSIONS[id].disconnect(),
+							);
 						}
 						break;
 					}

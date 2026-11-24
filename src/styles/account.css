@@ -295,3 +295,8 @@ a.settings-row-title:focus-visible {
 .settings-error:empty {
 	display: none;
 }
+/* still readable while it runs, unlike a plain disabled button */
+.settings .ui-button[aria-busy="true"] {
+	--ui-button-fg: var(--ohf-color-text-subtle);
+	cursor: progress;
+}
