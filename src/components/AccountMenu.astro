@@ -69,11 +69,12 @@ const marks: Record<AuthProviderId, typeof GitHubMark> = {
 									size="lg"
 									shape="pill"
 									class="account-provider"
+									data-provider-name={provider.name}
 									data-astro-reload
 									data-astro-prefetch="false"
 								>
 									<Mark width="16" height="16" aria-hidden="true" />
-									{provider.name}
+									<span data-label>{provider.name}</span>
 								</Button>
 							</li>
 						);
@@ -114,8 +115,9 @@ const marks: Record<AuthProviderId, typeof GitHubMark> = {
 			{m.account_security()}
 		</MenuItem>
 		<MenuItem icon={iconLogOut} data-account-sign-out>
-			{m.account_sign_out()}
+			<span data-label>{m.account_sign_out()}</span>
 		</MenuItem>
+		<p class="account-menu-error" role="alert" data-account-menu-error></p>
 	</Menu>
 </div>
 
@@ -123,6 +125,7 @@ const marks: Record<AuthProviderId, typeof GitHubMark> = {
 	import { AUTH_PROVIDERS } from "../io/auth/providers";
 	import { activeSession, AUTH_SESSIONS } from "../io/auth/providers.client";
 	import { m } from "../paraglide/messages.js";
+	import { markBusy } from "../utilities/busy";
 
 	// the page may be cached for everyone, so the signed-in state is filled in here
 	const sync = () => {
@@ -157,12 +160,16 @@ const marks: Record<AuthProviderId, typeof GitHubMark> = {
 			return;
 		}
 
-		button.disabled = true;
+		// github has to revoke the token first, which can take a few seconds
+		const restore = markBusy(button, m.account_signing_out());
 		if (await active.session.signOut()) {
 			window.location.reload();
 			return;
 		}
-		button.disabled = false;
+
+		restore();
+		const error = document.querySelector("[data-account-menu-error]");
+		if (error) error.textContent = m.account_action_failed();
 	};
 
 	// the modal is on every page, the logo is only worth loading once it opens
@@ -183,6 +190,32 @@ const marks: Record<AuthProviderId, typeof GitHubMark> = {
 
 		if (event.target.closest('[data-modal-open="account-sign-in"]')) {
 			loadMark();
+			return;
+		}
+
+		// the sign-in goes through our server and then the provider, which can
+		// take a few seconds before the page changes
+		const provider =
+			event.target.closest<HTMLAnchorElement>(".account-provider");
+		if (provider) {
+			if (provider.getAttribute("aria-busy") === "true") {
+				event.preventDefault();
+				return;
+			}
+			const restore = markBusy(
+				provider,
+				m.account_signing_in({
+					provider: provider.dataset["providerName"] ?? "",
+				}),
+			);
+			// coming back with the back button restores the page as it was left
+			window.addEventListener(
+				"pageshow",
+				(shown) => {
+					if (shown.persisted) restore();
+				},
+				{ once: true },
+			);
 			return;
 		}
 

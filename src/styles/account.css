@@ -57,6 +57,9 @@ html:not([data-github-session]) .account .ui-menu-anchor {
 .account-provider.ui-button {
 	width: 100%;
 }
+.account-provider[aria-busy="true"] {
+	cursor: progress;
+}
 /* GitHub's brand guidelines only allow the mark in pure black or white */
 .account-provider svg path {
 	fill: #000;
@@ -82,16 +85,18 @@ html:not([data-github-session]) .account .ui-menu-anchor {
 	border-radius: var(--ohf-radius-sm);
 }
 
-/* the avatar, 40px like the other header buttons, with the accent ring */
+/* the avatar, 40px with the same thin outline as the menu button next to it */
 .account-avatar {
 	display: block;
 	flex: none;
+	box-sizing: border-box;
 	width: 40px;
 	height: 40px;
-	padding: 2px;
-	border: var(--ohf-border-width-focus) solid var(--ohf-color-bg-accent-default);
+	padding: 0;
+	overflow: hidden;
+	border: var(--ohf-border-width-default) solid var(--ohf-color-alpha-12);
 	border-radius: var(--ohf-radius-full);
-	background: var(--ohf-color-bg-surface-default);
+	background: var(--ohf-color-alpha-9);
 	cursor: pointer;
 }
 .account-avatar:focus-visible {
@@ -104,6 +109,21 @@ html:not([data-github-session]) .account .ui-menu-anchor {
 	height: 100%;
 	border-radius: var(--ohf-radius-full);
 	background: var(--ohf-color-bg-surface-sunken);
+}
+.account-menu .account-menu-error {
+	margin: 0;
+	padding: var(--ohf-space-4) var(--ohf-space-12) var(--ohf-space-8);
+	color: var(--ohf-color-text-danger);
+	font-size: var(--ohf-font-size-13);
+	line-height: var(--ohf-line-height-20);
+}
+.account-menu .account-menu-error:empty {
+	display: none;
+}
+/* still readable while it runs, unlike a plain disabled item */
+.account-menu .ui-menu-item[aria-busy="true"] {
+	color: var(--ohf-color-text-subtle);
+	cursor: progress;
 }
 .account-menu .account-menu-login {
 	margin: 0;
