@@ -1,0 +1,27 @@
+/*
+ * Colours for the drawings in `src/assets/illustrations/`. Each drawing is one
+ * file for both themes: its lines use `currentColor` and the rest read these
+ * properties. Set on the theme boundaries so the nearest `data-theme` wins.
+ * The glass and soft line values are the handoff's own, which have no token.
+ */
+:root,
+[data-theme="light"] {
+	/* faces take the page colour so the lines behind them stay hidden */
+	--illustration-paper: var(--ohf-color-bg-canvas);
+	--illustration-mute: var(--ohf-color-warm-grey-400);
+	--illustration-accent: var(--ohf-color-bg-accent-default);
+	--illustration-glass: rgb(255 255 255 / 72%);
+	--illustration-line-soft: rgb(27 25 22 / 40%);
+}
+[data-theme="dark"] {
+	--illustration-mute: var(--ohf-color-warm-grey-700);
+	--illustration-glass: rgb(255 255 255 / 50%);
+	--illustration-line-soft: rgb(233 230 223 / 45%);
+}
+@media (prefers-color-scheme: dark) {
+	[data-theme="auto"] {
+		--illustration-mute: var(--ohf-color-warm-grey-700);
+		--illustration-glass: rgb(255 255 255 / 50%);
+		--illustration-line-soft: rgb(233 230 223 / 45%);
+	}
+}
