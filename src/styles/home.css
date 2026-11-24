@@ -141,7 +141,8 @@ html[data-page="home"] .appnav {
 	position: relative;
 	height: 100%;
 	transform-style: preserve-3d;
-	touch-action: none;
+	/* one finger drags the reel, two still zoom the page */
+	touch-action: pinch-zoom;
 	cursor: grab;
 	-webkit-user-select: none;
 	user-select: none;
@@ -767,7 +768,7 @@ html.home-exiting .appfoot {
 	}
 	.home-reel:nth-child(n) {
 		grid-column: auto;
-		touch-action: pan-y;
+		touch-action: pan-y pinch-zoom;
 	}
 	.home-hero {
 		grid-template-columns: 1fr;
@@ -900,7 +901,11 @@ html.home-exiting .appfoot {
 		touch-action: auto;
 		cursor: default;
 	}
-	/* a drawing still comes apart, at once */
+	/* and the drawings stay whole, on hover and in the blue state */
+	.home-card:hover,
+	.home-gallery.is-blueprint .home-card {
+		--e: 0;
+	}
 	.home-card-face,
 	.home-card-face::before,
 	.home-art .pt,

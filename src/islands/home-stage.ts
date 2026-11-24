@@ -1086,8 +1086,13 @@ const start = (host: HTMLElement): (() => void) => {
 			reel.dragging = false;
 			el.classList.remove("is-dragging");
 			if (moved) {
+				// only a drag that is let go flings. one the browser took over,
+				// to scroll the page or to zoom, stops where it is
 				const idle = performance.now() - lastT;
-				reel.flingV = idle > 90 ? 0 : Math.max(-9000, Math.min(9000, velocity));
+				reel.flingV =
+					event.type === "pointercancel" || idle > 90
+						? 0
+						: Math.max(-9000, Math.min(9000, velocity));
 			}
 			if (event.type === "pointercancel" || !el.matches(":hover")) {
 				reel.hoverTarget = 1;
