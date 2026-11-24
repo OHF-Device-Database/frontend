@@ -19,18 +19,18 @@
    `data-theme` wins */
 :root,
 [data-theme="light"] {
-	--stance-art-face: #010101;
+	--stance-art-face: var(--ohf-color-black);
 	--stance-art-line: #dedfe7;
 	--stance-art-ladder: #98989b;
 }
 [data-theme="dark"] {
-	--stance-art-face: #1f1f1e;
+	--stance-art-face: var(--ohf-color-grey-900);
 	--stance-art-line: #e7e5de;
 	--stance-art-ladder: #e7e5de;
 }
 @media (prefers-color-scheme: dark) {
 	[data-theme="auto"] {
-		--stance-art-face: #1f1f1e;
+		--stance-art-face: var(--ohf-color-grey-900);
 		--stance-art-line: #e7e5de;
 		--stance-art-ladder: #e7e5de;
 	}
@@ -40,16 +40,186 @@
 	max-width: 100%;
 	margin-bottom: var(--ohf-space-32);
 }
-.stance-art .f {
+/* the woofers pump, the small speaker hops and the ladders shake as rings
+   of sound leave the big cone. without motion two rings stay in place */
+.stance-art g {
+	stroke: var(--stance-art-line);
+	stroke-width: 1;
+	stroke-linejoin: round;
+	stroke-linecap: round;
+}
+.stance-art .pf {
 	fill: var(--stance-art-face);
 	stroke: var(--stance-art-face);
-	stroke-width: 0.6;
+	stroke-width: 0.9px;
 }
-.stance-art .l {
+.stance-art .ink {
 	stroke: var(--stance-art-line);
 }
-.stance-art .l2 {
+.stance-art .lad,
+.stance-art .af {
 	stroke: var(--stance-art-ladder);
+}
+.stance-art .w {
+	fill: none;
+	/* the ladder grey shows on both the black cabinet and a light page */
+	stroke: var(--stance-art-ladder);
+	opacity: 0;
+	transform-box: view-box;
+	transform-origin: 0 0;
+	transform: translate(182.06px, 228.52px) scale(45.017);
+}
+.stance-art .w path {
+	vector-effect: non-scaling-stroke;
+	stroke-width: 1px;
+}
+.stance-art .af {
+	transform-box: view-box;
+	transform-origin: 286.1px 363.7px;
+}
+.stance-art .lad {
+	transform-box: view-box;
+	transform-origin: 60.65px 329.49px;
+}
+.stance-art .cone {
+	animation: stance-pump 3.2s cubic-bezier(0.3, 0.7, 0.3, 1) infinite;
+}
+.stance-art .bxcone {
+	animation: stance-bx 3.2s cubic-bezier(0.3, 0.7, 0.3, 1) infinite;
+}
+.stance-art .port {
+	animation: stance-hop 3.2s cubic-bezier(0.3, 0.7, 0.3, 1) infinite;
+}
+.stance-art .af {
+	animation: stance-shake 3.2s ease-out infinite;
+	animation-delay: 0.06s;
+}
+.stance-art .lad {
+	animation: stance-shake 3.2s ease-out infinite;
+}
+.stance-art .w {
+	animation: stance-wave 3.2s cubic-bezier(0.15, 0.55, 0.35, 1) infinite;
+}
+.stance-art .w1 {
+	animation-delay: 0.42s;
+}
+@keyframes stance-pump {
+	0%,
+	100% {
+		transform: translate(0, 0);
+	}
+	3% {
+		transform: translate(3.12px, 1.8px);
+	}
+	10% {
+		transform: translate(0, 0);
+	}
+	16% {
+		transform: translate(3.12px, 1.8px);
+	}
+	24% {
+		transform: translate(0, 0);
+	}
+}
+@keyframes stance-bx {
+	0%,
+	100% {
+		transform: translate(0, 0);
+	}
+	3% {
+		transform: translate(-2.23px, 1.29px);
+	}
+	10% {
+		transform: translate(0, 0);
+	}
+	16% {
+		transform: translate(-2.23px, 1.29px);
+	}
+	24% {
+		transform: translate(0, 0);
+	}
+}
+@keyframes stance-hop {
+	0%,
+	2% {
+		transform: translate(0, 0);
+	}
+	6% {
+		transform: translate(0, -3.6px);
+	}
+	10% {
+		transform: translate(0, 0);
+	}
+	15% {
+		transform: translate(0, 0);
+	}
+	19% {
+		transform: translate(0, -3.6px);
+	}
+	23%,
+	100% {
+		transform: translate(0, 0);
+	}
+}
+@keyframes stance-wave {
+	0% {
+		opacity: 0;
+		transform: translate(182.06px, 228.52px) scale(45.017);
+	}
+	4% {
+		opacity: 1;
+	}
+	26% {
+		opacity: 0.55;
+	}
+	40%,
+	100% {
+		opacity: 0;
+		transform: translate(242.21px, 263.25px) scale(74.599);
+	}
+}
+@keyframes stance-shake {
+	0%,
+	3% {
+		transform: rotate(0);
+	}
+	6% {
+		transform: rotate(-1.4deg);
+	}
+	10% {
+		transform: rotate(0.9deg);
+	}
+	17% {
+		transform: rotate(-1.2deg);
+	}
+	21% {
+		transform: rotate(0.7deg);
+	}
+	25% {
+		transform: rotate(-0.3deg);
+	}
+	29%,
+	100% {
+		transform: rotate(0);
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.stance-art .cone,
+	.stance-art .bxcone,
+	.stance-art .port,
+	.stance-art .lad,
+	.stance-art .af,
+	.stance-art .w {
+		animation: none;
+	}
+	.stance-art .w0 {
+		opacity: 1;
+		transform: translate(199.88px, 238.81px) scale(54.02);
+	}
+	.stance-art .w1 {
+		opacity: 0.5;
+		transform: translate(219.93px, 250.39px) scale(64.309);
+	}
 }
 .stance-eyebrow {
 	margin: 0 0 var(--ohf-space-24);
