@@ -226,8 +226,8 @@ html:not([data-github-session]) .settings-signed-in {
 	display: grid;
 	place-items: center;
 	flex: none;
-	width: 40px;
-	height: 40px;
+	width: var(--ohf-size-control-md);
+	height: var(--ohf-size-control-md);
 	overflow: hidden;
 	border-radius: var(--ohf-radius-md);
 	background: var(--ohf-color-bg-surface-sunken);
@@ -271,8 +271,8 @@ a.settings-row-title:focus-visible {
 .settings-status::before {
 	content: "";
 	display: inline-block;
-	width: 6px;
-	height: 6px;
+	width: var(--ohf-space-6);
+	height: var(--ohf-space-6);
 	margin-inline-end: var(--ohf-space-6);
 	border-radius: var(--ohf-radius-full);
 	background: var(--ohf-color-text-success);
