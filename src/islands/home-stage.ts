@@ -41,6 +41,10 @@ import type { HomeMotion } from "../utilities/home-motion.js";
  * blue the cards move with the scroll and nothing else. Clicking a card does
  * nothing.
  *
+ * The copy comes in after the reels, but only at the top of the page. Once
+ * the page is scrolled all of it shows at once, and a page that opens already
+ * scrolled has no opening.
+ *
  * Leaving for another page plays the prototype's exit: the page clears and
  * the reels spin up again while the next page loads.
  *
@@ -61,6 +65,11 @@ const PARALLAX = [0.42, 0.24, 0.3, 0.48];
 /** px of scroll for each category */
 const ROW_STEP = 64;
 const SWITCH_SECONDS = 0.55;
+/**
+ * the share of a screen the page scrolls before the list starts to move. the
+ * copy no longer waits for the reels from there
+ */
+const SCROLLED = 0.04;
 /** seconds the reels spin out for before the next page shows */
 const EXIT_SECONDS = 1.45;
 const FOOTER_BANDS = 6;
@@ -836,7 +845,7 @@ const start = (host: HTMLElement): (() => void) => {
 			setDock(false);
 		}
 
-		const listProgress = smooth(clamp01((scrollY - H * 0.04) / (H * 0.42)));
+		const listProgress = smooth(clamp01((scrollY - H * SCROLLED) / (H * 0.42)));
 		moveList(dt, listProgress);
 
 		// crossing a line starts a timed change. scrolling back over it, with
@@ -899,18 +908,89 @@ const start = (host: HTMLElement): (() => void) => {
 		}
 	};
 
+	/* ---------- the reveal: the copy waits for the reels ---------- */
+
+	const copy = [
+		...host.querySelectorAll<HTMLElement>(".home-reveal, .home-reveal-now"),
+	];
+	const timers: number[] = [];
+	/** the copy is still waiting, or on its way in */
+	let staged = false;
+	const reveal = (): void => {
+		for (const timer of timers.splice(0)) {
+			window.clearTimeout(timer);
+		}
+		host.classList.remove("is-revealed", "is-settled");
+		staged = true;
+		timers.push(
+			window.setTimeout(() => {
+				host.classList.add("is-nav-in");
+			}, 150),
+			window.setTimeout(() => {
+				host.classList.add("is-revealed");
+			}, motion.spin * 520),
+			window.setTimeout(
+				() => {
+					host.classList.add("is-settled");
+					staged = false;
+				},
+				motion.spin * 520 + 2600,
+			),
+		);
+	};
+	/**
+	 * the copy stops waiting once the page is scrolled, so that nobody meets
+	 * an empty list. all of it comes in together. with `fade` each piece goes
+	 * softly, from wherever it had got to
+	 */
+	const showCopy = (fade: boolean): void => {
+		if (!staged) {
+			return;
+		}
+		staged = false;
+		for (const timer of timers.splice(0)) {
+			window.clearTimeout(timer);
+		}
+		const from = fade
+			? copy.map((element) => {
+					const { opacity, transform } = getComputedStyle(element);
+					return { opacity, transform, offset: 0 };
+				})
+			: [];
+		host.classList.add("is-nav-in", "is-revealed", "is-settled");
+		from.forEach((keyframe, index) => {
+			// with no end given, each piece goes to where it now belongs
+			copy[index]?.animate([keyframe], { duration: 220, easing: "ease-out" });
+		});
+	};
+
 	/* ---------- frame loop ---------- */
 
 	let raf = 0;
+	/** no frame has run yet */
+	let first = true;
 	const frame = (now: number): void => {
 		const dt = Math.min(0.05, Math.max(0.001, (now - last) / 1000));
 		last = now;
-		const t = (now - t0) / 1000;
 
 		const scrollY = window.scrollY;
+		const scrolled = scrollY > H * SCROLLED;
+		// a page that opens already scrolled, on a reload or on the way back to
+		// it, is simply there. it has no opening
+		const arrived = first && !reduce && scrolled;
+		first = false;
+		if (arrived) {
+			startIntro(now, true);
+		}
+		if (scrolled) {
+			showCopy(!arrived);
+		}
+		const t = (now - t0) / 1000;
+
 		const dy = scrollY - lastScroll;
 		lastScroll = scrollY;
-		scrollUI(scrollY, dt, now);
+		// one long step there puts the list and the page's colour in place
+		scrollUI(scrollY, arrived ? 10 : dt, now);
 
 		// the camera starts receded and tilted and settles flat as the reels
 		// slow. scrolling never tilts it
@@ -1117,30 +1197,6 @@ const start = (host: HTMLElement): (() => void) => {
 		el.addEventListener("pointerup", end, { signal });
 		el.addEventListener("pointercancel", end, { signal });
 	}
-
-	/* ---------- the reveal: the copy waits for the reels ---------- */
-
-	const timers: number[] = [];
-	const reveal = (): void => {
-		for (const timer of timers.splice(0)) {
-			window.clearTimeout(timer);
-		}
-		host.classList.remove("is-revealed", "is-settled");
-		timers.push(
-			window.setTimeout(() => {
-				host.classList.add("is-nav-in");
-			}, 150),
-			window.setTimeout(() => {
-				host.classList.add("is-revealed");
-			}, motion.spin * 520),
-			window.setTimeout(
-				() => {
-					host.classList.add("is-settled");
-				},
-				motion.spin * 520 + 2600,
-			),
-		);
-	};
 
 	/* ---------- temporary: sliders for the opening spin while it is tuned.
 	   only with the `motion` feature on, from the debug page ---------- */
