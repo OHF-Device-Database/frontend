@@ -38,7 +38,7 @@ html:not([data-github-session]) .account .ui-menu-anchor {
 	font-family: inherit;
 	font-size: var(--ohf-font-size-24);
 	font-weight: var(--ohf-font-weight-medium);
-	line-height: 1.15;
+	line-height: var(--ohf-line-height-28);
 	letter-spacing: 0;
 }
 .account-sign-in-title span {
@@ -90,8 +90,8 @@ html:not([data-github-session]) .account .ui-menu-anchor {
 	display: block;
 	flex: none;
 	box-sizing: border-box;
-	width: 40px;
-	height: 40px;
+	width: var(--ohf-size-control-md);
+	height: var(--ohf-size-control-md);
 	padding: 0;
 	overflow: hidden;
 	border: var(--ohf-border-width-default) solid var(--ohf-color-alpha-12);
