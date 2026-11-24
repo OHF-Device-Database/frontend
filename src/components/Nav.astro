@@ -207,7 +207,12 @@ const links = [
 							<fragment slot="signInLink">
 								{
 									(children: unknown[]) => (
-										<button type="button" popovertarget="account-sign-in">
+										<button
+											type="button"
+											data-modal-open="account-sign-in"
+											popovertarget="appnav-menu"
+											popovertargetaction="hide"
+										>
 											{children}
 										</button>
 									)

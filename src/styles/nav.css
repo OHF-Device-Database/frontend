@@ -389,14 +389,4 @@ html[data-feature-account="on"]:not([data-github-session]) .appnav-new-here {
 	.appnav .ui-button.appnav-menu-button[data-icon-only] {
 		width: 64px;
 	}
-	/* Contribute is hidden here, so the sign-in panel has no button to hang
-     from. it sits under the header, opened from the menu */
-	.appnav .account-popover {
-		position-area: none;
-		inset: calc(var(--nav-h) + var(--ohf-space-8)) var(--page-gutter) auto;
-		justify-self: auto;
-		width: auto;
-		max-width: none;
-		margin: 0;
-	}
 }
