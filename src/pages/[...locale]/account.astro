@@ -1,59 +1,194 @@
 ---
+import { iconUserRound } from "@openhomefoundation/icons";
+
+import Button from "../../components/ui/Button.astro";
+import Icon from "../../components/ui/Icon.astro";
+import Modal from "../../components/ui/Modal.astro";
+import Tabs from "../../components/ui/Tabs.astro";
 import Layout from "../../layouts/Layout.astro";
 
+import { AUTH_PROVIDERS } from "../../io/auth/providers";
 import { m } from "../../paraglide/messages.js";
 import { localizeHref } from "../../paraglide/runtime.js";
 import { localeStaticPaths } from "../../utilities/locale";
 
 export const getStaticPaths = localeStaticPaths;
+
+// the design has more sections (profile, notifications, appearance). only
+// sign-in and security exists for now, the tabs grow with them
+const tabs = [
+	{
+		href: localizeHref("/account"),
+		label: m.account_security(),
+		current: true,
+	},
+];
 ---
 
 <Layout page="page" title={m.account_title()}>
-	<div class="container-narrow account-page" data-home={localizeHref("/")}>
-		<p class="account-signed-out content-prose">{m.account_signed_out()}</p>
+	<div class="settings" data-home={localizeHref("/")}>
+		<header class="settings-header">
+			<h1>{m.account_settings_title()}</h1>
+			<Tabs
+				label={m.account_settings_sections()}
+				tabs={tabs}
+				class="settings-tabs"
+			/>
+		</header>
 
-		<div class="account-signed-in account-stack">
-			<section class="account-action">
-				<button type="button" class="account-button" data-account="sign-out">
-					{m.account_sign_out()}
-				</button>
-				<p>{m.account_sign_out_hint()}</p>
+		<div class="settings-body">
+			<section class="settings-signed-out">
+				<p>{m.account_signed_out()} {m.account_signed_out_hint()}</p>
+				<Button
+					variant="primary"
+					size="lg"
+					shape="pill"
+					data-modal-open="account-sign-in"
+				>
+					{m.account_sign_in_button()}
+				</Button>
 			</section>
 
-			<section class="account-danger" aria-labelledby="account-danger-title">
-				<h2 id="account-danger-title">{m.account_danger_zone()}</h2>
-				<div class="account-action">
-					<button
-						type="button"
-						class="account-button account-button-danger"
-						data-account="disconnect"
-					>
-						{m.account_disconnect()}
-					</button>
-					<p>
-						{m.account_disconnect_hint()}<br />
-						{m.account_disconnect_hint_contributions()}
-					</p>
-				</div>
-			</section>
+			<section
+				class="settings-section settings-signed-in"
+				aria-labelledby="settings-security"
+			>
+				<header class="settings-section-header">
+					<h2 id="settings-security">{m.account_security()}</h2>
+					<p>{m.account_security_description()}</p>
+				</header>
 
-			<p class="account-error" role="alert" data-account-error></p>
+				{
+					AUTH_PROVIDERS.map((provider) => (
+						<section
+							class="settings-group"
+							aria-labelledby={`settings-${provider.id}`}
+							data-provider={provider.id}
+						>
+							<h3 id={`settings-${provider.id}`}>{provider.name}</h3>
+							<p class="settings-group-hint">{provider.description()}</p>
+							<div class="settings-row">
+								<span class="settings-row-icon">
+									<Icon icon={iconUserRound} size={20} />
+									<img alt="" width="40" height="40" decoding="async" hidden />
+								</span>
+								<div class="settings-row-text">
+									<a class="settings-row-title" data-provider-login />
+									<span class="settings-status">{m.account_connected()}</span>
+								</div>
+								<Button
+									size="sm"
+									aria-label={m.account_disconnect_label({
+										provider: provider.name,
+									})}
+									data-modal-open={`settings-disconnect-${provider.id}`}
+								>
+									{m.account_disconnect_button()}
+								</Button>
+							</div>
+							<Modal
+								id={`settings-disconnect-${provider.id}`}
+								title={m.account_disconnect_title({ provider: provider.name })}
+								closeLabel={m.account_close()}
+								size="sm"
+							>
+								<p class="settings-modal-text">
+									{m.account_disconnect_body({ provider: provider.name })}
+								</p>
+								<Fragment slot="footer">
+									<Button size="sm" data-modal-close>
+										{m.account_cancel()}
+									</Button>
+									<Button
+										size="sm"
+										variant="primary"
+										data-account="disconnect"
+										data-provider={provider.id}
+									>
+										{m.account_disconnect_button()}
+									</Button>
+								</Fragment>
+							</Modal>
+						</section>
+					))
+				}
+
+				<section class="settings-group" aria-labelledby="settings-session">
+					<h3 id="settings-session">{m.account_session_title()}</h3>
+					<div class="settings-row">
+						<div class="settings-row-text">
+							<span class="settings-row-title">
+								{m.account_session_current()}
+							</span>
+							<span class="settings-row-hint">{m.account_sign_out_hint()}</span>
+						</div>
+						<Button size="sm" data-account="sign-out">
+							{m.account_sign_out()}
+						</Button>
+					</div>
+				</section>
+
+				<p class="settings-error" role="alert" data-account-error></p>
+			</section>
 		</div>
 	</div>
 </Layout>
 
 <script>
-	import { GitHubOperation } from "../../io/vendor/github/operations";
+	import { AUTH_PROVIDERS } from "../../io/auth/providers";
+	import {
+		activeSession,
+		AUTH_SESSIONS,
+		isAuthProviderId,
+	} from "../../io/auth/providers.client";
 	import { m } from "../../paraglide/messages.js";
 
+	// the page is prerendered for everyone, so the account is filled in here
+	const fill = (page: HTMLElement) => {
+		for (const provider of AUTH_PROVIDERS) {
+			const group = page.querySelector<HTMLElement>(
+				`[data-provider="${provider.id}"]`,
+			);
+			const login = AUTH_SESSIONS[provider.id].login();
+			if (!group) {
+				continue;
+			}
+
+			// only accounts that are connected are listed
+			group.hidden = typeof login === "undefined";
+			if (typeof login === "undefined") {
+				continue;
+			}
+
+			const link = group.querySelector<HTMLAnchorElement>(
+				"[data-provider-login]",
+			);
+			if (link) {
+				link.textContent = login;
+				link.href = provider.profileHref(login);
+			}
+
+			const image = group.querySelector<HTMLImageElement>(
+				".settings-row-icon img",
+			);
+			if (image) {
+				image.addEventListener("load", () => (image.hidden = false), {
+					once: true,
+				});
+				image.src = provider.avatarSrc(login, 40);
+			}
+		}
+	};
+
 	const bind = () => {
-		const page = document.querySelector<HTMLElement>("[data-home]");
-		if (!page || page.dataset.bound) {
+		const page = document.querySelector<HTMLElement>(".settings[data-home]");
+		if (!page || page.dataset["bound"]) {
 			return;
 		}
-		page.dataset.bound = "true";
+		page.dataset["bound"] = "true";
+		fill(page);
 
-		const home = page.dataset.home ?? "/";
+		const home = page.dataset["home"] ?? "/";
 		const error = page.querySelector("[data-account-error]");
 		const buttons = [
 			...page.querySelectorAll<HTMLButtonElement>("[data-account]"),
@@ -69,20 +204,28 @@ export const getStaticPaths = localeStaticPaths;
 			}
 
 			buttons.forEach((button) => (button.disabled = false));
+			// the error shows on the page, behind the confirmation
+			page
+				.querySelectorAll<HTMLDialogElement>("dialog[open]")
+				.forEach((dialog) => dialog.close());
 			if (error) error.textContent = m.account_action_failed();
 		};
 
 		for (const button of buttons) {
 			button.addEventListener("click", () => {
-				switch (button.dataset.account) {
-					case "sign-out":
-						void run(() => GitHubOperation.signOut());
+				switch (button.dataset["account"]) {
+					case "sign-out": {
+						const active = activeSession();
+						if (active) void run(() => active.session.signOut());
 						break;
-					case "disconnect":
-						if (window.confirm(m.account_disconnect_confirm())) {
-							void run(() => GitHubOperation.revoke());
+					}
+					case "disconnect": {
+						const id = button.dataset["provider"];
+						if (isAuthProviderId(id)) {
+							void run(() => AUTH_SESSIONS[id].disconnect());
 						}
 						break;
+					}
 				}
 			});
 		}
