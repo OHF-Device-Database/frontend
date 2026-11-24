@@ -771,6 +771,9 @@ const start = (host: HTMLElement): (() => void) => {
 		if (dock !== null) {
 			dock.classList.toggle("is-shown", on);
 			dock.inert = !on;
+			// the hero search has faded out under the header by then, so it
+			// steps out of the tab order while the header's stands in for it
+			heroSearch.inert = on;
 		}
 	};
 	// the hero search and the one in the header stand for one search. what
