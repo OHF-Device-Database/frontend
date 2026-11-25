@@ -10,6 +10,11 @@ export const FEATURES = {
 		label: "Account",
 		description: "Sign in with GitHub and the account page",
 	},
+	// while the contributors have no endpoint. it goes once they do
+	contributors: {
+		label: "Sample contributors",
+		description: "Made-up people in the contributors directory",
+	},
 } as const satisfies Record<string, FeatureDefinition>;
 
 export type FeatureName = keyof typeof FEATURES;

@@ -48,7 +48,8 @@ categories/lighting/
 - `how-it-works/` has the house, the wall switch and the contribute drop.
 - `editorial/` has the speakers and the voice speaker. `editorial/cards/` has
   the earlier card versions in five colours.
-- `contributors/` has the rolodex.
+- `contributors/` has the rolodex, still. The Contributors page draws the one
+  that turns, from `src/utilities/rolodex.ts`.
 - `about/parts/` has the device parts that orbit the text.
 
 ## Still in pairs

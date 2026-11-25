@@ -112,6 +112,25 @@
 	"about_body": "It is built and maintained in the open. Manufacturer specs say what a device should do. We record what it actually does, drawn from anonymized data the community shares, and kept editorially neutral.",
 	"about_read": "Read about {#link}how it works{/link} to see exactly what is shared, and how it is protected.",
 	"about_ohf_logo_alt": "Open Home Foundation Logo",
+	"contributors_title": "Contributors",
+	"contributors_heading": "Contributors Directory",
+	"contributors_lede": "A heartfelt thank you to the volunteers who keep this database accurate. Every contribution is attributed, and carefully reviewed before it goes live.",
+	"contributors_count": [
+		{
+			"declarations": [
+				"input count",
+				"local countPlural = count: plural",
+				"local countNumber = count: number"
+			],
+			"selectors": ["countPlural"],
+			"match": {
+				"countPlural=one": "{countNumber} contribution",
+				"countPlural=other": "{countNumber} contributions"
+			}
+		}
+	],
+	"contributors_empty_title": "No contributors yet",
+	"contributors_empty_hint": "As soon as the first contributions are reviewed and go live, the people behind them are listed here.",
 	"surveys_title": "Surveys",
 	"surveys_heading": "Community Surveys",
 	"surveys_lede": "Browse the community survey reports.",

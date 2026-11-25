@@ -57,6 +57,7 @@ const pageLinks = [
 		href: localizeHref("/editorial-stance"),
 		label: m.footer_editorial_stance(),
 	},
+	{ href: localizeHref("/contributors"), label: m.contributors_title() },
 	{ href: localizeHref("/about"), label: m.footer_about() },
 	{ href: localizeHref("/surveys"), label: m.surveys_title() },
 ].map((link) => ({ ...link, current: link.href === Astro.url.pathname }));

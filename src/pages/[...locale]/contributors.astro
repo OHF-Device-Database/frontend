@@ -1,0 +1,98 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+import { getContributors, getContributorsSample } from "../../io/contributor";
+import { m } from "../../paraglide/messages.js";
+import { getLocale } from "../../paraglide/runtime.js";
+import { feature } from "../../utilities/feature";
+import { rolodexDrawing } from "../../utilities/rolodex";
+
+// the sample people sit behind a flag, which is a cookie
+export const prerender = false;
+
+/** a card of the wheel for a row of the list, which is 64px tall */
+const TURN_PER_PIXEL = 18 / 64;
+
+const { contributors } = await (feature("contributors")
+	? getContributorsSample()
+	: getContributors());
+
+// a directory, so by name
+const people = contributors.toSorted((a, b) =>
+	a.name.localeCompare(b.name, getLocale()),
+);
+---
+
+<Layout page="page" title={m.contributors_title()}>
+	<div class="contributors">
+		<header class="contributors-intro">
+			{
+				/* decoration only. drawn here at rest, so it shows before the script
+				   runs and without it. dark in both themes, as in the Figma frames */
+			}
+			<rolodex-art
+				class="contributors-art"
+				data-theme="dark"
+				aria-hidden="true"
+				turn={TURN_PER_PIXEL}
+				set:html={rolodexDrawing(0)}
+			/>
+			<h1>{m.contributors_heading()}</h1>
+			<p>{m.contributors_lede()}</p>
+		</header>
+
+		{
+			people.length > 0 ? (
+				<ul
+					class="contributors-list"
+					role="list"
+					aria-label={m.contributors_title()}
+				>
+					{people.map(({ name, location, avatar, url, contributions }) => {
+						// a row leads to the contributor's own page where there is one
+						const Entry = typeof url === "undefined" ? "div" : "a";
+						const link =
+							typeof url === "undefined"
+								? {}
+								: { href: url, target: "_blank", rel: "noopener" };
+
+						return (
+							<li>
+								<Entry class="contributors-entry" {...link}>
+									<span class="contributors-avatar">
+										{typeof avatar !== "undefined" && (
+											<img
+												src={avatar}
+												alt=""
+												width="40"
+												height="40"
+												loading="lazy"
+												decoding="async"
+											/>
+										)}
+									</span>
+									<span class="contributors-name">{name}</span>
+									{typeof location !== "undefined" && (
+										<span class="contributors-location">{location}</span>
+									)}
+									<span class="contributors-count">
+										{m.contributors_count({ count: contributions })}
+									</span>
+								</Entry>
+							</li>
+						);
+					})}
+				</ul>
+			) : (
+				<div class="contributors-empty">
+					<h2>{m.contributors_empty_title()}</h2>
+					<p>{m.contributors_empty_hint()}</p>
+				</div>
+			)
+		}
+	</div>
+</Layout>
+
+<script>
+	import "../../islands/rolodex";
+</script>

@@ -1,0 +1,81 @@
+[
+	{
+		"name": "Alan Doe",
+		"location": "Amsterdam, The Netherlands",
+		"avatar": "https://avatars.githubusercontent.com/OHF-Device-Database?s=80",
+		"url": "https://github.com/OHF-Device-Database",
+		"contributions": 11
+	},
+	{
+		"name": "Annie Doe",
+		"location": "Berlin, Germany",
+		"url": "https://github.com/OHF-Device-Database",
+		"contributions": 112
+	},
+	{
+		"name": "Bert Doe",
+		"location": "The basement, watching the meter spin",
+		"contributions": 1
+	},
+	{
+		"name": "Brian Doe",
+		"location": "Madrid, Spain",
+		"url": "https://github.com/OHF-Device-Database",
+		"contributions": 42
+	},
+	{
+		"name": "Chris Smith",
+		"location": "New York, USA",
+		"avatar": "https://avatars.githubusercontent.com/OHF-Device-Database?s=80",
+		"contributions": 8
+	},
+	{
+		"name": "Dirk Johnson",
+		"url": "https://github.com/OHF-Device-Database",
+		"contributions": 1204
+	},
+	{
+		"name": "Emily Johnson",
+		"location": "The park, sketching ideas under a tree",
+		"url": "https://github.com/OHF-Device-Database",
+		"contributions": 15
+	},
+	{
+		"name": "Farah Example",
+		"location": "Casablanca, Morocco",
+		"contributions": 3
+	},
+	{
+		"name": "Gus Placeholder",
+		"location": "Somewhere with a very long name that has to wrap or be cut short on a narrow screen",
+		"url": "https://github.com/OHF-Device-Database",
+		"contributions": 27
+	},
+	{
+		"name": "Hana Sample",
+		"location": "Osaka, Japan",
+		"url": "https://github.com/OHF-Device-Database",
+		"contributions": 64
+	},
+	{
+		"name": "Ivo Maximilian Alexander von Placeholder-Sampleton the Third",
+		"location": "Ljubljana, Slovenia",
+		"contributions": 5
+	},
+	{
+		"name": "Jo Doe",
+		"url": "https://github.com/OHF-Device-Database",
+		"contributions": 2
+	},
+	{
+		"name": "Kai Example",
+		"location": "Wellington, New Zealand",
+		"url": "https://github.com/OHF-Device-Database",
+		"contributions": 19
+	},
+	{
+		"name": "Lena Sample",
+		"location": "The attic, labelling cables",
+		"contributions": 7
+	}
+]
