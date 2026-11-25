@@ -162,13 +162,15 @@ const marks: Record<AuthProviderId, typeof GitHubMark> = {
 
 		// github has to revoke the token first, which can take a few seconds
 		const restore = markBusy(button, m.account_signing_out());
+		// cleared first, so a repeated failure is announced again
+		const error = document.querySelector("[data-account-menu-error]");
+		if (error) error.textContent = "";
 		if (await active.session.signOut()) {
 			window.location.reload();
 			return;
 		}
 
 		restore();
-		const error = document.querySelector("[data-account-menu-error]");
 		if (error) error.textContent = m.account_action_failed();
 	};
 
