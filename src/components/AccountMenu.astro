@@ -156,7 +156,7 @@ const marks: Record<AuthProviderId, typeof GitHubMark> = {
 
 	const signOut = async (button: HTMLButtonElement) => {
 		const active = activeSession();
-		if (!active) {
+		if (!active || button.getAttribute("aria-busy") === "true") {
 			return;
 		}
 
