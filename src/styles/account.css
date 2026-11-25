@@ -141,7 +141,8 @@ html:not([data-github-session]) .account .ui-menu-anchor {
  * now: the connected accounts and the session, each a heading over a row
  * with its action at the end.
  */
-html:not([data-feature-account="on"]) .settings {
+/* like the header: signed-in visitors keep it even with the feature off */
+html:not([data-feature-account="on"]):not([data-github-session]) .settings {
 	display: none;
 }
 html[data-github-session] .settings-signed-out,
