@@ -5,7 +5,14 @@ import Layout from "../../layouts/Layout.astro";
 import { getDeviceCount } from "../../io/device";
 import { m } from "../../paraglide/messages.js";
 import { getLocale, localizeHref } from "../../paraglide/runtime.js";
+import {
+	browseFiltersFromSearchParams,
+	browseFiltersToHref,
+	withCategoryToggled,
+} from "../../types/browse";
+import { DeviceCategoryTopLevelId } from "../../types/category";
 import { cachePolicy } from "../../utilities/cache";
+import { device } from "../../utilities/presentation";
 
 export const prerender = false;
 
@@ -15,23 +22,112 @@ Astro.cache.set({
 	...cachePolicy(caching),
 	tags: ["device-count"],
 });
+
+const locale = getLocale();
+const noFilters = browseFiltersFromSearchParams(new URLSearchParams());
+const categories = DeviceCategoryTopLevelId.options
+	.map((id) => ({
+		id,
+		label: device.category(id).label,
+		href: localizeHref(browseFiltersToHref(withCategoryToggled(noFilters, id))),
+	}))
+	.sort((a, b) => a.label.localeCompare(b.label, locale));
+
+const REELS = [0, 1, 2, 3];
 ---
 
 <Layout page="home">
-	<div class="home-screen">
-		<section class="hero">
-			<div class="container hero-center">
-				<h1>{m.home_title()}</h1>
-				<p class="hero-lede">{m.home_lede()}</p>
-				<div class="hero-search-wrap">
-					<SearchBox size="hero" placeholder={m.home_search_placeholder()} />
-				</div>
-				<div class="hero-actions">
-					<a href={localizeHref("/browse")}>
-						{m.home_browse_all({ count: total.toLocaleString(getLocale()) })}
+	<home-stage class="home" art="/home-art.svg">
+		{/* the page colour, which turns to the blueprint blue behind the list */}
+		<div class="home-backdrop" aria-hidden="true"></div>
+
+		{/* a vertical blur per reel while it spins */}
+		<svg class="home-defs" width="0" height="0" aria-hidden="true">
+			{
+				REELS.map((reel) => (
+					<filter
+						id={`home-blur-${reel}`}
+						x="-5%"
+						y="-40%"
+						width="110%"
+						height="180%"
+						color-interpolation-filters="sRGB"
+					>
+						<feGaussianBlur stdDeviation="0 0" />
+					</filter>
+				))
+			}
+		</svg>
+		{/* the card drawings are fetched into here as symbols */}
+		<div class="home-sprite" aria-hidden="true"></div>
+
+		<div class="home-gallery" aria-hidden="true">
+			<div class="home-stage">
+				{
+					REELS.map((reel) => (
+						<div class="home-reel" style={`--blur:url(#home-blur-${reel})`} />
+					))
+				}
+			</div>
+		</div>
+		<div class="home-bottom-shade" aria-hidden="true"></div>
+		<div class="home-nav-shade" aria-hidden="true"></div>
+
+		<div class="home-hero">
+			<div class="home-hero-inner">
+				<div class="home-hero-top">
+					<div class="home-hero-intro">
+						<h1 class="home-reveal" style="--d:0s">{m.home_title()}</h1>
+						<p class="home-sub home-reveal" style="--d:.12s">
+							{m.home_lede()}
+						</p>
+					</div>
+					<div class="home-search home-reveal-now">
+						<SearchBox size="hero" placeholder={m.home_search_placeholder()} />
+					</div>
+					<a
+						class="home-browse home-reveal"
+						style="--d:.32s"
+						href={localizeHref("/browse")}
+					>
+						{m.home_browse_all({ count: total.toLocaleString(locale) })}
 					</a>
 				</div>
+
+				<div class="home-cats-track">
+					<section class="home-cats" aria-labelledby="home-cats-title">
+						<div class="home-cats-reel">
+							<h2 id="home-cats-title" class="home-reveal" style="--d:.38s">
+								{m.home_categories_title()}
+							</h2>
+							<ul>
+								{
+									categories.map((category, index) => (
+										<li
+											class="home-reveal"
+											style={`--d:${(0.5 + index * 0.04).toFixed(2)}s`}
+										>
+											<a
+												class="home-cat"
+												href={category.href}
+												data-category={category.id}
+												style={`--i:${index}`}
+											>
+												<span class="home-cat-name">{category.label}</span>
+											</a>
+										</li>
+									))
+								}
+							</ul>
+						</div>
+					</section>
+					<div class="home-cats-spacer" aria-hidden="true"></div>
+				</div>
 			</div>
-		</section>
-	</div>
+		</div>
+	</home-stage>
 </Layout>
+
+<script>
+	import "../../islands/home-stage";
+</script>

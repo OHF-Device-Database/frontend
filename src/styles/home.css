@@ -1,0 +1,907 @@
+/*
+ * The landing page, from the design handoff's home prototype. Reels of cards
+ * fill the screen behind a centred hero. Below it the category list holds
+ * the screen and scrolls through a reading line, and the page turns to a
+ * blueprint: a cobalt ground with the drawings in white, taken apart.
+ * `src/islands/home-stage.ts` runs the motion. Without it the page is a
+ * plain hero over a list of categories.
+ *
+ * The cobalt and the five card colours are the handoff's own. They have no
+ * token, so they are set here.
+ */
+html[data-page="home"] body {
+	background: var(--ohf-color-bg-canvas);
+}
+/* keeps the fixed layers under the header and the footer */
+html[data-page="home"] .app-main {
+	position: relative;
+	z-index: 0;
+}
+/* the header floats on the page */
+html[data-page="home"] .appnav {
+	border-bottom-color: transparent;
+	background: transparent;
+}
+
+.home,
+.appfoot-steps {
+	--home-bg: var(--ohf-color-bg-canvas);
+	--home-cobalt: #002cac;
+	/* `--home-sp` runs from 0 to 1 as the page turns blue */
+	--home-shade: color-mix(
+		in srgb,
+		var(--home-cobalt) calc(var(--home-sp, 0) * 100%),
+		var(--home-bg)
+	);
+}
+.home {
+	--home-vh: 100vh;
+	--home-gutter: var(--ohf-space-16);
+	--home-center-gap: var(--ohf-space-32);
+	/* reel, reel, the hero, reel, reel */
+	--home-cols: minmax(0, 1fr) var(--home-gutter) minmax(0, 1fr)
+		var(--home-center-gap) minmax(0, 2fr) var(--home-center-gap) minmax(0, 1fr)
+		var(--home-gutter) minmax(0, 1fr);
+	/* the grid grows with the window up to 1920px */
+	--home-pad: max(var(--home-gutter), calc((100% - 1920px) / 2 + 32px));
+	--home-text: var(--ohf-color-text-default);
+	--home-text-subtle: var(--ohf-color-text-subtle);
+	--home-fs-h1: var(--ohf-font-size-40);
+	--home-fs-cat: var(--ohf-font-size-28);
+
+	display: block;
+	/* the first screen starts under the header */
+	margin-top: calc(-1 * var(--nav-h));
+	color: var(--home-text);
+	font-family: var(--ohf-font-family-sans);
+}
+@supports (height: 100svh) {
+	.home {
+		--home-vh: 100svh;
+	}
+}
+.home.is-blue {
+	--home-text: var(--ohf-color-white);
+	--home-text-subtle: rgb(255 255 255 / 62%);
+}
+
+/* the card colours, per theme. set on the theme boundaries so the nearest
+   `data-theme` wins */
+:root,
+[data-theme="light"] {
+	--home-dash: var(--ohf-color-black-alpha-16);
+	--home-sand-top: #dedcd6;
+	--home-sand-bottom: #dedcd6;
+	--home-sand-ink: #6a3a12;
+	--home-carbon: #c8bcb3;
+	--home-carbon-ink: #3d281b;
+	--home-carbon-figure: #6e5a4d;
+	--home-umber: #3f1a0a;
+	--home-umber-ink: #bcd9ef;
+	--home-cobalt-card: #0033c4;
+	--home-linen: #e3e0d9;
+	--home-linen-ink: #5b2e0c;
+}
+[data-theme="dark"] {
+	--home-dash: var(--ohf-color-white-alpha-16);
+	--home-sand-top: #b6b4ad;
+	--home-sand-bottom: #e8e5dd;
+	--home-carbon: #141414;
+	--home-carbon-ink: #f4f4f4;
+	--home-carbon-figure: #8e8e8e;
+	--home-linen: #e4e1da;
+}
+@media (prefers-color-scheme: dark) {
+	[data-theme="auto"] {
+		--home-dash: var(--ohf-color-white-alpha-16);
+		--home-sand-top: #b6b4ad;
+		--home-sand-bottom: #e8e5dd;
+		--home-carbon: #141414;
+		--home-carbon-ink: #f4f4f4;
+		--home-carbon-figure: #8e8e8e;
+		--home-linen: #e4e1da;
+	}
+}
+
+.home-backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	background: var(--home-shade);
+	pointer-events: none;
+}
+.home-defs,
+.home-sprite {
+	position: absolute;
+	width: 0;
+	height: 0;
+	overflow: hidden;
+}
+
+/* ---------- the reels: fixed behind the page, on a 3D drum while they spin */
+.home-gallery {
+	position: fixed;
+	inset: 0;
+	z-index: 1;
+	overflow: hidden;
+	perspective: 1500px;
+	perspective-origin: 50% 50%;
+}
+.home-stage {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	grid-template-columns: var(--home-cols);
+	grid-template-rows: 100%;
+	padding-inline: var(--home-pad);
+	transform-style: preserve-3d;
+	transform-origin: 50% 50%;
+}
+.home-reel {
+	position: relative;
+	height: 100%;
+	transform-style: preserve-3d;
+	/* one finger drags the reel, two still zoom the page */
+	touch-action: pinch-zoom;
+	cursor: grab;
+	-webkit-user-select: none;
+	user-select: none;
+}
+.home-reel.is-dragging {
+	cursor: grabbing;
+}
+/* while the page is blue the cards only move with the scroll, so a touch on
+   them scrolls the page */
+.home-gallery.is-blueprint .home-reel {
+	touch-action: auto;
+	cursor: default;
+}
+.home-reel:nth-child(1) {
+	grid-column: 1;
+}
+.home-reel:nth-child(2) {
+	grid-column: 3;
+}
+.home-reel:nth-child(3) {
+	grid-column: 7;
+}
+.home-reel:nth-child(4) {
+	grid-column: 9;
+}
+
+.home-card {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	opacity: 0;
+	transform-origin: 50% 50%;
+	will-change: transform, opacity;
+	container-type: size;
+}
+.home-card-face {
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+	transition:
+		transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1),
+		color 0.7s ease;
+}
+.home-reel.is-blurred .home-card-face {
+	filter: var(--blur);
+}
+.home-card:hover .home-card-face:not(.home-card-face--dash) {
+	transform: scale(1.02);
+}
+/* a cobalt sheet that fades over the card as the page turns blue */
+.home-card-face::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: var(--home-cobalt);
+	box-shadow: inset 0 0 0 0.5px rgb(255 255 255 / 32%);
+	opacity: 0;
+	transition: opacity 0.7s ease;
+	pointer-events: none;
+}
+.home-card-face--dash::before {
+	display: none;
+}
+/* an empty slot, drawn as a dashed frame */
+.home-card-face--dash {
+	background-image:
+		linear-gradient(90deg, var(--home-dash) 4px, transparent 0),
+		linear-gradient(90deg, var(--home-dash) 4px, transparent 0),
+		linear-gradient(0deg, var(--home-dash) 4px, transparent 0),
+		linear-gradient(0deg, var(--home-dash) 4px, transparent 0);
+	background-position:
+		0 0,
+		0 100%,
+		0 0,
+		100% 0;
+	background-size:
+		7px 1px,
+		7px 1px,
+		1px 7px,
+		1px 7px;
+	background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+}
+.home-card:hover .home-card-face--dash {
+	--home-dash: color-mix(in srgb, var(--home-text) 32%, transparent);
+}
+.home-card-face--sand {
+	--home-card-fill: var(--home-sand-bottom);
+
+	background: linear-gradient(
+		180deg,
+		var(--home-sand-top) 0%,
+		var(--home-sand-bottom) 68%
+	);
+	color: var(--home-sand-ink);
+}
+.home-card-face--carbon {
+	--home-card-fill: var(--home-carbon);
+
+	background: var(--home-carbon);
+	color: var(--home-carbon-ink);
+}
+.home-card-face--umber {
+	--home-card-fill: var(--home-umber);
+
+	background: var(--home-umber);
+	color: var(--home-umber-ink);
+}
+.home-card-face--cobalt {
+	--home-card-fill: var(--home-cobalt-card);
+
+	background: var(--home-cobalt-card);
+	color: var(--ohf-color-white);
+}
+.home-card-face--linen {
+	--home-card-fill: var(--home-linen);
+
+	background: var(--home-linen);
+	color: var(--home-linen-ink);
+}
+
+/* the drawing: 74% of the card's width, at most 78% of its height */
+.home-card-art {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	place-items: center;
+}
+.home-card-art svg {
+	width: 74%;
+	height: 78%;
+	overflow: visible;
+}
+.home-card-figure {
+	position: absolute;
+	bottom: 5cqw;
+	left: 5cqw;
+	font-family: var(--ohf-font-family-mono);
+	font-size: max(10px, 4.2cqw);
+	letter-spacing: 0.1em;
+	opacity: 0.55;
+}
+.home-card-face--carbon .home-card-figure {
+	color: var(--home-carbon-figure);
+	opacity: 1;
+}
+
+/* hovering a card takes its drawing apart. `--e` runs from 0 to 1 */
+.home-card:hover {
+	--e: 1;
+}
+
+/* the blueprint: every card in its place, white lines on cobalt, taken apart */
+.home-gallery.is-blueprint .home-card {
+	--e: 1;
+}
+.home-gallery.is-blueprint .home-card-face {
+	--home-card-fill: var(--home-cobalt);
+	--home-dash: rgb(255 255 255 / 30%);
+
+	color: var(--ohf-color-white);
+}
+.home-gallery.is-blueprint .home-card-face:not(.home-card-face--dash)::before {
+	opacity: 1;
+}
+.home-gallery.is-blueprint .home-card-figure {
+	color: rgb(255 255 255 / 62%);
+	opacity: 1;
+}
+
+/*
+ * The drawings themselves. They live once in `.home-sprite` and every card
+ * shows one with `<use>`. Only what is inside the symbol can be matched
+ * there, so the rules hang on the `.home-art` group in each one. The colours
+ * come from the card: its text colour for the lines and `--home-card-fill`
+ * for the faces, which hides the lines behind them.
+ */
+.home-art path,
+.home-art ellipse {
+	stroke-width: 1px;
+	stroke-linejoin: round;
+	vector-effect: non-scaling-stroke;
+}
+.home-art .pf {
+	fill: var(--home-card-fill, transparent);
+	stroke: currentcolor;
+}
+.home-art .ln,
+.home-art .ln2,
+.home-art .dash {
+	fill: none;
+	stroke: currentcolor;
+}
+.home-art path.ln2 {
+	stroke-width: 2.2px;
+	stroke-linecap: round;
+}
+.home-art .dash {
+	stroke-dasharray: 2 2;
+}
+.home-art .acu {
+	fill: var(--home-card-fill, transparent);
+	stroke: none;
+}
+/* glass and screens, a shade off the card */
+.home-art .acf,
+.home-art .ac {
+	fill: color-mix(
+		in srgb,
+		currentcolor 10%,
+		var(--home-card-fill, transparent)
+	);
+	stroke: currentcolor;
+}
+.home-art .acl {
+	fill: none;
+	stroke: color-mix(in srgb, currentcolor 40%, transparent);
+}
+.home-art .mute {
+	fill: color-mix(
+		in srgb,
+		currentcolor 24%,
+		var(--home-card-fill, transparent)
+	);
+}
+.home-art .hole {
+	fill: currentcolor;
+	stroke: currentcolor;
+}
+.home-art .txt {
+	fill: currentcolor;
+	stroke: none;
+	font-family: var(--ohf-font-family-sans);
+	letter-spacing: -0.02em;
+}
+/* each part moves by its own offset, a beat after the one before */
+.home-art .pt {
+	transform: translate(
+		calc(var(--tx) * var(--e, 0)),
+		calc(var(--ty) * var(--e, 0))
+	);
+	transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0ms);
+}
+/* parts only seen when taken apart, and parts only seen when whole */
+.home-art .pt.fade {
+	opacity: var(--e, 0);
+	transition:
+		transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0ms),
+		opacity 0.3s;
+}
+.home-art .pt.fout {
+	opacity: calc(1 - var(--e, 0));
+	transition:
+		transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0ms),
+		opacity 0.25s;
+}
+
+/* ---------- soft fades in the page colour over the reels */
+.home-bottom-shade {
+	position: fixed;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 5;
+	height: 200px;
+	background: linear-gradient(
+		0deg,
+		color-mix(in srgb, var(--home-shade) 94%, transparent) 0%,
+		color-mix(in srgb, var(--home-shade) 92%, transparent) 7%,
+		color-mix(in srgb, var(--home-shade) 88%, transparent) 14%,
+		color-mix(in srgb, var(--home-shade) 82%, transparent) 21%,
+		color-mix(in srgb, var(--home-shade) 75%, transparent) 28%,
+		color-mix(in srgb, var(--home-shade) 66%, transparent) 35%,
+		color-mix(in srgb, var(--home-shade) 57%, transparent) 42%,
+		color-mix(in srgb, var(--home-shade) 48%, transparent) 49%,
+		color-mix(in srgb, var(--home-shade) 39%, transparent) 56%,
+		color-mix(in srgb, var(--home-shade) 30%, transparent) 63%,
+		color-mix(in srgb, var(--home-shade) 22%, transparent) 70%,
+		color-mix(in srgb, var(--home-shade) 15%, transparent) 77%,
+		color-mix(in srgb, var(--home-shade) 9%, transparent) 84%,
+		color-mix(in srgb, var(--home-shade) 4%, transparent) 91%,
+		color-mix(in srgb, var(--home-shade) 1.2%, transparent) 96%,
+		transparent 100%
+	);
+	pointer-events: none;
+}
+.home-nav-shade {
+	position: fixed;
+	top: 0;
+	right: 0;
+	left: 0;
+	z-index: 9;
+	height: 200px;
+	background: linear-gradient(
+		180deg,
+		color-mix(in srgb, var(--home-shade) 94%, transparent) 0%,
+		color-mix(in srgb, var(--home-shade) 92%, transparent) 7%,
+		color-mix(in srgb, var(--home-shade) 88%, transparent) 14%,
+		color-mix(in srgb, var(--home-shade) 82%, transparent) 21%,
+		color-mix(in srgb, var(--home-shade) 75%, transparent) 28%,
+		color-mix(in srgb, var(--home-shade) 66%, transparent) 35%,
+		color-mix(in srgb, var(--home-shade) 57%, transparent) 42%,
+		color-mix(in srgb, var(--home-shade) 48%, transparent) 49%,
+		color-mix(in srgb, var(--home-shade) 39%, transparent) 56%,
+		color-mix(in srgb, var(--home-shade) 30%, transparent) 63%,
+		color-mix(in srgb, var(--home-shade) 22%, transparent) 70%,
+		color-mix(in srgb, var(--home-shade) 15%, transparent) 77%,
+		color-mix(in srgb, var(--home-shade) 9%, transparent) 84%,
+		color-mix(in srgb, var(--home-shade) 4%, transparent) 91%,
+		color-mix(in srgb, var(--home-shade) 1.2%, transparent) 96%,
+		transparent 100%
+	);
+	pointer-events: none;
+}
+
+/* ---------- hero */
+.home-hero {
+	position: relative;
+	z-index: 2;
+	display: grid;
+	grid-template-columns: var(--home-cols);
+	padding-inline: var(--home-pad);
+	pointer-events: none;
+}
+.home-hero-inner {
+	position: relative;
+	grid-column: 5;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-width: 0;
+	padding-bottom: max(140px, calc(var(--home-vh) * 0.3));
+	text-align: center;
+	isolation: isolate;
+	pointer-events: auto;
+}
+/* first screen: the search sits 40px above the middle and the categories
+   start in the bottom fifth */
+.home-hero-top {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	min-height: var(--home-vh);
+	padding-bottom: var(--ohf-space-80, 80px);
+}
+.home-hero-intro {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding-bottom: 28px;
+}
+.home h1 {
+	margin: 0;
+	color: var(--home-text);
+	font-size: var(--home-fs-h1);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: 1;
+	letter-spacing: -0.03em;
+}
+.home-sub {
+	margin: var(--ohf-space-16) 0 0;
+	color: var(--home-text-subtle);
+	font-size: var(--ohf-font-size-14);
+	line-height: var(--ohf-line-height-20);
+	text-wrap: balance;
+}
+.home-search {
+	width: min(100%, 400px);
+}
+/* a padded hit area, cancelled by the margins so the layout stays put */
+.home-browse {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 5px;
+	margin: var(--ohf-space-12) calc(-1 * var(--ohf-space-12))
+		calc(-1 * var(--ohf-space-8));
+	padding: var(--ohf-space-8) var(--ohf-space-12);
+	color: var(--home-text-subtle);
+	font-size: var(--ohf-font-size-14);
+	font-variant-numeric: tabular-nums;
+	text-decoration: none;
+	transition: color 0.25s;
+}
+/* a quiet rule under the link */
+.home-browse::after {
+	content: "";
+	height: 1px;
+	background: currentcolor;
+	opacity: 0.4;
+	transition: opacity 0.25s;
+}
+/* the site's visited link colour would win over the plain class */
+.home-browse:visited {
+	color: var(--home-text-subtle);
+}
+.home-browse:hover {
+	color: var(--home-text);
+	text-decoration: none;
+}
+.home-browse:hover::after {
+	opacity: 0.7;
+}
+.home-browse:focus-visible,
+.home-cat:focus-visible {
+	outline: var(--ohf-border-width-focus) solid var(--ohf-color-border-focus);
+	outline-offset: 3px;
+	border-radius: var(--ohf-radius-sm);
+}
+
+/* ---------- categories */
+/* pulled up over the hero. clicks pass through, only the rows catch them */
+.home-cats-track {
+	width: 100%;
+	margin-top: calc(var(--home-vh) * -0.17);
+	pointer-events: none;
+}
+.home-cats-track .home-cat {
+	pointer-events: auto;
+}
+.home-cats-reel {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--ohf-space-24);
+}
+.home-cats h2 {
+	margin: 0;
+	color: var(--home-text);
+	font-size: var(--ohf-font-size-14);
+	font-weight: var(--ohf-font-weight-regular);
+	line-height: var(--ohf-line-height-20);
+	transition: color 0.6s ease;
+}
+.home-cats ul {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.08em;
+	margin: 0;
+	padding: 0;
+	font-size: var(--home-fs-cat);
+	list-style: none;
+}
+/* `--o` is the row's opacity, set as the list moves */
+.home-cat {
+	position: relative;
+	display: block;
+	padding: 0.03em 0;
+	color: var(--home-text);
+	font-size: 1em;
+	line-height: 1.2;
+	letter-spacing: -0.015em;
+	text-decoration: none;
+	opacity: var(--o, 1);
+	transition:
+		opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+		color 0.6s ease;
+}
+/* the site's visited link colour would win over the plain class, and leave
+   a visited row dark on the cobalt */
+.home-cat:visited,
+.home-cat:hover {
+	color: var(--home-text);
+	text-decoration: none;
+}
+.home-cats ul:hover .home-cat:not(:hover) {
+	opacity: calc(var(--o, 1) * 0.55);
+}
+.home-cats ul .home-cat:hover,
+.home-cats ul .home-cat:focus-visible {
+	opacity: 1;
+}
+.home-cat-name {
+	display: inline-block;
+	transform: scale(calc(0.985 + var(--o, 1) * 0.015));
+	transform-origin: 50% 60%;
+}
+.home-cats-spacer {
+	height: calc(var(--home-vh) * 0.8);
+}
+
+/* the list as a reel: the section holds the screen and the list scrolls
+   through a reading line at mid screen. wider than the hero column, so long
+   names stay clear of the mask's edges */
+.home-cats.is-rolo {
+	--rw: min(1000px, calc(100vw - 32px));
+	--rtop: 84px;
+
+	position: sticky;
+	top: 0;
+	height: var(--home-vh);
+	margin-inline: calc((100% - var(--rw)) / 2);
+	overflow: clip;
+	-webkit-mask-image: linear-gradient(
+		180deg,
+		transparent 0,
+		transparent var(--rtop),
+		#000 calc(var(--rtop) + 18%),
+		#000 66%,
+		transparent calc(100% - 40px)
+	);
+	mask-image: linear-gradient(
+		180deg,
+		transparent 0,
+		transparent var(--rtop),
+		#000 calc(var(--rtop) + 18%),
+		#000 66%,
+		transparent calc(100% - 40px)
+	);
+	pointer-events: none;
+}
+.home-cats.is-rolo .home-cats-reel {
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: 0;
+	will-change: transform;
+}
+.home-cats.is-rolo ul {
+	position: relative;
+}
+.home-cats.is-rolo li:not(.home-cats-band) {
+	position: relative;
+	z-index: 1;
+	will-change: transform;
+}
+.home-cats.is-rolo .home-cat {
+	white-space: nowrap;
+	transition:
+		opacity 0.12s linear,
+		color 0.6s ease;
+}
+.home-cats.is-rolo .home-cat.is-tick .home-cat-name {
+	animation: home-tick 0.22s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+@keyframes home-tick {
+	40% {
+		transform: scale(1.035);
+	}
+}
+/* a soft band behind the name in focus */
+.home-cats ul li.home-cats-band {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 0;
+	width: 0;
+	height: 0;
+	border-radius: 10px;
+	background: color-mix(in srgb, var(--home-text) 6.5%, transparent);
+	opacity: 0;
+	pointer-events: none;
+}
+
+/* ---------- the reveal on load. only once the script is running, so the
+   page reads without it */
+home-stage:defined .home-reveal {
+	opacity: 0;
+	transform: translateY(6px);
+}
+home-stage:defined li.home-reveal {
+	transform: translateY(10px);
+}
+home-stage.is-revealed .home-reveal {
+	opacity: var(--sf, 1);
+	transform: none;
+	transition:
+		opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1) var(--d, 0s),
+		transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s);
+}
+home-stage.is-revealed.is-settled .home-reveal {
+	transition: none;
+}
+home-stage:defined .home-reveal-now {
+	opacity: 0;
+	transform: translateY(6px);
+}
+home-stage.is-nav-in .home-reveal-now {
+	opacity: var(--sf, 1);
+	transform: none;
+	transition:
+		opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.05s,
+		transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) 0.05s;
+}
+home-stage.is-nav-in.is-settled .home-reveal-now {
+	transition: none;
+}
+home-stage:defined .home-nav-shade {
+	opacity: 0;
+}
+home-stage.is-nav-in .home-nav-shade {
+	opacity: 1;
+	transition: opacity 1s ease;
+}
+
+/* ---------- leaving for another page: the page clears while the reels spin
+   up again */
+html.home-exiting .home-hero,
+html.home-exiting .appnav-search-dock,
+html.home-exiting .appfoot-steps,
+html.home-exiting .appfoot {
+	opacity: 0;
+	transform: translateY(-12px);
+	transition:
+		opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+		transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+	pointer-events: none;
+}
+
+/* ---------- narrower: the reels run the full width and the content floats
+   over a soft fade */
+@media (max-width: 1100px) {
+	.home {
+		--home-cols: repeat(4, minmax(0, 1fr));
+		--home-fs-h1: var(--ohf-font-size-36);
+		--home-fs-cat: var(--ohf-font-size-24);
+	}
+	.home-stage {
+		column-gap: var(--home-gutter);
+	}
+	.home-reel:nth-child(n) {
+		grid-column: auto;
+		touch-action: pan-y pinch-zoom;
+	}
+	.home-hero {
+		grid-template-columns: 1fr;
+	}
+	.home-hero-inner {
+		grid-column: 1;
+		justify-self: center;
+		width: min(100%, 600px);
+	}
+	.home-search {
+		width: 100%;
+	}
+}
+@media (max-width: 900px) {
+	/* eased ramps, so the cards fade as they pass behind the content */
+	.home-hero-inner::before {
+		--fade-y: linear-gradient(
+			180deg,
+			rgb(0 0 0 / 0%) 0,
+			rgb(0 0 0 / 4%) 4vh,
+			rgb(0 0 0 / 13%) 8vh,
+			rgb(0 0 0 / 28%) 12vh,
+			rgb(0 0 0 / 47%) 16vh,
+			rgb(0 0 0 / 66%) 20vh,
+			rgb(0 0 0 / 82%) 24vh,
+			rgb(0 0 0 / 94%) 28vh,
+			#000 32vh,
+			#000 calc(100% - 24vh),
+			rgb(0 0 0 / 82%) calc(100% - 18vh),
+			rgb(0 0 0 / 50%) calc(100% - 12vh),
+			rgb(0 0 0 / 18%) calc(100% - 6vh),
+			rgb(0 0 0 / 0%) 100%
+		);
+		--fade-x: linear-gradient(
+			90deg,
+			rgb(0 0 0 / 0%) 0,
+			rgb(0 0 0 / 8%) 6%,
+			rgb(0 0 0 / 26%) 12%,
+			rgb(0 0 0 / 52%) 18%,
+			rgb(0 0 0 / 78%) 24%,
+			rgb(0 0 0 / 94%) 30%,
+			#000 35%,
+			#000 65%,
+			rgb(0 0 0 / 94%) 70%,
+			rgb(0 0 0 / 78%) 76%,
+			rgb(0 0 0 / 52%) 82%,
+			rgb(0 0 0 / 26%) 88%,
+			rgb(0 0 0 / 8%) 94%,
+			rgb(0 0 0 / 0%) 100%
+		);
+
+		content: "";
+		position: absolute;
+		top: -14vh;
+		right: -16vw;
+		bottom: -4vh;
+		left: -16vw;
+		z-index: -1;
+		background: color-mix(in srgb, var(--home-shade) 80%, transparent);
+		-webkit-mask-image: var(--fade-y), var(--fade-x);
+		-webkit-mask-composite: source-in;
+		mask-image: var(--fade-y), var(--fade-x);
+		mask-composite: intersect;
+		pointer-events: none;
+	}
+}
+@media (max-width: 700px) {
+	.home-cats.is-rolo {
+		--rtop: 150px;
+	}
+}
+/* phone: the cards get a band at the top and the content sits below it */
+@media (max-width: 600px) {
+	.home {
+		--home-cols: repeat(3, minmax(0, 1fr));
+		--home-fs-h1: clamp(
+			var(--ohf-font-size-28),
+			8.4vw,
+			var(--ohf-font-size-36)
+		);
+		--home-fs-cat: var(--ohf-font-size-20);
+	}
+	.home-reel:nth-child(4) {
+		display: none;
+	}
+	.home-gallery {
+		-webkit-mask-image: linear-gradient(
+			180deg,
+			#000 0,
+			#000 calc(var(--home-vh) * 0.2),
+			rgb(0 0 0 / 55%) calc(var(--home-vh) * 0.3),
+			rgb(0 0 0 / 15%) calc(var(--home-vh) * 0.38),
+			transparent calc(var(--home-vh) * 0.44)
+		);
+		mask-image: linear-gradient(
+			180deg,
+			#000 0,
+			#000 calc(var(--home-vh) * 0.2),
+			rgb(0 0 0 / 55%) calc(var(--home-vh) * 0.3),
+			rgb(0 0 0 / 15%) calc(var(--home-vh) * 0.38),
+			transparent calc(var(--home-vh) * 0.44)
+		);
+	}
+	.home-hero-inner::before {
+		display: none;
+	}
+	.home-hero-top {
+		justify-content: flex-start;
+		padding-top: calc(var(--home-vh) * 0.43);
+		padding-bottom: 0;
+	}
+	.home-cats-track {
+		margin-top: calc(var(--home-vh) * -0.15);
+	}
+	.home-nav-shade {
+		height: 112px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	home-stage:defined .home-reveal,
+	home-stage:defined .home-reveal-now,
+	home-stage:defined .home-nav-shade {
+		opacity: var(--sf, 1);
+		transform: none;
+		transition: none;
+	}
+	/* no card reels at all. even standing still they change their drawings
+	   as the list scrolls, and that is motion too */
+	.home-gallery {
+		display: none;
+	}
+	.home-cats.is-rolo .home-cat.is-tick .home-cat-name {
+		animation: none;
+	}
+}

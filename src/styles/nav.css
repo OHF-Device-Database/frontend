@@ -250,6 +250,40 @@
 }
 .appnav .searchbox-header .searchbox-input input {
 	background: transparent;
+	color: var(--ohf-color-text-default);
+}
+/* text in the tokens too, so it follows the header when the landing page
+   turns it dark over the cobalt */
+.appnav .searchbox-header .searchbox-input,
+.appnav .searchbox-header .searchbox-button-clear {
+	color: var(--ohf-color-text-subtle);
+}
+.appnav .searchbox-header .searchbox-input input::placeholder {
+	color: var(--ohf-color-text-placeholder);
+}
+.appnav .searchbox-header .searchbox-input input:focus::placeholder {
+	color: transparent;
+}
+
+/* landing page: hidden until the hero search has scrolled under the header */
+.appnav-search-dock {
+	min-width: 0;
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(-6px);
+	transition:
+		opacity 0.3s ease,
+		transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
+		visibility 0s linear 0.45s;
+}
+.appnav-search-dock.is-shown {
+	opacity: 1;
+	visibility: visible;
+	transform: none;
+	transition:
+		opacity 0.35s ease,
+		transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
+		visibility 0s;
 }
 
 /* the menu button is 56px wide, 64px on a phone */

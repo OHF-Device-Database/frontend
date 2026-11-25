@@ -67,6 +67,9 @@ const limits = {
 	manufacturer: 2,
 } as const;
 
+/** counts the searches on the page, for their id prefixes */
+let instances = 0;
+
 export class DeviceSearch extends LitElement {
 	@property() size: "header" | "hero" = "header";
 	@property() placeholder = "Search";
@@ -97,6 +100,10 @@ export class DeviceSearch extends LitElement {
 	private _input: HTMLInputElement | null = null;
 	private _clearButton: HTMLButtonElement | null = null;
 	private _popover: Ref<HTMLInputElement> = createRef();
+
+	// a page can hold more than one search (the landing page has one in the
+	// hero and one in the header), so each keeps its suggestion ids apart
+	private readonly _idPrefix = `device-search-${++instances}`;
 
 	// opt-out of shadow dom to be able to reference global css classes
 	protected override createRenderRoot(): HTMLElement {
@@ -470,7 +477,7 @@ export class DeviceSearch extends LitElement {
 						${section.items.map((f) => {
 							const filter = quickFilter(f);
 							return html`<button
-								id=${`quick-filter-${f}`}
+								id=${`${this._idPrefix}-quick-filter-${f}`}
 								class="searchbox-popover-section-row"
 								@click=${() => void navigate(this._urlQuickFilter(f))}
 							>
@@ -494,7 +501,7 @@ export class DeviceSearch extends LitElement {
 							const category = device.category(c.id);
 							return html`<button
 								class="searchbox-popover-section-row"
-								id=${`category-${c.id}`}
+								id=${`${this._idPrefix}-category-${c.id}`}
 								@click=${() => void navigate(this._urlCategory(c.id))}
 							>
 								${unsafeHTML(render(category, PresentationRenderPresetRoleIcon.withSize(16)))}
@@ -518,7 +525,7 @@ export class DeviceSearch extends LitElement {
 							(m) =>
 								html`<button
 									class="searchbox-popover-section-row"
-									id=${`manufacturer-${m.name}`}
+									id=${`${this._idPrefix}-manufacturer-${m.name}`}
 									@click=${() => void navigate(this._urlManufacturer(m.name))}
 								>
 									${unsafeHTML(render(generic("users"), PresentationRenderPresetRoleIcon.withSize(16)))}
@@ -557,7 +564,7 @@ export class DeviceSearch extends LitElement {
 										);
 										return html`<button
 											class=${"searchbox-popover-section-row" + (section.stale ? " searchbox-popover-section-row-stale" : "")}
-											id=${`device-${d.id}`}
+											id=${`${this._idPrefix}-device-${d.id}`}
 											@click=${() => void navigate(this._urlDevice(d.id))}
 										>
 											${unsafeHTML(render(category, PresentationRenderPresetRoleIcon.withSize(16)))}
@@ -578,7 +585,7 @@ export class DeviceSearch extends LitElement {
 										section.total > limits.device
 											? html`<button
 													class="searchbox-popover-section-row"
-													id=${`more-device`}
+													id=${`${this._idPrefix}-more-device`}
 													@click=${() => void navigate(localizeHref(browseFiltersToHref(this._searchFilters)))}
 												>
 													${unsafeHTML(render(generic("arrow"), PresentationRenderPresetRoleIcon.withSize(16)))}
