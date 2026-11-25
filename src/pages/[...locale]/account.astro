@@ -201,6 +201,8 @@ const tabs = [
 			label: string,
 			action: () => Promise<boolean>,
 		) => {
+			// disabling the focused button drops focus to <body>
+			const hadFocus = document.activeElement === clicked;
 			buttons.forEach((button) => (button.disabled = true));
 			const restore = markBusy(clicked, label);
 			if (error) error.textContent = "";
@@ -216,6 +218,8 @@ const tabs = [
 			page
 				.querySelectorAll<HTMLDialogElement>("dialog[open]")
 				.forEach((dialog) => dialog.close());
+			// a closed dialog already returns focus to the button that opened it
+			if (hadFocus && !clicked.closest("dialog")) clicked.focus();
 			if (error) error.textContent = m.account_action_failed();
 		};
 
