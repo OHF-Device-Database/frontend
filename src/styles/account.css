@@ -136,82 +136,168 @@ html:not([data-github-session]) .account .ui-menu-anchor {
 	white-space: nowrap;
 }
 
-html:not([data-feature-account="on"]) .account-page {
+/*
+ * Account page, from the Settings frames. Only "Sign-in and security" for
+ * now: the connected accounts and the session, each a heading over a row
+ * with its action at the end.
+ */
+/* like the header: signed-in visitors keep it even with the feature off */
+html:not([data-feature-account="on"]):not([data-github-session]) .settings {
 	display: none;
 }
-.account-page {
-	padding-top: var(--space-10);
-	padding-bottom: var(--space-10);
+html[data-github-session] .settings-signed-out,
+html:not([data-github-session]) .settings-signed-in {
+	display: none;
 }
-.account-stack {
+.settings-header {
+	padding-top: var(--ohf-space-48);
+	text-align: center;
+}
+.settings-header h1 {
+	margin: 0 0 var(--ohf-space-32);
+	font-size: var(--ohf-font-size-24);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-32);
+	letter-spacing: 0;
+}
+.settings-tabs.ui-tabs {
+	justify-content: center;
+	border-top: 0;
+	padding-inline: var(--page-gutter);
+}
+.settings-body {
+	box-sizing: border-box;
+	width: min(680px, 100%);
+	margin: 0 auto;
+	padding: var(--ohf-space-48) var(--page-gutter) var(--ohf-space-80);
+}
+.settings-signed-out {
 	display: flex;
 	flex-direction: column;
-	gap: var(--space-6);
+	align-items: center;
+	gap: var(--ohf-space-16);
+	text-align: center;
 }
-.account-action {
-	display: flex;
-	flex-direction: column;
-	gap: var(--space-2);
-}
-.account-action p {
+.settings-signed-out p {
 	margin: 0;
-	color: var(--fg-muted);
-	font-size: var(--fs-14);
-	line-height: 1.45;
+	color: var(--ohf-color-text-subtle);
 }
-.account-button {
+.settings-section {
+	display: flex;
+	flex-direction: column;
+	gap: var(--ohf-space-32);
+}
+.settings-section-header {
+	padding-bottom: var(--ohf-space-32);
+	border-bottom: var(--ohf-border-width-default) solid
+		var(--ohf-color-border-default);
+}
+.settings-section-header h2 {
+	margin: 0;
+	font-size: var(--ohf-font-size-18);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-24);
+	letter-spacing: 0;
+}
+.settings-section-header p,
+.settings-group-hint {
+	margin: var(--ohf-space-4) 0 0;
+	color: var(--ohf-color-text-subtle);
+	font-size: var(--ohf-font-size-14);
+	line-height: var(--ohf-line-height-20);
+}
+.settings-group h3 {
+	margin: 0;
+	font-size: var(--ohf-font-size-16);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-24);
+	letter-spacing: 0;
+}
+.settings-row {
+	display: flex;
+	align-items: center;
+	gap: var(--ohf-space-12);
+	margin-top: var(--ohf-space-12);
+	padding: var(--ohf-space-16);
+	border: var(--ohf-border-width-default) solid var(--ohf-color-border-default);
+	border-radius: var(--ohf-radius-l);
+	background: var(--ohf-color-bg-surface-raised);
+}
+.settings-row-icon {
+	display: grid;
+	place-items: center;
+	flex: none;
+	width: var(--ohf-size-control-md);
+	height: var(--ohf-size-control-md);
+	overflow: hidden;
+	border-radius: var(--ohf-radius-md);
+	background: var(--ohf-color-bg-surface-sunken);
+	color: var(--ohf-color-icon-subtle);
+}
+.settings-row-icon > * {
+	grid-area: 1 / 1;
+}
+.settings-row-icon img {
 	width: 100%;
-	padding: var(--space-3) var(--space-3);
-	border: 0;
-	border-radius: var(--radius-2);
-	background: var(--fg);
-	color: var(--fg-on-primary);
-	font: var(--fw-medium) var(--fs-16) / 1.2 var(--font-sans);
-	text-align: start;
-	cursor: pointer;
-	transition: var(--transition-fast);
+	height: 100%;
 }
-.account-button:hover {
-	opacity: 0.9;
-}
-.account-button:focus-visible {
-	outline: 0;
-	box-shadow: var(--ring-focus);
-}
-.account-button:disabled {
-	opacity: 0.5;
-	cursor: progress;
-}
-.account-button-danger {
-	background: var(--error);
-	/* white in light theme, dark in dark theme, where the error red is light */
-	color: var(--fg-on-primary);
-}
-.account-danger {
+.settings-row-text {
 	display: flex;
+	flex: 1;
 	flex-direction: column;
-	gap: var(--space-5);
-	padding: var(--space-6);
-	border: 1px solid var(--border-strong);
-	border-radius: var(--radius-2);
+	min-width: 0;
+	font-size: var(--ohf-font-size-14);
+	line-height: var(--ohf-line-height-20);
 }
-.account-danger h2 {
+.settings-row-title {
+	overflow: hidden;
+	color: var(--ohf-color-text-default);
+	font-weight: var(--ohf-font-weight-medium);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+a.settings-row-title:hover {
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+a.settings-row-title:focus-visible {
+	outline: var(--ohf-border-width-focus) solid var(--ohf-color-border-focus);
+	outline-offset: 2px;
+	border-radius: var(--ohf-radius-sm);
+}
+.settings-row-hint,
+.settings-status {
+	color: var(--ohf-color-text-subtle);
+}
+.settings-status::before {
+	content: "";
+	display: inline-block;
+	width: var(--ohf-space-6);
+	height: var(--ohf-space-6);
+	margin-inline-end: var(--ohf-space-6);
+	border-radius: var(--ohf-radius-full);
+	background: var(--ohf-color-text-success);
+	vertical-align: middle;
+}
+.settings-row .ui-button {
+	flex: none;
+}
+.ui-modal .settings-modal-text {
 	margin: 0;
-	color: var(--fg-muted);
-	font-size: var(--fs-16);
-	font-weight: var(--fw-semibold);
-	text-transform: uppercase;
-	letter-spacing: 0.02em;
+	color: var(--ohf-color-text-subtle);
+	font-size: var(--ohf-font-size-14);
+	line-height: var(--ohf-line-height-20);
 }
-.account-error {
+.settings-error {
 	margin: 0;
-	color: var(--error);
-	font-size: var(--fs-14);
+	color: var(--ohf-color-text-danger);
+	font-size: var(--ohf-font-size-14);
 }
-.account-error:empty {
+.settings-error:empty {
 	display: none;
 }
-html[data-github-session] .account-signed-out,
-html:not([data-github-session]) .account-signed-in {
-	display: none;
+/* still readable while it runs, unlike a plain disabled button */
+.settings .ui-button[aria-busy="true"] {
+	--ui-button-fg: var(--ohf-color-text-subtle);
+	cursor: progress;
 }

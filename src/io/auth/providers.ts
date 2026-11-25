@@ -1,3 +1,4 @@
+import { m } from "../../paraglide/messages.js";
 import { GITHUB_AUTHORIZE_PATH } from "../vendor/github/routes";
 
 /**
@@ -11,6 +12,8 @@ export interface AuthProvider {
 	id: AuthProviderId;
 	/** brand name, not translated */
 	name: string;
+	/** what the connection is used for, on the account page */
+	description: () => string;
 	/** starts the sign-in, which comes back to `returnTo` */
 	signInHref: (returnTo: string) => string;
 	/** the account's public profile */
@@ -22,6 +25,7 @@ export interface AuthProvider {
 const github: AuthProvider = {
 	id: "github",
 	name: "GitHub",
+	description: () => m.account_provider_github(),
 	signInHref: (returnTo) =>
 		`${GITHUB_AUTHORIZE_PATH}?${new URLSearchParams({ "return-to": returnTo })}`,
 	profileHref: (login) => `https://github.com/${encodeURIComponent(login)}`,
