@@ -27,11 +27,6 @@
 	font-size: var(--ohf-font-size-14);
 	line-height: var(--ohf-line-height-20);
 }
-.debug-page-header a {
-	color: var(--ohf-color-text-default);
-	text-decoration: underline;
-	text-underline-offset: 2px;
-}
 
 .debug-panel {
 	overflow: hidden;
