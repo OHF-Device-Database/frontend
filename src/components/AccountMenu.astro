@@ -204,6 +204,10 @@ const marks: Record<AuthProviderId, typeof GitHubMark> = {
 				event.preventDefault();
 				return;
 			}
+			// opens in a new tab or window, this page stays as it is
+			if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+				return;
+			}
 			const restore = markBusy(
 				provider,
 				m.account_signing_in({
@@ -218,6 +222,8 @@ const marks: Record<AuthProviderId, typeof GitHubMark> = {
 				},
 				{ once: true },
 			);
+			// a navigation that was stopped never leaves the page
+			setTimeout(restore, 10_000);
 			return;
 		}
 
