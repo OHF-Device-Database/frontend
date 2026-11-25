@@ -1,120 +1,139 @@
+/*
+ * Sign-in and the account menu in the header. Signed out: Contribute opens the
+ * sign-in modal. Signed in: the avatar opens a menu with the account page and
+ * sign out. `data-github-session` is set on <html> before first paint.
+ */
 .account {
 	display: none;
 	align-items: center;
 }
-html[data-feature-account="on"] .account {
+html[data-feature-account="on"] .account,
+html[data-github-session] .account {
 	display: flex;
 }
-html[data-github-session=""] .account {
-	display: flex;
-}
-/* looks come from `ui-button`. this only names it as the popover's anchor */
-.account-trigger {
-	anchor-name: --account;
+html[data-github-session] .account-trigger,
+html:not([data-github-session]) .account .ui-menu-anchor {
+	display: none;
 }
 
-.account-popover {
-	position-anchor: --account;
-	position-area: bottom span-left;
-	position-try-fallbacks: flip-inline;
-	inset: auto;
-	margin: var(--space-1) 0 0;
-	width: 360px;
-	max-width: calc(100vw - 2 * var(--space-4));
-	padding: var(--space-4);
-	border: 1px solid var(--border);
-	border-radius: var(--radius-3);
-	background: var(--surface);
-	color: var(--fg);
-	box-shadow: var(--shadow-2);
+/* the modal, from the Sign in frame: logo, title, providers, consent */
+.account-sign-in {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--ohf-space-24);
+	width: min(330px, 100%);
+	margin: 0 auto;
+	text-align: center;
 }
-@supports not (position-area: bottom) {
-	.account-popover {
-		inset: var(--nav-h) var(--space-4) auto auto;
-	}
+.account-sign-in-mark {
+	display: block;
+	width: 49px;
+	height: 53px;
+	margin-top: calc(-1 * var(--ohf-space-16));
 }
-.account-popover-title {
+.account-modal .account-sign-in-title {
 	margin: 0;
-	font-size: var(--fs-14);
-	line-height: 1.4;
+	color: var(--ohf-color-text-default);
+	font-family: inherit;
+	font-size: var(--ohf-font-size-24);
+	font-weight: var(--ohf-font-weight-medium);
+	line-height: var(--ohf-line-height-28);
+	letter-spacing: 0;
 }
-.account-popover-consent {
-	margin: var(--space-2) 0 0;
-	color: var(--fg-muted);
-	font-size: var(--fs-12);
-	line-height: 1.45;
+.account-sign-in-title span {
+	display: block;
+	color: var(--ohf-color-text-subtle);
 }
-.account-popover-consent a {
-	color: inherit;
+.account-providers {
+	display: flex;
+	flex-direction: column;
+	gap: var(--ohf-space-8);
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.account-provider.ui-button {
+	width: 100%;
+}
+.account-provider[aria-busy="true"] {
+	cursor: progress;
+}
+/* GitHub's brand guidelines only allow the mark in pure black or white */
+.account-provider svg path {
+	fill: #000;
+}
+:root[data-resolved-theme="dark"] .account-provider svg path {
+	fill: #fff;
+}
+.account-modal .account-consent {
+	margin: 0;
+	color: var(--ohf-color-text-subtle);
+	font-size: var(--ohf-font-size-13);
+	line-height: var(--ohf-line-height-20);
+	text-wrap: pretty;
+}
+.account-consent a {
+	color: var(--ohf-color-text-default);
 	text-decoration: underline;
 	text-underline-offset: 2px;
 }
-.account-popover-continue {
-	margin: var(--space-4) 0 var(--space-2);
-	font-size: var(--fs-14);
-	font-weight: var(--fw-semibold);
-}
-.account-provider,
-.account-provider:visited {
-	display: flex;
-	align-items: center;
-	gap: var(--space-2);
-	padding: var(--space-2) var(--space-3);
-	border-radius: var(--radius-2);
-	background: var(--primary);
-	color: var(--fg-on-primary);
-	font-size: var(--fs-14);
-	font-weight: var(--fw-medium);
-	text-decoration: none;
-	transition: var(--transition-fast);
-}
-.account-provider:hover {
-	background: var(--primary-hover);
-	color: var(--fg-on-primary);
-	text-decoration: none;
-}
-/* GitHub's brand guidelines only allow the mark in pure white or black */
-.account-provider svg path {
-	fill: #fff;
-}
-:root[data-resolved-theme="dark"] .account-provider svg path {
-	fill: #000;
-}
-.account-provider:focus-visible {
-	outline: 0;
-	box-shadow: var(--ring-focus);
+.account-consent a:focus-visible {
+	outline: var(--ohf-border-width-focus) solid var(--ohf-color-border-focus);
+	outline-offset: 2px;
+	border-radius: var(--ohf-radius-sm);
 }
 
+/* the avatar, 40px with the same thin outline as the menu button next to it */
 .account-avatar {
-	display: none;
-	border-radius: var(--radius-pill);
+	display: block;
+	flex: none;
+	box-sizing: border-box;
+	width: var(--ohf-size-control-md);
+	height: var(--ohf-size-control-md);
+	padding: 0;
+	overflow: hidden;
+	border: var(--ohf-border-width-default) solid var(--ohf-color-alpha-12);
+	border-radius: var(--ohf-radius-full);
+	background: var(--ohf-color-alpha-9);
+	cursor: pointer;
 }
 .account-avatar:focus-visible {
-	outline: 0;
-	box-shadow: var(--ring-focus);
+	outline: var(--ohf-border-width-focus) solid var(--ohf-color-border-focus);
+	outline-offset: 2px;
 }
 .account-avatar img {
 	display: block;
-	width: 32px;
-	height: 32px;
-	border-radius: var(--radius-pill);
-	background: var(--surface-tint-mid);
+	width: 100%;
+	height: 100%;
+	border-radius: var(--ohf-radius-full);
+	background: var(--ohf-color-bg-surface-sunken);
 }
-html[data-github-session] .account-trigger,
-html[data-github-session] .account-popover {
+.account-menu .account-menu-error {
+	margin: 0;
+	padding: var(--ohf-space-4) var(--ohf-space-12) var(--ohf-space-8);
+	color: var(--ohf-color-text-danger);
+	font-size: var(--ohf-font-size-13);
+	line-height: var(--ohf-line-height-20);
+}
+.account-menu .account-menu-error:empty {
 	display: none;
 }
-html[data-github-session] .account-avatar {
-	display: block;
+/* still readable while it runs, unlike a plain disabled item */
+.account-menu .ui-menu-item[aria-busy="true"] {
+	color: var(--ohf-color-text-subtle);
+	cursor: progress;
 }
-
-/* only full width where a 360px popover wouldn't fit comfortably */
-@media (max-width: 767px) {
-	.account-popover {
-		position-area: bottom span-all;
-		justify-self: center;
-		width: calc(100vw - 2 * var(--space-4));
-	}
+.account-menu .account-menu-login {
+	margin: 0;
+	padding: var(--ohf-space-8) var(--ohf-space-12) var(--ohf-space-4);
+	overflow: hidden;
+	color: var(--ohf-color-text-subtle);
+	font-size: var(--ohf-font-size-13);
+	line-height: var(--ohf-line-height-20);
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 html:not([data-feature-account="on"]) .account-page {

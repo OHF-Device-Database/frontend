@@ -17,6 +17,21 @@ document.addEventListener("click", (event) => {
 		const dialog = document.getElementById(opener.dataset["modalOpen"] ?? "");
 		if (dialog instanceof HTMLDialogElement && !dialog.open) {
 			dialog.showModal();
+			// an opener inside a popover is hidden by now, so on close the
+			// focus goes back to the button that opens that popover instead
+			const popover = opener.closest("[popover]");
+			if (popover?.id) {
+				dialog.addEventListener(
+					"close",
+					() =>
+						document
+							.querySelector<HTMLElement>(
+								`[popovertarget="${popover.id}"]:not([popovertargetaction="hide"])`,
+							)
+							?.focus(),
+					{ once: true },
+				);
+			}
 		}
 		return;
 	}
